@@ -1,0 +1,16 @@
+/* src/astyls/astyles/HeaderComponent */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  color: black;
+  padding: 8px;
+  position: relative;
+  border-bottom: solid 1px #ddd;
+}
+
+.button-container {
+  position: absolute;
+  right: 16px;
+}

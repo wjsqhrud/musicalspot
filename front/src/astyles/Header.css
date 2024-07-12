@@ -1,0 +1,8 @@
+.custom-header {
+    font-family: 'CustomFont', sans-serif; /* Tailwind's font-custom */
+  }
+  
+  .header-title {
+    font-size: 1.5rem; /* Tailwind's text-2xl */
+    cursor: pointer; /* Tailwind's cursor-pointer */
+  }
