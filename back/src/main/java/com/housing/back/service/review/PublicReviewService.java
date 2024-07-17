@@ -138,6 +138,9 @@ public class PublicReviewService {
         try {
             Pageable pageable = PageRequest.of(page, 40, sort);
             List<ReviewEntity> reviews = reviewRepository.findAll(pageable).getContent();
+            if(reviews.isEmpty()){
+                return TestResponseDto.notFound();
+            }
 
             List<ReviewListResponseDto> reviewList = reviews.stream().map(review -> {
                 String reviewNickname = nicknameRepository.findByUserId(review.getUser().getId())
@@ -171,5 +174,4 @@ public class PublicReviewService {
             throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
     }
-
 }

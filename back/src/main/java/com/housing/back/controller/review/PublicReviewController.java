@@ -22,31 +22,26 @@ public class PublicReviewController {
 
     @GetMapping("/review-details/{reviewId}")
     public ResponseEntity<TestResponseDto> getReviewDetails (@PathVariable("reviewId") Long reviewId){
-        ResponseEntity<TestResponseDto> response = publicReviewService.getReviewDetails(reviewId);
-        return response;
+        return publicReviewService.getReviewDetails(reviewId);
     }
 
     @PostMapping("/review-details/increase-view/{reviewId}")
     public ResponseEntity<TestResponseDto> increaseViewCount(@PathVariable("reviewId") Long reviewId) {
-        ResponseEntity<TestResponseDto> response = publicReviewService.increaseViewCount(reviewId);
-        return response;
+        return publicReviewService.increaseViewCount(reviewId);
     }
 
     @GetMapping("/reviews/recent")
     public ResponseEntity<TestResponseDto> getRecentReviews(@RequestParam(name = "page", defaultValue = "0") int page) {
-        ResponseEntity<TestResponseDto> response = publicReviewService.getRecentReviews(page);
-        return response;
+        return publicReviewService.getRecentReviews(page);
     }
 
     @GetMapping("/reviews/likes")
     public ResponseEntity<TestResponseDto> getReviewsByLikes(@RequestParam(name = "page", defaultValue = "0") int page) {
-        ResponseEntity<TestResponseDto> response = publicReviewService.getReviewsByLikes(page);
-        return response;
+        return publicReviewService.getReviewsByLikes(page);
     }
 
     @GetMapping("/reviews/views")
     public ResponseEntity<TestResponseDto> getReviewsByViews(@RequestParam(name = "page", defaultValue = "0") int page) {
-        ResponseEntity<TestResponseDto> response = publicReviewService.getReviewsByViews(page);
-        return response;
+        return publicReviewService.getReviewsByViews(page);
     }
 }

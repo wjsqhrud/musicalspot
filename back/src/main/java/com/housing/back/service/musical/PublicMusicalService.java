@@ -31,9 +31,14 @@ public class PublicMusicalService {
     private final MusicalLinkRepository musicalLinkRepository;
     private final MusicalTicketRepository musicalTicketRepository;
 
-    public List<MusicalCategoryEntity> getCategoryList() { // 카테고리 목록요청
+    public ResponseEntity<TestResponseDto> getCategoryList() { // 카테고리 목록요청
         try {
-            return musicalCategoryRepository.findAll();
+            List<MusicalCategoryEntity> categories = musicalCategoryRepository.findAllOrderedById();
+            if (categories.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+
+            return TestResponseDto.success(categories);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -41,10 +46,15 @@ public class PublicMusicalService {
         }
     }
 
-    // todo: 데이터를 간소화해서 보내주자 상의를 해야할듯 
-    public List<MusicalEntity> getMusicalsByCategoryId(Long categoryId) { // 해당 카테고리 뮤지컬 목록
+    // todo: 모든 뮤지컬 반환하는거 작성해야댐
+    public ResponseEntity<TestResponseDto> getAllMusicals() { // 모든 뮤지컬 반환
         try {
-            return musicalRepository.findByCategoryId(categoryId);
+            List<MusicalEntity> musicals = musicalRepository.findAll();
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -52,9 +62,16 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsSortedByStartDate() { // 뮤지컬 최신등록순 (메인) 7개 - 슬라이드 데이터
+   
+    
+    public ResponseEntity<TestResponseDto> getMusicalsByCategoryId(Long categoryId) { // 해당 카테고리 뮤지컬 목록
         try {
-            return musicalRepository.findTop7ByOrderByStartDateDesc();
+            List<MusicalEntity> musicals = musicalRepository.findByCategoryId(categoryId);
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -62,9 +79,14 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsSortedByViewCount() { // 뮤지컬 조회수순 (메인) 7개 - What's Hot 데이터
+    public ResponseEntity<TestResponseDto> getMusicalsSortedByStartDate() { // 뮤지컬 최신등록순 (메인) 7개 - 슬라이드 데이터
         try {
-            return musicalRepository.findTop10ByOrderByViewCountDesc();
+            List<MusicalEntity> musicals = musicalRepository.findTop7ByOrderByStartDateDesc();
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -72,9 +94,14 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByAllByViewCount() { // 모든 뮤지컬 조회수순
+    public ResponseEntity<TestResponseDto> getMusicalsSortedByViewCount() { // 뮤지컬 조회수순 (메인) 7개 - What's Hot 데이터
         try {
-            return musicalRepository.findAllByOrderByViewCountDesc();
+            List<MusicalEntity> musicals = musicalRepository.findTop10ByOrderByViewCountDesc();
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -82,9 +109,14 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByAllByEndDate() { // 모든 뮤지컬 종료임박순
+    public ResponseEntity<TestResponseDto> getMusicalsByAllByViewCount() { // 모든 뮤지컬 조회수순
         try {
-            return musicalRepository.findAllByOrderByEndDateAsc();
+            List<MusicalEntity> musicals = musicalRepository.findAllByOrderByViewCountDesc();
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -92,9 +124,13 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByAllByTitle() { // 모든 뮤지컬 상품명순
+    public ResponseEntity<TestResponseDto> getMusicalsByAllByEndDate() { // 모든 뮤지컬 종료임박순
         try {
-            return musicalRepository.findAllByOrderByTitleAsc();
+            List<MusicalEntity> musicals = musicalRepository.findAllByOrderByEndDateAsc();
+            if (musicals.isEmpty()){
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -102,9 +138,27 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByAllByStartDate(){ // 모든 뮤지컬 최신등록순
+    public ResponseEntity<TestResponseDto> getMusicalsByAllByTitle() { // 모든 뮤지컬 상품명순
         try {
-            return musicalRepository.findAllByOrderByStartDateDesc();
+            List<MusicalEntity> musicals = musicalRepository.findAllByOrderByTitleAsc();
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
+        } catch (DataAccessException e) {
+            throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
+        }
+    }
+
+    public ResponseEntity<TestResponseDto> getMusicalsByAllByStartDate(){ // 모든 뮤지컬 최신등록순
+        try {
+            List<MusicalEntity> musicals = musicalRepository.findAllByOrderByStartDateDesc();
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -113,9 +167,13 @@ public class PublicMusicalService {
     }
 
 
-    public List<MusicalEntity> getMusicalsByCategoryIdSortedByViewCount(Long categoryId) { // 해당 카테고리 뮤지컬 조회수순
+    public ResponseEntity<TestResponseDto> getMusicalsByCategoryIdSortedByViewCount(Long categoryId) { // 해당 카테고리 뮤지컬 조회수순
         try {
-            return musicalRepository.findByCategoryIdOrderByViewCountDesc(categoryId);
+            List<MusicalEntity> musicals = musicalRepository.findByCategoryIdOrderByViewCountDesc(categoryId);
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -123,9 +181,13 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByCategoryIdSortedByEndDate(Long categoryId) { // 해당 카테고리 뮤지컬 종료임박순
+    public ResponseEntity<TestResponseDto> getMusicalsByCategoryIdSortedByEndDate(Long categoryId) { // 해당 카테고리 뮤지컬 종료임박순
         try {
-            return musicalRepository.findByCategoryIdOrderByEndDateAsc(categoryId);
+            List<MusicalEntity> musicals = musicalRepository.findByCategoryIdOrderByEndDateAsc(categoryId);
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -133,9 +195,13 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByCategoryIdSortedByTitle(Long categoryId) { // 해당 카테고리 뮤지컬 상품명순
+    public ResponseEntity<TestResponseDto> getMusicalsByCategoryIdSortedByTitle(Long categoryId) { // 해당 카테고리 뮤지컬 상품명순
         try {
-            return musicalRepository.findByCategoryIdOrderByTitleAsc(categoryId);
+            List<MusicalEntity> musicals = musicalRepository.findByCategoryIdOrderByTitleAsc(categoryId);
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -143,9 +209,13 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByCategoryIdSortedByCreatedDate(Long categoryId) { // 해당 카테고리 뮤지컬 최신등록순
+    public ResponseEntity<TestResponseDto> getMusicalsByCategoryIdSortedByCreatedDate(Long categoryId) { // 해당 카테고리 뮤지컬 최신등록순
         try {
-            return musicalRepository.findByCategoryIdOrderByStartDateDesc(categoryId);
+            List<MusicalEntity> musicals = musicalRepository.findByCategoryIdOrderByStartDateDesc(categoryId);
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -153,9 +223,13 @@ public class PublicMusicalService {
         }
     }
 
-    public List<MusicalEntity> getMusicalsByTitleStartingWith(String title) { // 제목으로 뮤지컬 검색
+    public ResponseEntity<TestResponseDto> getMusicalsByTitleStartingWith(String title) { // 제목으로 뮤지컬 검색
         try {
-            return musicalRepository.findByTitleStartingWith(title);
+            List<MusicalEntity> musicals = musicalRepository.findByTitleStartingWith(title);
+            if (musicals.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            return TestResponseDto.success(musicals);
         } catch (DataAccessException e) {
             throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
@@ -186,8 +260,7 @@ public class PublicMusicalService {
             Optional<MusicalEntity> optionalMusical = musicalRepository.findById(musicalId);
             if (!optionalMusical.isPresent()) {
                 return TestResponseDto.notFound();
-            }
-            
+            }            
             MusicalEntity musical = optionalMusical.get();
     
             List<Map<String, Object>> tickets = musicalTicketRepository.findByMusicalId(musicalId)
@@ -230,5 +303,4 @@ public class PublicMusicalService {
             throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
     }
-
 }

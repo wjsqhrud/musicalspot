@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,12 +62,17 @@ public class PrivateReviewService {
             }
             UserEntity user = optionalUser.get();
 
+            Optional<MusicalEntity> optionalMusical = musicalRepository.findById(createReviewRequestDto.getMusicalId());
+            if (!optionalMusical.isPresent()) {
+                return TestResponseDto.notFound();
+            }
+            MusicalEntity musical = optionalMusical.get();
+
             ReviewEntity review = new ReviewEntity();
             review.setUser(user);
             review.setTitle(createReviewRequestDto.getTitle());
             review.setContent(createReviewRequestDto.getContent());
-            review.setMusical(musicalRepository.findById(createReviewRequestDto.getMusicalId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid musical ID")));
+            review.setMusical(musical);
 
             reviewRepository.save(review);
 
@@ -323,5 +327,5 @@ public class PrivateReviewService {
             throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
     }
-
 }
+
