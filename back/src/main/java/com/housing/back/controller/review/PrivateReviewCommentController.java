@@ -24,20 +24,6 @@ public class PrivateReviewCommentController {
 
     private final PrivateReviewCommentService privateReviewCommentService;
 
-    // @PostMapping("/create")
-    // public ResponseEntity<?> createComment(HttpServletRequest request, @RequestBody CreateReviewCommentRequestDto createReviewCommentRequestDto) {
-    //     return privateReviewCommentService.createComment(request, createReviewCommentRequestDto);
-    // }
-
-    // @PutMapping("/update/{commentId}")
-    // public ResponseEntity<?> updateComment(HttpServletRequest request, @PathVariable("commentId") Long commentId, @RequestBody UpdateReviewCommentRequestDto updateReviewCommentRequestDto) {
-    //     return privateReviewCommentService.updateComment(request, commentId, updateReviewCommentRequestDto);
-    // }
-
-    // @DeleteMapping("/delete/{commentId}")
-    // public ResponseEntity<?> deleteComment(HttpServletRequest request, @PathVariable("commentId") Long commentId) {
-    //     return privateReviewCommentService.deleteComment(request, commentId);
-    // }
     @PostMapping("/create")
     public ResponseEntity<TestResponseDto> createComment(HttpServletRequest request, @RequestBody CreateReviewCommentRequestDto createReviewCommentRequestDto) {
         ResponseEntity<TestResponseDto> response = privateReviewCommentService.createComment(request, createReviewCommentRequestDto);

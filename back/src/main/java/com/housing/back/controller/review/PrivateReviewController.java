@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.housing.back.dto.request.review.CreateReviewRequestDto;
 import com.housing.back.dto.request.review.UpdateReviewRequestDto;
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.service.review.PrivateReviewService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,34 +27,38 @@ public class PrivateReviewController {
     private final PrivateReviewService privateReviewService;
 
     @PostMapping("/create-review")
-    public ResponseEntity<?> createReview(HttpServletRequest request, @RequestBody CreateReviewRequestDto createReviewRequestDto) {
-        return privateReviewService.createReview(request, createReviewRequestDto);
+    public ResponseEntity<TestResponseDto> createReview(HttpServletRequest request, @RequestBody CreateReviewRequestDto createReviewRequestDto) {
+        ResponseEntity<TestResponseDto> response = privateReviewService.createReview(request, createReviewRequestDto);
+        return response;
     }
 
     @PutMapping("/update-review/{reviewId}")
-    public ResponseEntity<?> updateReview(HttpServletRequest request, @PathVariable("reviewId") Long reviewId, @RequestBody UpdateReviewRequestDto updateReviewRequestDto) {
-        return privateReviewService.updateReview(request, reviewId, updateReviewRequestDto);
+    public ResponseEntity<TestResponseDto> updateReview(HttpServletRequest request, @PathVariable("reviewId") Long reviewId, @RequestBody UpdateReviewRequestDto updateReviewRequestDto) {
+        ResponseEntity<TestResponseDto> response = privateReviewService.updateReview(request, reviewId, updateReviewRequestDto);
+        return response;
     }
 
     @DeleteMapping("/delete-review/{reviewId}")
-    public ResponseEntity<?> deleteReview(HttpServletRequest request, @PathVariable("reviewId") Long reviewId) {
-        return privateReviewService.deleteReview(request, reviewId);
+    public ResponseEntity<TestResponseDto> deleteReview(HttpServletRequest request, @PathVariable("reviewId") Long reviewId) {
+        ResponseEntity<TestResponseDto> response = privateReviewService.deleteReview(request, reviewId);
+        return response;
     }
 
     @GetMapping("/review-details/{reviewId}")
-    public ResponseEntity<?> getReviewDetailsWithOwnerCheck(HttpServletRequest request, @PathVariable("reviewId") Long reviewId) {
-        return privateReviewService.getReviewDetailsWithOwnerCheck(request, reviewId);
+    public ResponseEntity<TestResponseDto> getReviewDetailsWithOwnerCheck(HttpServletRequest request, @PathVariable("reviewId") Long reviewId) {
+        ResponseEntity<TestResponseDto> response = privateReviewService.getReviewDetailsWithOwnerCheck(request, reviewId);
+        return response;
     }
 
     @GetMapping("/review-like/{reviewId}")
-    public ResponseEntity<?> hasUserLikedReview(@RequestHeader("Authorization") String authorizationHeader,
-                                                @PathVariable("reviewId") Long reviewId) {
-        return privateReviewService.hasUserLikedReview(authorizationHeader, reviewId);
+    public ResponseEntity<TestResponseDto> hasUserLikedReview(HttpServletRequest request, @PathVariable("reviewId") Long reviewId) {
+        ResponseEntity<TestResponseDto> response = privateReviewService.hasUserLikedReview(request, reviewId);
+        return response;
     }
 
     @PostMapping("/toggle-review-like/{reviewId}")
-    public ResponseEntity<?> toggleReviewLike(@RequestHeader("Authorization") String authorizationHeader,
-                                              @PathVariable("reviewId") Long reviewId) {
-        return privateReviewService.toggleReviewLike(authorizationHeader, reviewId);
+    public ResponseEntity<TestResponseDto> toggleReviewLike(HttpServletRequest request, @PathVariable("reviewId") Long reviewId) {
+        ResponseEntity<TestResponseDto> response = privateReviewService.toggleReviewLike(request, reviewId);
+        return response;
     }
 }

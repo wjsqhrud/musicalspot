@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.service.review.PublicReviewService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,27 +21,32 @@ public class PublicReviewController {
     private final PublicReviewService publicReviewService;
 
     @GetMapping("/review-details/{reviewId}")
-    public ResponseEntity<?> getReviewDetails (@PathVariable("reviewId") Long reviewId){
-        return publicReviewService.getReviewDetails(reviewId);
+    public ResponseEntity<TestResponseDto> getReviewDetails (@PathVariable("reviewId") Long reviewId){
+        ResponseEntity<TestResponseDto> response = publicReviewService.getReviewDetails(reviewId);
+        return response;
     }
 
     @PostMapping("/review-details/increase-view/{reviewId}")
-    public ResponseEntity<?> increaseViewCount(@PathVariable("reviewId") Long reviewId) {
-        return publicReviewService.increaseViewCount(reviewId);
+    public ResponseEntity<TestResponseDto> increaseViewCount(@PathVariable("reviewId") Long reviewId) {
+        ResponseEntity<TestResponseDto> response = publicReviewService.increaseViewCount(reviewId);
+        return response;
     }
 
     @GetMapping("/reviews/recent")
-    public ResponseEntity<?> getRecentReviews(@RequestParam(name = "page", defaultValue = "0") int page) {
-        return publicReviewService.getRecentReviews(page);
+    public ResponseEntity<TestResponseDto> getRecentReviews(@RequestParam(name = "page", defaultValue = "0") int page) {
+        ResponseEntity<TestResponseDto> response = publicReviewService.getRecentReviews(page);
+        return response;
     }
 
     @GetMapping("/reviews/likes")
-    public ResponseEntity<?> getReviewsByLikes(@RequestParam(name = "page", defaultValue = "0") int page) {
-        return publicReviewService.getReviewsByLikes(page);
+    public ResponseEntity<TestResponseDto> getReviewsByLikes(@RequestParam(name = "page", defaultValue = "0") int page) {
+        ResponseEntity<TestResponseDto> response = publicReviewService.getReviewsByLikes(page);
+        return response;
     }
 
     @GetMapping("/reviews/views")
-    public ResponseEntity<?> getReviewsByViews(@RequestParam(name = "page", defaultValue = "0") int page) {
-        return publicReviewService.getReviewsByViews(page);
+    public ResponseEntity<TestResponseDto> getReviewsByViews(@RequestParam(name = "page", defaultValue = "0") int page) {
+        ResponseEntity<TestResponseDto> response = publicReviewService.getReviewsByViews(page);
+        return response;
     }
 }
