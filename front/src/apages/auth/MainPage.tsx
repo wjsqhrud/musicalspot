@@ -9,7 +9,7 @@ import { deleteAccount } from 'services/Auth/authService';
 import { HeaderProvider, useHeader } from 'services/HeaderService/HeaderService';
 import { useAuth } from 'hooks/useAuthHook';
 import Button from 'acommons/Button';
-import { categoryList, categoryMusical, musicalCategoryIdSortedByEndDate, musicalCategoryIdSortedByStartDate, musicalCategoryIdSortedByTitle, musicalCategoryIdSortedByViewCount, musicalDetails, musicalDetailsIncrementView, musicalLike, musicalSortedByStartDate, musicalSortedByViewCount, toggleMusicalLike } from 'services/musical/musicalService';
+import { allMusicals, categoryList, categoryMusical, musicalCategoryIdSortedByEndDate, musicalCategoryIdSortedByStartDate, musicalCategoryIdSortedByTitle, musicalCategoryIdSortedByViewCount, musicalDetails, musicalDetailsIncrementView, musicalLike, musicalSortedByStartDate, musicalSortedByViewCount, searchMusicalsByTitle, toggleMusicalLike } from 'services/musical/musicalService';
 import { createReview, deleteReview, privateReviewDetails, publicReviewDetails, reviewCommentsCreate, reviewCommentsDelete, reviewCommentsUpdate, reviewDetailsIncreaseView, reviewLike, reviewLikes40, reviewRecent40, reviewViews40, toggleReviewLike, updateReview } from 'services/review/reviewService';
 
 const HomePage: React.FC = () => {
@@ -74,6 +74,8 @@ const HomePage: React.FC = () => {
       // const response = await musicalDetailsIncrementView("1");
       // const response = await musicalLike("1");
       // const response = await toggleMusicalLike("1");  
+      // const response = await searchMusicalsByTitle("하");
+      const response = await allMusicals();
 
       //todo: 리뷰 관련
       // const response = await privateReviewDetails("1"); 
@@ -89,10 +91,10 @@ const HomePage: React.FC = () => {
       // const response = await reviewLikes40(0); 
       // const response = await reviewViews40(0); 
       // const response = await reviewLike("1"); 
-      const response = await toggleReviewLike("1"); 
+      // const response = await toggleReviewLike("1"); 
 
 
-      console.log(response.data);
+      console.log(response);
     } catch (error) {
       console.error('Error', error);
     }

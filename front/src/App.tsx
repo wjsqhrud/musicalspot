@@ -7,12 +7,15 @@ import SignInPage from 'apages/auth/SignInPage';
 import SignUpPage from 'apages/auth/SignUpPage';
 import CreateNickNamePage from 'apages/auth/CreateNickNamePage';
 import HomePage from 'apages/auth/MainPage';
+import JMainpage from 'apages/auth/JMainpage';
+import './font.css';
 
 function App() {
   return (
     <HeaderProvider>
       <Routes>
         <Route path='/auth'>
+          <Route path='bo-test' element={<JMainpage/>} />
 
           <Route path='sign-in' element={<SignInPage/>} />
           <Route path='sign-up' element={<SignUpPage/>} />

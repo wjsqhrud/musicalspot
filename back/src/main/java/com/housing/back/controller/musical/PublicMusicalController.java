@@ -39,7 +39,7 @@ public class PublicMusicalController {
         return musicalService.getMusicalsSortedByViewCount();
     }
 
-    @GetMapping("/category-musical/all")
+    @GetMapping("/category-musical/all") // 모든 뮤지컬
     public ResponseEntity<TestResponseDto> getAllMusicals(){
         return musicalService.getAllMusicals();
     }

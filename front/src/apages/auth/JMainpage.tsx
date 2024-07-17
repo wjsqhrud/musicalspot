@@ -78,8 +78,12 @@ const JMainpage: React.FC = () => {
     console.log("Clicked ID:", id);
   };
 
+  const handleAllCategory = ()=>{
+    console.log("all클릭");
+  };
+
   return (
-    <div>
+    <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
       {/* Header */}
       <header
         style={{
@@ -90,23 +94,37 @@ const JMainpage: React.FC = () => {
           backgroundColor: "white",
           color: "#33313B",
           width: "100%",
-          height: "30px",
           marginBottom: "20px",
+          boxSizing: "border-box",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <h1>MUSICAL SPOT</h1>
-          <div style={{ display: "flex", gap: "5px", marginLeft: "5px" }}>
+        <h1 style={{ flexShrink: 0, fontSize: "24px", margin: "0 10px 0 0" }}>MUSICAL SPOT</h1>
+        <div style={{ display: "flex", alignItems: "center", flexGrow: 1, justifyContent: "center" }}>
+          <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
+            <div style={{
+              backgroundColor: "white",
+              color: "#33313B",
+              padding: "10px",
+              minWidth: "60px",
+              textAlign: "center",
+              cursor: "pointer",
+              boxSizing: "border-box",
+            }}
+              onClick={handleAllCategory}
+            >
+              All
+            </div>
             {categories.map((category) => (
               <div
                 key={category.id}
                 style={{
                   backgroundColor: "white",
                   color: "#33313B",
-                  padding: "20px",
-                  width: "250px",
+                  padding: "10px",
+                  minWidth: "60px",
                   textAlign: "center",
                   cursor: "pointer",
+                  boxSizing: "border-box",
                 }}
                 onClick={() => handleClick(category.id)}
               >
@@ -132,6 +150,7 @@ const JMainpage: React.FC = () => {
                 marginLeft: "5px",
                 borderBottom: "1px solid #ccc",
                 padding: "5px 0",
+                boxSizing: "border-box",
               }}
             />
             <FaSearch />
