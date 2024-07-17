@@ -46,7 +46,7 @@ const JMainpage: React.FC = () => {
     try {
       const response = await musicalSortedByStartDate();
       setMusicalsByStartDate(response.data);
-      console.log("StartDate Data:", response.data);
+      console.log("StartDate Data:", response);
     } catch (error) {
       console.error("Error fetching start date sorted musicals:", error);
     }

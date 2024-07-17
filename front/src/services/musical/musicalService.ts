@@ -149,7 +149,7 @@ export const musicalLike = async (musicalId: string) => {
             },
             withCredentials: true
         });
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;
@@ -165,7 +165,7 @@ export const toggleMusicalLike = async (musicalId: string) => {
             },
             withCredentials: true
         });
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;
