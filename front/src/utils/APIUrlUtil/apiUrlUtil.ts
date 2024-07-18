@@ -19,10 +19,13 @@ export const ACCESS_URL = () => `${API_DOMAIN}/access`;
 export const POST_DELETE_ACCOUNT = () => `${API_DOMAIN}/delete`;
 
 
+export const SEARCH_MUSICALS_BY_TITLE = (title: string) => `${API_DOMAIN}/public/musical/search-by-title?title=${title}`;
 export const CATEGORY_LIST = () => `${API_DOMAIN}/public/category-list`;
 export const CATEGORY_MUSICAL = (categoryId : string) => `${API_DOMAIN}/public/category-musical/${categoryId}`;
 export const MUSICAL_SORTED_BY_START_DATE = () => `${API_DOMAIN}/public/category-musical/sorted-by-start-date`;
 export const MUSICAL_SORTED_BY_VIEW_COUNT = () => `${API_DOMAIN}/public/category-musical/sorted-by-view-count`;
+export const ALL_MUSICALS = () => `${API_DOMAIN}/public/category-musical/all`;
+
 export const MUSICAL_CATEGORYID_SORTED_BY_VIEW_COUNT = (categoryId : string) => `${API_DOMAIN}/public/category-musical/${categoryId}/sorted-by-view-count`;
 export const MUSICAL_CATEGORYID_SORTED_BY_END_DATE = (categoryId : string) => `${API_DOMAIN}/public/category-musical/${categoryId}/sorted-by-end-date`;
 export const MUSICAL_CATEGORYID_SORTED_BY_TITLE = (categoryId : string) => `${API_DOMAIN}/public/category-musical/${categoryId}/sorted-by-title`;

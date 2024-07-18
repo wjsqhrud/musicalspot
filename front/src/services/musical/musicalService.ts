@@ -1,6 +1,9 @@
 import axios from "axios";
-import { CATEGORY_LIST, CATEGORY_MUSICAL, MUSICAL_CATEGORYID_SORTED_BY_END_DATE, MUSICAL_CATEGORYID_SORTED_BY_START_DATE, MUSICAL_CATEGORYID_SORTED_BY_TITLE, MUSICAL_CATEGORYID_SORTED_BY_VIEW_COUNT, MUSICAL_DETAILS, MUSICAL_DETAILS_INCREMENT_VIEW, MUSICAL_LIKE, MUSICAL_SORTED_BY_START_DATE, MUSICAL_SORTED_BY_VIEW_COUNT, TOGGLE_MUSICAL_LIKE } from "utils/APIUrlUtil/apiUrlUtil"
+import { ALL_MUSICALS, CATEGORY_LIST, CATEGORY_MUSICAL, MUSICAL_CATEGORYID_SORTED_BY_END_DATE, MUSICAL_CATEGORYID_SORTED_BY_START_DATE, MUSICAL_CATEGORYID_SORTED_BY_TITLE, MUSICAL_CATEGORYID_SORTED_BY_VIEW_COUNT, MUSICAL_DETAILS, MUSICAL_DETAILS_INCREMENT_VIEW, MUSICAL_LIKE, MUSICAL_SORTED_BY_START_DATE, MUSICAL_SORTED_BY_VIEW_COUNT, SEARCH_MUSICALS_BY_TITLE, TOGGLE_MUSICAL_LIKE } from "utils/APIUrlUtil/apiUrlUtil"
 import { getCookie } from "utils/CookieUtil/cookieUtis";
+
+
+
 
 // 뮤지컬 카테고리 리스트 불러오기
 export const categoryList = async () =>{
@@ -12,6 +15,17 @@ export const categoryList = async () =>{
         throw error;
       }
 }
+
+// 제목으로 뮤지컬 검색 (검색창)
+export const searchMusicalsByTitle = async (title: string) => {
+    try {
+        const result = await axios.get(SEARCH_MUSICALS_BY_TITLE(title));
+        return result.data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error;
+    }
+};
 
 // 선택 카테고리 뮤지컬 목록
 export const categoryMusical = async (categoryId : string) => {
@@ -47,6 +61,16 @@ export const musicalSortedByViewCount = async () => {
 } 
 
 // todo: All 눌렀을때 나오는 뮤지컬 전체목록나오는거 깜박하고 못했음
+// 모든 뮤지컬
+export const allMusicals = async () => {
+    try{
+        const result = await axios.get(ALL_MUSICALS());
+        return result.data;
+    } catch (error) {
+        console.error('Error', error);
+        throw error;
+    }
+} 
 
 // 해당 카테고리 뮤지컬 조회수순
 export const musicalCategoryIdSortedByViewCount = async (categoryId: string) => {
@@ -125,7 +149,7 @@ export const musicalLike = async (musicalId: string) => {
             },
             withCredentials: true
         });
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;
@@ -141,7 +165,7 @@ export const toggleMusicalLike = async (musicalId: string) => {
             },
             withCredentials: true
         });
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;

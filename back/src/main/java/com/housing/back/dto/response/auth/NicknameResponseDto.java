@@ -9,23 +9,6 @@ import com.housing.back.dto.response.ResponseDto;
 
 import lombok.Getter;
 
-// @Getter
-// public class NicknameResponseDto extends ResponseDto {
-    
-//     private NicknameResponseDto(){
-//         super();
-//     }
-
-//     public static ResponseEntity<NicknameResponseDto> success(){
-//         NicknameResponseDto responseBody = new NicknameResponseDto();
-//         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
-//     }
-
-//     public static ResponseEntity<ResponseDto> duplicatedNickname(){
-//         ResponseDto responseBody = new ResponseDto(ResponseCode.DUPLICATE_ID, ResponseMessage.DUPLICATE_ID);
-//         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody); 
-//     }
-// }
 @Getter
 public class NicknameResponseDto extends ResponseDto {
     private String nickname;

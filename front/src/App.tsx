@@ -1,4 +1,4 @@
-// src/App.tsx
+// src/App.tsx// src/App.tsx
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { HeaderProvider } from 'services/HeaderService/HeaderService';
@@ -7,12 +7,20 @@ import SignInPage from 'apages/auth/SignInPage';
 import SignUpPage from 'apages/auth/SignUpPage';
 import CreateNickNamePage from 'apages/auth/CreateNickNamePage';
 import HomePage from 'apages/auth/MainPage';
+import JMainpage from 'apages/auth/JMainpage';
+import ReviewList from 'apages/reviewList/ReviewList';
+import './font.css';
 
 function App() {
   return (
     <HeaderProvider>
       <Routes>
         <Route path='/auth'>
+<<<<<<< HEAD
+=======
+          <Route path='bo-test' element={<JMainpage/>} />
+          <Route path='reviewlist' element={<ReviewList/>}/>
+>>>>>>> origin/main
           <Route path='sign-in' element={<SignInPage/>} />
           <Route path='sign-up' element={<SignUpPage/>} />
           <Route path='create-nickname' element={<CreateNickNamePage/>} />

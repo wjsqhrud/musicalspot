@@ -1,22 +1,26 @@
 package com.housing.back.service.review;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.housing.back.common.TestResponseMessage;
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.dto.response.review.ReviewCommentOwnerResponseDto;
 import com.housing.back.dto.response.review.ReviewListResponseDto;
 import com.housing.back.dto.response.review.ReviewOwnerResponseDto;
 import com.housing.back.entity.auth.NickNameEntity;
 import com.housing.back.entity.review.ReviewCommentEntity;
 import com.housing.back.entity.review.ReviewEntity;
+import com.housing.back.exception.CustomDatabaseException;
 import com.housing.back.repository.auth.NicknameRepository;
 import com.housing.back.repository.musical.MusicalRepository;
 import com.housing.back.repository.review.ReviewCommentRepository;
@@ -34,10 +38,13 @@ public class PublicReviewService {
     private final NicknameRepository nicknameRepository;
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ReviewOwnerResponseDto> getReviewDetails(Long reviewId) {
+    public ResponseEntity<TestResponseDto> getReviewDetails(Long reviewId) {
         try {
-            ReviewEntity review = reviewRepository.findById(reviewId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid review ID"));
+             Optional<ReviewEntity> optionalReview = reviewRepository.findById(reviewId);
+            if(!optionalReview.isPresent()) {
+                return TestResponseDto.notFound();
+            }
+            ReviewEntity review = optionalReview.get();
 
             List<ReviewCommentEntity> comments = reviewCommentRepository.findByReviewId(reviewId);
             List<ReviewCommentOwnerResponseDto> commentDtos = comments.stream().map(comment -> {
@@ -83,47 +90,57 @@ public class PublicReviewService {
                     commentDtos
             );
 
-            return ResponseEntity.ok(responseDto);
+            return TestResponseDto.success(responseDto);
 
+        } catch (DataAccessException e) {
+            throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
     }
 
     @Transactional
-    public ResponseEntity<?> increaseViewCount(Long reviewId) {
+    public ResponseEntity<TestResponseDto> increaseViewCount(Long reviewId) {
         try {
-            ReviewEntity review = reviewRepository.findById(reviewId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid review ID"));
+            Optional<ReviewEntity> optionalReview = reviewRepository.findById(reviewId);
+            if(!optionalReview.isPresent()) {
+                return TestResponseDto.notFound();
+            }
+            ReviewEntity review = optionalReview.get(); 
 
             review.setViewCount(review.getViewCount() + 1);
             reviewRepository.save(review);
 
-            return ResponseEntity.ok("View count increased successfully");
+            return TestResponseDto.success();
+        } catch (DataAccessException e) {
+            throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error increasing view count");
+            throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getRecentReviews(int page) {
+    public ResponseEntity<TestResponseDto> getRecentReviews(int page) {
         return getReviews(page, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getReviewsByLikes(int page) {
+    public ResponseEntity<TestResponseDto> getReviewsByLikes(int page) {
         return getReviews(page, Sort.by(Sort.Direction.DESC, "likeCount"));
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getReviewsByViews(int page) {
+    public ResponseEntity<TestResponseDto> getReviewsByViews(int page) {
         return getReviews(page, Sort.by(Sort.Direction.DESC, "viewCount"));
     }
 
-    private ResponseEntity<?> getReviews(int page, Sort sort) {
+    private ResponseEntity<TestResponseDto> getReviews(int page, Sort sort) {
         try {
             Pageable pageable = PageRequest.of(page, 40, sort);
             List<ReviewEntity> reviews = reviewRepository.findAll(pageable).getContent();
+            if(reviews.isEmpty()){
+                return TestResponseDto.notFound();
+            }
 
             List<ReviewListResponseDto> reviewList = reviews.stream().map(review -> {
                 String reviewNickname = nicknameRepository.findByUserId(review.getUser().getId())
@@ -150,11 +167,11 @@ public class PublicReviewService {
                         review.getUpdatedAt(), review.getViewCount(), review.getLikeCount(), commentCount);
             }).collect(Collectors.toList());
 
-            return ResponseEntity.ok(reviewList);
-
+            return TestResponseDto.success(reviewList);
+        } catch (DataAccessException e) {
+            throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching reviews");
+            throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
     }
-
 }

@@ -11,7 +11,7 @@ export const privateReviewDetails = async (reviewId: string) => {
             },
             withCredentials: true
         });
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;
@@ -21,7 +21,7 @@ export const privateReviewDetails = async (reviewId: string) => {
 export const publicReviewDetails = async (reviewId: string) => {
     try{
         const result = await axios.get(PUBLIC_REVIEW_DETAILS(reviewId));
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;
@@ -44,7 +44,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
           withCredentials: true
         }
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -68,7 +68,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
           withCredentials: true
         }
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -87,7 +87,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
           withCredentials: true
         }
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -99,7 +99,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
     try {
       const result = await axios.post(
         REVIEW_DETAILS_INCREASE_VIEW(reviewId));
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -122,7 +122,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
           withCredentials: true
         }
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -144,7 +144,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
           withCredentials: true
         }
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -163,7 +163,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
           withCredentials: true
         }
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -175,7 +175,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
     try {
       const result = await axios.get(
         REVIEWS_RECENT_40(page));
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -187,7 +187,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
     try {
       const result = await axios.get(
         REVIEWS_LIKES_40(page));
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -199,7 +199,7 @@ export const createReview = async (title:string, content:string, musicalId:strin
     try {
       const result = await axios.get(
         REVIEWS_VIEWS_40(page));
-      return result;
+      return result.data;
     } catch (error) {
       console.error('Error', error);
       throw error;
@@ -215,7 +215,7 @@ export const reviewLike = async (reviewId: string) => {
             },
             withCredentials: true
         });
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;
@@ -231,7 +231,7 @@ export const toggleReviewLike = async (reviewId: string) => {
             },
             withCredentials: true
         });
-        return result;
+        return result.data;
     } catch (error) {
         console.error('Error', error);
         throw error;

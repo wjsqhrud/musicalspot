@@ -1,7 +1,6 @@
 package com.housing.back.service.musical;
 
 import com.housing.back.common.JwtUtils;
-import com.housing.back.common.TestResponseCode;
 import com.housing.back.common.TestResponseMessage;
 import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.entity.auth.UserEntity;
@@ -11,6 +10,8 @@ import com.housing.back.exception.CustomDatabaseException;
 import com.housing.back.repository.auth.UserRepository;
 import com.housing.back.repository.musical.MusicalLikeRepository;
 import com.housing.back.repository.musical.MusicalRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -28,33 +29,49 @@ public class PrivateMusicalService {
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     
-    public ResponseEntity<TestResponseDto> hasUserLikedMusical(String authorizationHeader, Long musicalId) {
-        String token = authorizationHeader.substring(7);
-        String userId = jwtUtils.extractUserId(token);
+    public ResponseEntity<TestResponseDto> hasUserLikedMusical(HttpServletRequest request, Long musicalId) {
+        try {
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                return TestResponseDto.unAuthorized();
+            }
+            token = token.substring(7);
+            
+            String username = jwtUtils.extractUserId(token);
 
-        Optional<UserEntity> userEntityOptional = userRepository.findByUserId(userId);
-        if(!userEntityOptional.isPresent()){
-            return TestResponseDto.userNotFound();
-        }        
-        UserEntity userEntity = userEntityOptional.get();
+            Optional<UserEntity> userEntityOptional = userRepository.findByUserId(username);
+            if(!userEntityOptional.isPresent()){
+                return TestResponseDto.userNotFound();
+            }        
+            UserEntity userEntity = userEntityOptional.get();
 
-        Optional<MusicalEntity> optionalMusical = musicalRepository.findById(musicalId);
-        if (!optionalMusical.isPresent()) {
-            return TestResponseDto.notFound();
+            Optional<MusicalEntity> optionalMusical = musicalRepository.findById(musicalId);
+            if (!optionalMusical.isPresent()) {
+                return TestResponseDto.notFound();
+            }
+            MusicalEntity musicalEntity = optionalMusical.get();
+
+            boolean hasLiked = musicalLikeRepository.findByUserAndMusical(userEntity, musicalEntity).isPresent();
+            return TestResponseDto.success(hasLiked);
+        } catch (DataAccessException e) {
+            throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
-        MusicalEntity musicalEntity = optionalMusical.get();
-
-        boolean hasLiked = musicalLikeRepository.findByUserAndMusical(userEntity, musicalEntity).isPresent();
-        return TestResponseDto.success(hasLiked);
     }
 
     // 좋아요 토글 메서드
-    public ResponseEntity<TestResponseDto> toggleMusicalLike(String authorizationHeader, Long musicalId) {
+    public ResponseEntity<TestResponseDto> toggleMusicalLike(HttpServletRequest request, Long musicalId) {
         try {
-            String token = authorizationHeader.substring(7);
-            String userId = jwtUtils.extractUserId(token);
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                return TestResponseDto.unAuthorized();
+            }
+            token = token.substring(7);
 
-            Optional<UserEntity> userEntityOptional = userRepository.findByUserId(userId);
+            String userName = jwtUtils.extractUserId(token);
+
+            Optional<UserEntity> userEntityOptional = userRepository.findByUserId(userName);
             if (!userEntityOptional.isPresent()) {
                 return TestResponseDto.userNotFound();
             }
