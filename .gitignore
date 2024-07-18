@@ -20,6 +20,9 @@ replay_pid*.log
 # production
 /build
 
+# CSS 파일 무시
+/front/styles/output.css
+
 # misc
 .DS_Store
 .env.local
@@ -42,7 +45,7 @@ gradle-app.setting
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
-# Avoid ignore Gradle wrappper properties
+# Avoid ignoring Gradle wrappper properties
 !gradle-wrapper.properties
 
 # Cache of project
@@ -58,4 +61,6 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-# End of https://www.toptal.com/developers/gitignore/api/gradle
+# Ignore temporary files
+*.tmp
+*.temp
