@@ -6,21 +6,21 @@ import OAuth from 'services/OAuth2SignInService/oAuthResponseService';
 import SignInPage from 'apages/auth/SignInPage';
 import SignUpPage from 'apages/auth/SignUpPage';
 import CreateNickNamePage from 'apages/auth/CreateNickNamePage';
-import JMainpage from 'apages/auth/JMainpage';
+import Mainpage from 'apages/auth/Mainpage';
 import ReviewList from 'apages/reviewList/ReviewList';
-import MainPage from 'apages/auth/MainPage';
+import TestPage from 'apages/auth/TestPage';
 
 function App() {
   return (
     <HeaderProvider>
       <Routes>
         <Route path='/auth'>
-          <Route path='bo-test' element={<JMainpage/>} />
+          <Route path='home' element={<Mainpage/>} />
           <Route path='reviewlist' element={<ReviewList/>}/>
           <Route path='sign-in' element={<SignInPage/>} />
           <Route path='sign-up' element={<SignUpPage/>} />
           <Route path='create-nickname' element={<CreateNickNamePage/>} />
-          <Route path='home' element={<MainPage/>} />
+          <Route path='test' element={<TestPage/>} />
           <Route path='oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
         </Route>
         <Route path="*" element={<Navigate to="/auth/home" />} />
