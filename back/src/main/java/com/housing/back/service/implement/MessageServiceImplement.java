@@ -17,18 +17,18 @@ public class MessageServiceImplement implements MessageService {
         message.setNickname(nickname);
         message.setMessageText(messageText);
         message.setTransmitTime(transmitTime);
-        // 메시지를 데이터베이스에 저장하는 로직이 여기에 추가되어야 합니다.
+
         return message;
     }
 
     @Override
-    public void transmitMessage(String nickname, String messageText, LocalDateTime transmitTime) {
+    public MessageDTO transmitMessage(String nickname, String messageText, LocalDateTime transmitTime) {
         // 메시지를 전송하는 로직 구현
         MessageDTO message = new MessageDTO();
         message.setNickname(nickname);
         message.setMessageText(messageText);
         message.setTransmitTime(transmitTime);
-        // 메시지를 전송하는 로직이 여기에 추가되어야 합니다.
+        return message;
     }
     
 }

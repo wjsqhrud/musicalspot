@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // 세션을 사용하지 않도록 설정 (JWT를 사용하기 때문)
             )
             .authorizeHttpRequests(request -> request
-                .requestMatchers("/","/api/v1/auth/**", "/oauth2/**","/error**","/api/v1/public/**").permitAll() // 인증 없이 접근 허용
+                .requestMatchers("/","/api/v1/auth/**", "/oauth2/**","/error**","/api/v1/public/**","/ws/**","/topic/**","app/**").permitAll() // 인증 없이 접근 허용
                 .requestMatchers("/api/v1/user/**").hasRole("USER") // USER 역할이 필요한 경로
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // ADMIN 역할이 필요한 경로
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 필요    

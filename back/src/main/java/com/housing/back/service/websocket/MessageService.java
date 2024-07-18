@@ -10,5 +10,5 @@ public interface MessageService {
     MessageDTO saveMessage(String nickname, String messageText, LocalDateTime transmitTime);
     
     // 메세지 전송
-    void transmitMessage(String nickname, String messageText, LocalDateTime transmitTime);
+    MessageDTO transmitMessage(String nickname, String messageText, LocalDateTime transmitTime);
 }

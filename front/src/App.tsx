@@ -16,11 +16,8 @@ function App() {
     <HeaderProvider>
       <Routes>
         <Route path='/auth'>
-<<<<<<< HEAD
-=======
           <Route path='bo-test' element={<JMainpage/>} />
           <Route path='reviewlist' element={<ReviewList/>}/>
->>>>>>> origin/main
           <Route path='sign-in' element={<SignInPage/>} />
           <Route path='sign-up' element={<SignUpPage/>} />
           <Route path='create-nickname' element={<CreateNickNamePage/>} />

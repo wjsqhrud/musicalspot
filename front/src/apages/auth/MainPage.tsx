@@ -133,12 +133,8 @@ const testOnClick = async () => {
           message="회원탈퇴를 위해 닉네임을 입력해주세요."
           showInput={true}
         />
-<<<<<<< HEAD
-    </div>
-    <WebSocketCommu/>
-=======
       </div>
->>>>>>> origin/main
+      <WebSocketCommu/>
     </HeaderProvider>
   );
 };
