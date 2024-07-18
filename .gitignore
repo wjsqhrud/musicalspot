@@ -12,6 +12,7 @@ replay_pid*.log
 
 # dependencies
 <<<<<<< HEAD
+<<<<<<< HEAD
 /front/node_modules
 =======
 <<<<<<< HEAD
@@ -20,9 +21,10 @@ node_modules/
 >>>>>>> origin/main
 /.pnp
 =======
+=======
+>>>>>>> origin/main
 /front/node_modules
 /front/.pnp
->>>>>>> origin/hwanhee
 .pnp.js
 # testing
 /coverage
