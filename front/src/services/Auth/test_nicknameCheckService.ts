@@ -1,20 +1,8 @@
 import axios from "axios";
 import { NICKNAME_FIND_URL } from "utils/APIUrlUtil/apiUrlUtil";
-
-
 import { getCookie } from "utils/CookieUtil/cookieUtis";
 
-
-
-// const DOMAIN = 'http://127.0.0.1:4040';
-// const API_DOMAIN = `${DOMAIN}/api/v1`;
-
-
-
-// const NICKNAME_FIND_URL = () => `${API_DOMAIN}/nickname-find`;
-
-
-
+// 닉네임 있는지 확인
 const findNickname = async () => {
     const result = await axios.post(NICKNAME_FIND_URL(), {}, {
       headers: {
@@ -29,6 +17,7 @@ const findNickname = async () => {
     return result;
   };
 
+// 닉네임체크
 export const nicknameCheck = (onSuccess: (nickname: string) => void, onFailure: () => void) => {
     findNickname()
       .then(response => {
