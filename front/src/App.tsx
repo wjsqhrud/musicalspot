@@ -6,9 +6,11 @@ import OAuth from 'services/OAuth2SignInService/oAuthResponseService';
 import SignInPage from 'apages/auth/SignInPage';
 import SignUpPage from 'apages/auth/SignUpPage';
 import CreateNickNamePage from 'apages/auth/CreateNickNamePage';
-import Mainpage from 'apages/auth/Mainpage';
+import Mainpage from 'apages/main/Mainpage';
 import ReviewList from 'apages/reviewList/ReviewList';
-import TestPage from 'apages/auth/TestPage';
+import TestPage from 'apages/test/TestPage';
+import MusicalPage from 'apages/musical/MusicalPage';
+import CategoryPage from 'apages/Category/CategoryPage';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
       <Routes>
         <Route path='/auth'>
           <Route path='home' element={<Mainpage/>} />
+          <Route path='category' element={<CategoryPage/>} />
+          <Route path='musical' element={<MusicalPage/>} />
           <Route path='reviewlist' element={<ReviewList/>}/>
           <Route path='sign-in' element={<SignInPage/>} />
           <Route path='sign-up' element={<SignUpPage/>} />
