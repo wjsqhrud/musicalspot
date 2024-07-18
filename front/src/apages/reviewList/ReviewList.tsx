@@ -53,28 +53,28 @@ const ReviewList: React.FC = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="review-list">
-      <h2>최근 리뷰</h2>
-      {reviews.map((review) => (
-        <button
-          key={review.id}
-          className="review-item"
-          onClick={() => handleReviewClick(review)}
-          onKeyDown={(e) => handleKeyDown(e, review)}
-          aria-label={`리뷰: ${review.title}, 작성자: ${review.nickname}`}
-        >
-          <h3>{review.title}</h3>
-          <p>{review.content.substring(0, 100)}...</p>
-          <div className="review-meta">
-            <span>작성자: {review.nickname}</span>
-            <span>
-              작성일: {new Date(review.createdAt).toLocaleDateString()}
-            </span>
-            <span>좋아요: {review.likeCount}</span>
-            <span>조회수: {review.viewCount}</span>
-          </div>
-        </button>
-      ))}
+    <div className="review-list p-4">
+      <h2 className="text-2xl font-bold mb-4">최근 리뷰</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {reviews.map((review) => (
+          <button
+            key={review.id}
+            className="review-item p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            onClick={() => handleReviewClick(review)}
+            onKeyDown={(e) => handleKeyDown(e, review)}
+            aria-label={`리뷰: ${review.title}, 작성자: ${review.nickname}`}
+          >
+            <h3 className="text-xl font-semibold mb-2">{review.title}</h3>
+            <p className="text-gray-600 mb-4">{review.content.substring(0, 100)}...</p>
+            <div className="review-meta text-sm text-gray-500">
+              <span className="block">작성자: {review.nickname}</span>
+              <span className="block">작성일: {new Date(review.createdAt).toLocaleDateString()}</span>
+              <span className="block">좋아요: {review.likeCount}</span>
+              <span className="block">조회수: {review.viewCount}</span>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

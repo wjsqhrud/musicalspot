@@ -85,18 +85,19 @@ const JMainpage: React.FC = () => {
   return (
     <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
       {/* Header */}
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "10px",
-          backgroundColor: "white",
-          color: "#33313B",
-          width: "100%",
-          marginBottom: "20px",
-          boxSizing: "border-box",
-        }}
+      <header className="flex justify-between items-center p-2.5 bg-white text-[#33313B] w-full mb-5"
+
+        // style={{ 
+        //   display: "flex",
+        //   justifyContent: "space-between",
+        //   alignItems: "center",
+        //   padding: "10px",
+        //   backgroundColor: "white",
+        //   color: "#33313B",
+        //   width: "100%",
+        //   marginBottom: "20px",
+        //   boxSizing: "border-box",
+        // }}
       >
         <h1 style={{ flexShrink: 0, fontSize: "24px", margin: "0 10px 0 0" }}>MUSICAL SPOT</h1>
         <div style={{ display: "flex", alignItems: "center", flexGrow: 1, justifyContent: "center" }}>
