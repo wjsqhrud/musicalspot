@@ -11,7 +11,7 @@ application.log.*
 replay_pid*.log
 
 # dependencies
-/node_modules
+/front/node_modules
 /.pnp
 .pnp.js
 

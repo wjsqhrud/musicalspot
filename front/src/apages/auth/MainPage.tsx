@@ -11,6 +11,7 @@ import { useAuth } from 'hooks/useAuthHook';
 import Button from 'acommons/Button';
 import { categoryList, categoryMusical, musicalCategoryIdSortedByEndDate, musicalCategoryIdSortedByStartDate, musicalCategoryIdSortedByTitle, musicalCategoryIdSortedByViewCount, musicalDetails, musicalDetailsIncrementView, musicalLike, musicalSortedByStartDate, musicalSortedByViewCount, toggleMusicalLike } from 'services/musical/musicalService';
 import { createReview, deleteReview, privateReviewDetails, publicReviewDetails, reviewCommentsCreate, reviewCommentsDelete, reviewCommentsUpdate, reviewDetailsIncreaseView, reviewLike, reviewLikes40, reviewRecent40, reviewViews40, toggleReviewLike, updateReview } from 'services/review/reviewService';
+import WebSocketCommu from 'components/websocket/WebsocketTest';
 
 const HomePage: React.FC = () => {
   const { navigateToCreateNickname, navigateToLogin, navigateToHome } = useNavigateHelper();
@@ -136,6 +137,7 @@ const HomePage: React.FC = () => {
           showInput={true}
         />
     </div>
+    <WebSocketCommu/>
     </HeaderProvider>
     
   );
