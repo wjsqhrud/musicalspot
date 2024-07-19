@@ -6,6 +6,17 @@ import CommonHeader from 'acomponents/header/CommonHeader';
 
 const TestPage: React.FC = () => {
   const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
+  // todo: isAuthenticated :
+  // todo: 로그인 상태 + 닉네임가진이용자 = true
+  // todo: 로그인상태 X = false
+
+  // todo: myNickname = 로그인상태 + 닉네임가진이용자일경우 값이 들어있음
+  // todo: nickname = 호석이두마리치킨, 네이버호석이
+
+  // todo: checkAuthStatus = 예측할수 없는 시점의 인증상태를 리필,확인 하기위한 함수
+  // todo: 이 함수내에서는 모든 인증 리필, 확인, 닉네임유무를 판단하고 2개의 갈래로 나뉨
+  // todo: 인증되면 위에 함수로 인증되지않았다면 아래함수로
+
 
   // todo : 버튼을 눌렀을때 인증로직발생
   const handleAuthCheck = () => {

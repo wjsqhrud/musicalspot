@@ -139,8 +139,8 @@ export const musicalDetailsIncrementView = async (musicalId: string) => {
 } 
 
 
-// todo: 여기서부터하자 어우 졸려
-// 뮤지컬 상세보기 좋아요 누른적 있는지
+// todo: 여기서부터하자 어우 졸려 
+// ( 로그인사용자 ) 뮤지컬 상세보기 좋아요 누른적 있는지 (랜더링시)
 export const musicalLike = async (musicalId: string) => {
     try{
         const result = await axios.get(MUSICAL_LIKE(musicalId),{
@@ -156,7 +156,7 @@ export const musicalLike = async (musicalId: string) => {
     }
 } 
 
-// 뮤지컬 상세보기 좋아요 클릭
+// ( 로그인사용자 ) 뮤지컬 상세보기 좋아요 클릭 (시점불분명)
 export const toggleMusicalLike = async (musicalId: string) => {
     try{
         const result = await axios.post(TOGGLE_MUSICAL_LIKE(musicalId), {},{
