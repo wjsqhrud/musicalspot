@@ -1,6 +1,6 @@
 //src/acommons/Input
 import React, { ChangeEvent, forwardRef, KeyboardEvent } from 'react';
-import '../astyles/Input.css';
+
 
 interface InputProps {
   placeholder: string;

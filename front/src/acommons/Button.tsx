@@ -1,6 +1,6 @@
 //src/acommons/Button
 import React, { ReactNode } from 'react';
-import '../astyles/Button.css';
+
 
 interface ButtonProps {
   text: string;
@@ -13,7 +13,7 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ text, onClick, className, style, children }) => {
   return (
     <button
-      className={`button ${className}`}
+      className={className}
       style={style}
       onClick ={onClick}
     >

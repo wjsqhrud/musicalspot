@@ -1,4 +1,7 @@
+import CommonHeader from "acomponents/header/CommonHeader";
+import { useAuth } from "hooks/useAuthHook";
 import React, { useState, useEffect } from "react";
+import { HeaderProvider } from "services/HeaderService/HeaderService";
 import { reviewRecent40 } from "services/review/reviewService";
 
 // 리뷰 데이터 인터페이스
@@ -15,6 +18,7 @@ interface Review {
 }
 
 const ReviewList: React.FC = () => {
+  const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +57,16 @@ const ReviewList: React.FC = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="review-list p-4">
+    <HeaderProvider>
+      <div className="pt-20"> 
+        <CommonHeader
+          isAuthenticated={isAuthenticated}
+          myNickname={myNickname}
+          nicknameModalOpen={nicknameModalOpen}
+          setNicknameModalOpen={setNicknameModalOpen}
+          checkAuthStatus={checkAuthStatus}
+        />
+        <div className="review-list p-4">
       <h2 className="text-2xl font-bold mb-4">최근 리뷰</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {reviews.map((review) => (
@@ -76,6 +89,9 @@ const ReviewList: React.FC = () => {
         ))}
       </div>
     </div>
+      </div>
+    </HeaderProvider>
+    
   );
 };
 

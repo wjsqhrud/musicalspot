@@ -1,19 +1,20 @@
 import React from 'react';
-import '../astyles/Header.css';
+
 
 type HeaderProps = {
     title: string;
     onClick?: () => void;
+    className?: string;
   };
   
-  const Header = ({ title, onClick }: HeaderProps) => {
+  const Header = ({ title, onClick, className }: HeaderProps) => {
     
     return (
-      <header className=" font-custom">
-        <h1 className="text-2xl cursor-pointer" onClick={onClick}>
+      <div className={className} onClick={onClick}>
+        <h1>
           {title}
         </h1>
-      </header>
+      </div>
     );
   };
   export default Header;

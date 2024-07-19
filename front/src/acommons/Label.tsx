@@ -1,6 +1,6 @@
 //src/acommons/Label
 import React from 'react';
-import '../astyles/Label.css';
+
 
 interface LabelProps {
   text: string;

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
-import '../../astyles/AuthComponent.css';
 import HomeButton from './HomeButton';
 import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 import { onHomeButtonClickHandler as authOnHomeButtonClickHandler } from 'services/Auth/authService';
@@ -52,7 +50,8 @@ const CreateNickNameComponent: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow-md w-96">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+<div className="bg-white p-6 rounded shadow-md w-96">
       <div className="flex items-center justify-center mb-4">
         <HomeButton/>
         <h2 className="text-2xl font-semibold text-indigo-600 flex-grow text-center">닉네임 생성</h2>
@@ -106,6 +105,8 @@ const CreateNickNameComponent: React.FC = () => {
         />
       </div>
     </div>
+    </div>
+    
   );
 };
 

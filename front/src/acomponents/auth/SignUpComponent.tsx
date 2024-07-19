@@ -5,7 +5,6 @@ import Input from '../../acommons/Input';
 import Label from '../../acommons/Label';
 import Button from '../../acommons/Button';
 import Divider from '../../acommons/Divider';
-import '../../astyles/AuthComponent.css';
 
 import { 
   

@@ -1,6 +1,6 @@
 //src/acommons/Divider
 import React from 'react';
-import '../astyles/Divider.css';
+
 
 interface DividerProps {
     text?: string;

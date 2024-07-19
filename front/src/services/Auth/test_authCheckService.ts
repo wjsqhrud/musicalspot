@@ -66,11 +66,12 @@ const refreshAccessToken = (refreshToken: string, deviceInfo: string) => {
     const deviceInfo = getDeviceInfo();
   
     if (!accessToken && !refreshToken) { // 엑세스, 리프레시 둘 다 존재 X
+      console.log("엑세스 X - 리프레시 X")
       return onFailure();
     }
   
     if (accessToken) { // 엑세스 존재 O
-      console.log("1-1");
+      console.log("엑세스 O");
       verifyAccessToken(accessToken, refreshToken, deviceInfo)
         .then((response) => {
           if (response === 'success') {
@@ -81,7 +82,7 @@ const refreshAccessToken = (refreshToken: string, deviceInfo: string) => {
         })
         .catch(onFailure);
     } else if (refreshToken) { // 엑세스 존재 X, 리프레시 존재 O
-      console.log("1-2-1");
+      console.log("엑세스 X - 리프레시 O ")
       handleTokenRefresh(refreshToken, deviceInfo)
         .then((response) => {
           if (response === 'success') {

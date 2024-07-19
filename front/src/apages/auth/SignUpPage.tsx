@@ -1,8 +1,6 @@
 //src/apages/Testpage
 import React from 'react';
-
 import SignUpComponent from 'acomponents/auth/SignUpComponent';
-import '../../astyles/ASignInPage.css';
 
 const SignUpPage: React.FC = () => {
   return (

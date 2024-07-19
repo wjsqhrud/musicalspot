@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
-  categoryList,
   musicalSortedByStartDate,
   musicalSortedByViewCount,
 } from "services/musical/musicalService";
-import { FaSearch, FaRegUser } from "react-icons/fa";
 
-interface Category {
-  id: number;
-  category: string;
-}
+import { HeaderProvider } from "services/HeaderService/HeaderService";
+import CommonHeader from "acomponents/header/CommonHeader";
+import { useAuth } from "hooks/useAuthHook";
+
 
 interface Musical {
   id: number;
@@ -20,27 +18,19 @@ interface Musical {
   imageUrl: string;
 }
 
-const JMainpage: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+const Mainpage: React.FC = () => {
+  const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
+  
   const [musicalsByStartDate, setMusicalsByStartDate] = useState<Musical[]>([]);
   const [musicalsByViewCount, setMusicalsByViewCount] = useState<Musical[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     console.log("사이트 랜더링 완료");
-    handleCategoryList();
     handleMusicalSortedByStartDate();
     handleMusicalSortedByViewCount();
   }, []);
 
-  const handleCategoryList = async () => {
-    try {
-      const response = await categoryList();
-      setCategories(response.data);
-    } catch (error) {
-      console.error("Error", error);
-    }
-  };
 
   const handleMusicalSortedByStartDate = async () => {
     try {
@@ -78,90 +68,19 @@ const JMainpage: React.FC = () => {
     console.log("Clicked ID:", id);
   };
 
-  const handleAllCategory = ()=>{
-    console.log("all클릭");
-  };
+  
 
   return (
-    <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
-      {/* Header */}
-      <header className="flex justify-between items-center p-2.5 bg-white text-[#33313B] w-full mb-5"
-
-        // style={{ 
-        //   display: "flex",
-        //   justifyContent: "space-between",
-        //   alignItems: "center",
-        //   padding: "10px",
-        //   backgroundColor: "white",
-        //   color: "#33313B",
-        //   width: "100%",
-        //   marginBottom: "20px",
-        //   boxSizing: "border-box",
-        // }}
-      >
-        <h1 style={{ flexShrink: 0, fontSize: "24px", margin: "0 10px 0 0" }}>MUSICAL SPOT</h1>
-        <div style={{ display: "flex", alignItems: "center", flexGrow: 1, justifyContent: "center" }}>
-          <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
-            <div style={{
-              backgroundColor: "white",
-              color: "#33313B",
-              padding: "10px",
-              minWidth: "60px",
-              textAlign: "center",
-              cursor: "pointer",
-              boxSizing: "border-box",
-            }}
-              onClick={handleAllCategory}
-            >
-              All
-            </div>
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                style={{
-                  backgroundColor: "white",
-                  color: "#33313B",
-                  padding: "10px",
-                  minWidth: "60px",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  boxSizing: "border-box",
-                }}
-                onClick={() => handleClick(category.id)}
-              >
-                {category.category}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "5px 0",
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Search"
-              style={{
-                border: "none",
-                outline: "none",
-                marginLeft: "5px",
-                borderBottom: "1px solid #ccc",
-                padding: "5px 0",
-                boxSizing: "border-box",
-              }}
-            />
-            <FaSearch />
-          </div>
-          <FaRegUser size={24} />
-        </div>
-      </header>
-
-      {/* Slider */}
-      <div
+    <HeaderProvider>
+      <div className="pt-20"> 
+        <CommonHeader
+          isAuthenticated={isAuthenticated}
+          myNickname={myNickname}
+          nicknameModalOpen={nicknameModalOpen}
+          setNicknameModalOpen={setNicknameModalOpen}
+          checkAuthStatus={checkAuthStatus}
+        />
+        <div
         style={{
           position: "relative",
           width: "100%",
@@ -249,8 +168,9 @@ const JMainpage: React.FC = () => {
           <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
         </div>
       </footer>
-    </div>
+      </div>
+    </HeaderProvider>
   );
 };
 
-export default JMainpage;
+export default Mainpage;
