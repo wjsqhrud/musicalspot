@@ -6,7 +6,7 @@ const API_DOMAIN = `${DOMAIN}/api/v1`;
 
 //OAuth2 관련
 export const SNS_SIGN_IN_URL = (type: 'kakao' | 'naver') => `${API_DOMAIN}/auth/oauth2/${type}`;
-export const SNS_DEVICE_INFO = () => `${API_DOMAIN}/auth/device-info`;
+export const SNS_DEVICE_INFO = () => `${API_DOMAIN}/device-info`;
 // http://127.0.0.1:4040/api/v1/device-info
 
 // 인증상태관리 관련
