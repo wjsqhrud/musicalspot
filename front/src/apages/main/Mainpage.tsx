@@ -189,6 +189,8 @@ const Mainpage: React.FC = () => {
           </div>
         </div>
 
+        <div className="text-center text-2xl font-bold my-10">WHAT'S HOT</div>
+
         {/* Grid Section */}
         <div className="p-5 grid grid-cols-5 gap-4">
           {musicalsByViewCount.slice(0, 1).map((musical) => (
