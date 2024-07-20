@@ -1,20 +1,24 @@
 {
-    "routes": [
-      {
-        "route": "/auth/*",
-        "serve": "/index.html",
-        "statusCode": 200
-      },
-      {
-        "route": "/*",
-        "serve": "/index.html",
-        "statusCode": 200
-      },
-      {
-        "route": "/auth/oauth-response/*",
-        "rewrite": "/index.html",
-        "statusCode": 200
-      }
-    ]
-    
-  }
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["*.{css,svg,js,ts,png,jpeg,jpg,ico}"]
+  },
+  "routes": [
+    {
+      "route": "/auth/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
+      "route": "/auth/oauth-response/*",
+      "rewrite": "/index.html",
+      "statusCode": 200
+    }
+  ]
+  
+}

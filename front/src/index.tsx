@@ -13,10 +13,12 @@ root.render(
     // <BrowserRouter>
     //   <App />
     // </BrowserRouter>
-
-    <Router>
-    <App />
-  </Router>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  //   <Router>
+  //   <App />
+  // </Router>
   // </React.StrictMode>
 );
 // StrictMode를 키면 useeffect가 두번실행되서 껐습니다.
