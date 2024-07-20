@@ -22,6 +22,18 @@ jobs:
           lfs: false
 
 # 클라 배포 최적화
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm      # npm 패키지를 저장할 위치
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}  # 캐시 키
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'  # 여기에 사용 중인 Node.js 버전을 명시
 
       - name: Build And Deploy
         id: builddeploy
