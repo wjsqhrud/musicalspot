@@ -50,7 +50,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
 
         // todo: 배포환경에서의 oauth 리스폰스 주소
         response.sendRedirect("https://happy-mud-0f0400300.5.azurestaticapps.net/auth/oauth-response/" + accessToken + "/" + accessTokenExpirationMillis + "/" + refreshToken + "/" + refreshTokenExpirationMillis);
-
+        
 	}
     
 }

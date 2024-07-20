@@ -3,9 +3,10 @@ import { useCookies } from 'react-cookie';
 import { useNavigate, useParams }   from 'react-router-dom'
 import axios from 'axios';
 import { SNS_DEVICE_INFO } from 'utils/APIUrlUtil/apiUrlUtil';
+import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 
 export default function OAuth() {
-
+    const { navigateToHome } = useNavigateHelper();
   const { token, expirationTime, refreshToken, refreshExpirationTime } = useParams();
   console.log("여기까진옴")
   const [cookie, setCookie] = useCookies();
@@ -42,7 +43,7 @@ useEffect(() => {
             });
 
             if (response.status === 200) {
-                navigate('/');
+                navigateToHome();
             } else {
                 console.error('Failed to send device info');
             }
