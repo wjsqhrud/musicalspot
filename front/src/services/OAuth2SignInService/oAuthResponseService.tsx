@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useNavigate, useParams }   from 'react-router-dom'
 import axios from 'axios';
+import { SNS_DEVICE_INFO } from 'utils/APIUrlUtil/apiUrlUtil';
 
 export default function OAuth() {
 
@@ -31,7 +32,7 @@ useEffect(() => {
             const deviceInfo = getDeviceInfo();
             const params = new URLSearchParams();
             params.append('deviceInfo', deviceInfo);
-            const response = await axios.post('http://127.0.0.1:4040/api/v1/device-info', params, {
+            const response = await axios.post(SNS_DEVICE_INFO(), params, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Refresh-Token': refreshToken,
