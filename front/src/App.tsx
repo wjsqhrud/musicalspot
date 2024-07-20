@@ -25,7 +25,8 @@ function App() {
           <Route path='sign-up' element={<SignUpPage/>} />
           <Route path='create-nickname' element={<CreateNickNamePage/>} />
           <Route path='test' element={<TestPage/>} />
-          <Route path='oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
+          <Route path='/oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
+          {/* <Route path='oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} /> */}
         </Route>
         <Route path="*" element={<Navigate to="/auth/home" />} />
       </Routes>
