@@ -47,6 +47,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: 17
+        distribution: 'temurin' # 또는 'zulu', 'adopt', 등 Java의 배포판(distribution)을 지정
 
     - name: Grant execute permission for gradlew
       run: chmod +x back/gradlew # gradlew에 실행 권한을 부여하기 위해 back/경로 추가
