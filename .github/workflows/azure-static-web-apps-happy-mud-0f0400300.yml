@@ -49,10 +49,11 @@ jobs:
         java-version: 17
 
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x back/gradlew # gradlew에 실행 권한을 부여하기 위해 back/경로 추가
 
     - name: Build with Gradle
       run: ./gradlew build
+      working-directory: back # working-directory 옵션을 사용하여 back 디렉토리에서 명령어 실행
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
