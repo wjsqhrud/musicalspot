@@ -33,6 +33,8 @@ const CreateNickNameComponent: React.FC = () => {
     const result = await combinedLogoutHandler(navigateToHome);
     if (result) {
       setLogOutModalOpen(true);
+      console.log(nicknameError);
+      console.log(errorType);
     }
   };
 
