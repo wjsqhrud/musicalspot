@@ -1,9 +1,20 @@
 {
     "routes": [
       {
+        "route": "/auth/*",
+        "serve": "/index.html",
+        "statusCode": 200
+      },
+      {
         "route": "/*",
+        "serve": "/index.html",
+        "statusCode": 200
+      },
+      {
+        "route": "/auth/oauth-response/*",
         "rewrite": "/index.html",
         "statusCode": 200
       }
     ]
+    
   }
