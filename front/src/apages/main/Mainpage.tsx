@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   musicalSortedByStartDate,
   musicalSortedByViewCount,
@@ -30,13 +30,16 @@ const Mainpage: React.FC = () => {
   const [musicalsByStartDate, setMusicalsByStartDate] = useState<Musical[]>([]);
   const [musicalsByViewCount, setMusicalsByViewCount] = useState<Musical[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    console.log("사이트 랜더링 완료");
-    handleMusicalSortedByStartDate();
-    handleMusicalSortedByViewCount();
-  }, []);
+  // 현재 설정된 타임아웃을 초기화
+  const resetTimeout = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
 
+  // 시작일 기준으로 정렬된 뮤지컬 목록을 가져오는 함수
   const handleMusicalSortedByStartDate = async () => {
     try {
       const response = await musicalSortedByStartDate();
@@ -47,6 +50,7 @@ const Mainpage: React.FC = () => {
     }
   };
 
+  // 날짜 포맷팅 함수
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -58,6 +62,7 @@ const Mainpage: React.FC = () => {
     return formatter.format(date).replace(/\. /g, ".").replace(".", "");
   };
 
+  // 조회수 기준으로 정렬된 뮤지컬 목록을 가져오는 함수
   const handleMusicalSortedByViewCount = async () => {
     try {
       const response = await musicalSortedByViewCount();
@@ -68,24 +73,37 @@ const Mainpage: React.FC = () => {
     }
   };
 
+  // 컴포넌트가 마운트될 때 시작일 기준과 조회수 기준 뮤지컬 목록을 로드
+  useEffect(() => {
+    console.log("사이트 랜더링 완료");
+    handleMusicalSortedByStartDate();
+    handleMusicalSortedByViewCount();
+  }, []);
+
+  // 슬라이드 자동 전환 설정
   useEffect(() => {
     if (musicalsByStartDate.length > 0) {
-      const interval = setInterval(() => {
+      resetTimeout();
+      timeoutRef.current = setTimeout(() => {
         setCurrentSlide(
           (prevSlide) => (prevSlide + 1) % musicalsByStartDate.length
         );
       }, 3000); // 3초마다 슬라이드 변경
 
-      return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 정리
+      return () => {
+        resetTimeout(); // 컴포넌트 언마운트 시 타임아웃 정리
+      };
     }
-  }, [musicalsByStartDate.length]);
+  }, [musicalsByStartDate, currentSlide]);
 
+  // 다음 슬라이드로 이동하는 함수
   const handleNext = () => {
     setCurrentSlide(
       (prevSlide) => (prevSlide + 1) % musicalsByStartDate.length
     );
   };
 
+  // 이전 슬라이드로 이동하는 함수
   const handlePrev = () => {
     setCurrentSlide(
       (prevSlide) =>
@@ -94,10 +112,12 @@ const Mainpage: React.FC = () => {
     );
   };
 
-  const handleDotClick = (index: number) => {
+  // 특정 슬라이드로 이동하는 함수
+  const handleLineClick = (index: number) => {
     setCurrentSlide(index);
   };
 
+  // 이미지 클릭 시 호출되는 함수
   const handleClick = (id: number) => {
     console.log("Clicked ID:", id);
   };
@@ -112,48 +132,64 @@ const Mainpage: React.FC = () => {
           setNicknameModalOpen={setNicknameModalOpen}
           checkAuthStatus={checkAuthStatus}
         />
-        <div className="relative w-full pt-[30%] overflow-hidden mb-10">
-          {musicalsByStartDate.length > 0 && (
-            <>
-              <div
-                key={musicalsByStartDate[currentSlide].id}
-                className="absolute top-0 left-0 w-full h-full transition-opacity duration-1000 cursor-pointer"
-                onClick={() =>
-                  handleClick(musicalsByStartDate[currentSlide].id)
-                }
-              >
-                <img
-                  src={musicalsByStartDate[currentSlide].imageUrl}
-                  alt={musicalsByStartDate[currentSlide].title}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <button
-                className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
-                onClick={handlePrev}
-              >
-                <GrPrevious />
-              </button>
-              <button
-                className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
-                onClick={handleNext}
-              >
-                <GrNext />
-              </button>
-              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {musicalsByStartDate.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-3 h-3 rounded-full ${
-                      index === currentSlide ? "bg-white" : "bg-gray-300"
-                    }`}
-                    onClick={() => handleDotClick(index)}
+        <div className="relative w-full pt-[5%] mb-10">
+          {/* 슬라이드 컨테이너 */}
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{
+              transform: `translateX(-${
+                currentSlide * (100 / musicalsByStartDate.length)
+              }%)`,
+            }}
+          >
+            {musicalsByStartDate.length > 0 &&
+              musicalsByStartDate.map((musical, index) => (
+                <div
+                  key={musical.id}
+                  className={`flex-shrink-0 w-1/4 h-full mx-4 transition-transform duration-500 ease-in-out ${
+                    index === currentSlide
+                      ? "transform scale-110"
+                      : "transform scale-100"
+                  }`} // 현재 슬라이드 확대
+                  onClick={() => handleClick(musical.id)}
+                >
+                  <img
+                    src={musical.imageUrl}
+                    alt={musical.title}
+                    className="w-full h-full object-contain"
                   />
-                ))}
-              </div>
-            </>
-          )}
+                </div>
+              ))}
+          </div>
+          {/* 이전 슬라이드 버튼 */}
+          <button
+            className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
+            onClick={handlePrev}
+          >
+            <GrPrevious />
+          </button>
+          {/* 다음 슬라이드 버튼 */}
+          <button
+            className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
+            onClick={handleNext}
+          >
+            <GrNext />
+          </button>
+          {/* 슬라이드 네비게이션 */}
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2 mt-2">
+            {musicalsByStartDate.map((_, index) => (
+              <div
+                key={index}
+                className={`h-1 cursor-pointer ${
+                  index === currentSlide ? "bg-black w-16" : "bg-gray-300 w-10"
+                }`} // 클릭 가능한 굵은 선 추가
+                onClick={() => handleLineClick(index)}
+              />
+            ))}
+          </div>
         </div>
+
+        <div className="text-center text-2xl font-bold my-10">WHAT'S HOT</div>
 
         {/* Grid Section */}
         <div className="p-5 grid grid-cols-5 gap-4">
@@ -169,7 +205,7 @@ const Mainpage: React.FC = () => {
                   alt={musical.title}
                   className="w-full h-full object-contain rounded"
                 />
-                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-40 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center">
+                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center">
                   <div>{musical.title}</div>
                   <div>{formatDate(musical.startDate)}</div>
                   {musical.startDate !== musical.endDate ? (
@@ -191,7 +227,7 @@ const Mainpage: React.FC = () => {
                   alt={musical.title}
                   className="w-full h-full object-contain rounded"
                 />
-                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-40 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center">
+                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-30 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center">
                   <div>{musical.title}</div>
                   <div>{formatDate(musical.startDate)}</div>
                   {musical.startDate !== musical.endDate ? (
@@ -204,19 +240,8 @@ const Mainpage: React.FC = () => {
         </div>
 
         {/* Footer Section */}
-        <footer>
-          <div
-            style={{
-              backgroundColor: "#f8f8f8",
-              textAlign: "center",
-              padding: "10px 0",
-              borderTop: "1px solid #e7e7e7",
-            }}
-          >
-            <p>
-              © {new Date().getFullYear()} Musical Spot. All rights reserved.
-            </p>
-          </div>
+        <footer className="bg-gray-100 text-center py-2.5 border-t border-gray-300">
+          <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
         </footer>
       </div>
     </HeaderProvider>
