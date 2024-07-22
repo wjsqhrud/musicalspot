@@ -52,7 +52,5 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
         response.sendRedirect("https://happy-mud-0f0400300.5.azurestaticapps.net/#/auth/oauth-response/" + accessToken + "/" + accessTokenExpirationMillis + "/" + refreshToken + "/" + refreshTokenExpirationMillis);
         // 일단 /auth/home으로 리디렉션
         // response.sendRedirect("https://happy-mud-0f0400300.5.azurestaticapps.net/#/auth/home");
-        
 	}
-    
 }
