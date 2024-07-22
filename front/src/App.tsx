@@ -10,6 +10,7 @@ import HomePage from 'apages/auth/MainPage';
 import JMainpage from 'apages/auth/JMainpage';
 import ReviewList from 'apages/reviewList/ReviewList';
 import './font.css';
+import ReviewDetail from 'apages/reviewList/ReviewDetail';
 
 function App() {
   return (
@@ -25,7 +26,10 @@ function App() {
           <Route path='oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
         </Route>
         <Route path="*" element={<Navigate to="/auth/home" />} />
+        <Route path='/reviews' element={<ReviewList />} />
+        <Route path='/review/:id' element={<ReviewDetail />} />
       </Routes>
+     
     </HeaderProvider>
   );
 }

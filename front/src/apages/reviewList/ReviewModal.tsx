@@ -4,56 +4,40 @@ import { Review } from "./ReviewType";
 interface ReviewModalProps {
   review: Review;
   onClose: () => void;
+  isLoggedIn: boolean;
 }
 
-const ReviewModal: React.FC<ReviewModalProps> = ({ review, onClose }) => {
-  const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
+const ReviewModal: React.FC<ReviewModalProps> = ({ review, onClose, isLoggedIn }) => {
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-      onClick={handleOutsideClick}
-    >
-      <div className="bg-white p-6 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto flex">
-        <div className="w-1/3 pr-4">
-          <img
-            src={review.musicalImageUrl}
-            alt={review.musicalTitle}
-            className="w-full h-auto rounded-lg"
-          />
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white p-6 rounded-lg max-w-2xl w-full">
+        <h2 className="text-2xl font-bold mb-4">{review.title}</h2>
+        <p className="mb-4">{review.content}</p>
+        <div className="mb-4">
+          <p>작성자: {review.nickname}</p>
+          <p>작성일: {new Date(review.createdAt).toLocaleDateString()}</p>
+          <p>좋아요: {review.likeCount}</p>
+          <p>조회수: {review.viewCount}</p>
         </div>
-        <div className="w-2/3">
-          <h2 className="text-2xl font-bold mb-4">{review.title}</h2>
-          <p className="mb-4 text-gray-700">{review.content}</p>
+        {isLoggedIn ? (
           <div className="mb-4">
-            <p>
-              <strong>작성자:</strong> {review.nickname}
-            </p>
-            <p>
-              <strong>작성일:</strong>{" "}
-              {new Date(review.createdAt).toLocaleDateString()}
-            </p>
-            <p>
-              <strong>뮤지컬:</strong> {review.musicalTitle}
-            </p>
-            <p>
-              <strong>좋아요:</strong> {review.likeCount}
-            </p>
-            <p>
-              <strong>조회수:</strong> {review.viewCount}
-            </p>
+            <textarea
+              className="w-full p-2 border rounded"
+              placeholder="댓글을 작성하세요..."
+            ></textarea>
+            <button className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              댓글 작성
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            닫기
-          </button>
-        </div>
+        ) : (
+          <p className="mb-4">댓글을 작성하려면 로그인이 필요합니다.</p>
+        )}
+        <button
+          onClick={onClose}
+          className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+        >
+          닫기
+        </button>
       </div>
     </div>
   );
