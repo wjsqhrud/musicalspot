@@ -11,7 +11,6 @@ import ReviewList from 'apages/reviewList/ReviewList';
 import TestPage from 'apages/test/TestPage';
 import MusicalPage from 'apages/musical/MusicalPage';
 import CategoryPage from 'apages/Category/CategoryPage';
-import './font.css';
 import WebSocketConnect from 'components/websocket/WebsocketTest';
 
 function App() {
