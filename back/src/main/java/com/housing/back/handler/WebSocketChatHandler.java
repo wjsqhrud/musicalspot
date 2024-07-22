@@ -1,11 +1,20 @@
+package com.housing.back.handler;
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-public class ChatWebSocketHandler extends TextWebSocketHandler {
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class WebSocketChatHandler extends TextWebSocketHandler {
 
     private final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
@@ -18,6 +27,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         System.out.println("메시지 수신: " + message.getPayload());
+        System.out.println("세션ID 수신 : " + session.getId());
         for (WebSocketSession webSocketSession : sessions) {
             if (webSocketSession.isOpen()) {
                 webSocketSession.sendMessage(new TextMessage(message.getPayload()));

@@ -10,22 +10,26 @@ import HomePage from 'apages/auth/MainPage';
 import JMainpage from 'apages/auth/JMainpage';
 import ReviewList from 'apages/reviewList/ReviewList';
 import './font.css';
+import WebSocketConnect from 'components/websocket/WebsocketTest';
 
 function App() {
   return (
     <HeaderProvider>
-      <Routes>
-        <Route path='/auth'>
-          <Route path='bo-test' element={<JMainpage/>} />
-          <Route path='reviewlist' element={<ReviewList/>}/>
-          <Route path='sign-in' element={<SignInPage/>} />
-          <Route path='sign-up' element={<SignUpPage/>} />
-          <Route path='create-nickname' element={<CreateNickNamePage/>} />
-          <Route path='home' element={<HomePage/>} />
-          <Route path='oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/auth/home" />} />
-      </Routes>
+      <div>
+        <WebSocketConnect />
+        <Routes>
+          <Route path='/auth'>
+            <Route path='bo-test' element={<JMainpage />} />
+            <Route path='reviewlist' element={<ReviewList />} />
+            <Route path='sign-in' element={<SignInPage />} />
+            <Route path='sign-up' element={<SignUpPage />} />
+            <Route path='create-nickname' element={<CreateNickNamePage />} />
+            <Route path='home' element={<HomePage />} />
+            <Route path='oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/auth/home" />} />
+        </Routes>
+      </div>
     </HeaderProvider>
   );
 }
