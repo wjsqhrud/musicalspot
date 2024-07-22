@@ -5,7 +5,10 @@ import 'tailwindcss/tailwind.css';
 import styles from './WebsocketTest.module.css';
 
 const WebSocketConnect = () => {
-  const serverAddr = 'http://localhost:4040/ws';
+  // 로컬 호스트 
+  // const serverAddr = 'http://localhost:4040/ws';
+  // 서버 url
+  const serverAddr = 'https://musicalspot-server2.azurewebsites.net/ws';
   const isChatToggled = false;
 
   const [stompClient, setStompClient] = useState<Client | null>(null);
