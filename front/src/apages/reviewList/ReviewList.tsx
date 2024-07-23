@@ -1,97 +1,104 @@
-import CommonHeader from "acomponents/header/CommonHeader";
-import { useAuth } from "hooks/useAuthHook";
-import React, { useState, useEffect } from "react";
-import { HeaderProvider } from "services/HeaderService/HeaderService";
+// ReviewList.tsx
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import ReviewItem from "./ReviewItem";
 import { reviewRecent40 } from "services/review/reviewService";
-
-// 리뷰 데이터 인터페이스
-interface Review {
-  id: number;  // ID가 숫자로 정의되어 있는 것을 반영
-  title: string;
-  content: string;
-  musicalId: number;  // musicalId로 변경
-  musicalTitle: string;  // musicalTitle 추가
-  createdAt: string;
-  likeCount: number;
-  viewCount: number;
-  nickname: string;  // 작성자의 닉네임 추가
-}
+import { Review } from "./ReviewType";
+import Modal from "./ReviewModal";
+import ReviewDetail from "./ReviewDetail";
+import ReviewForm from "apages/CreateReview/CreateReviewModal";
 
 const ReviewList: React.FC = () => {
-  const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastReviewElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await reviewRecent40(0);
-        console.log(response)
-        if (response.code === 'SU') {
-          setReviews(response.data);
-        } else {
-          setError('리뷰를 불러오는 데 실패했습니다.');
-        }
-        setLoading(false);
-      } catch (err) {
-        setError("리뷰를 불러오는 데 실패했습니다.");
-        setLoading(false);
-      }
-    };
-
     fetchReviews();
-  }, []);
+  }, [page]);
 
-  const handleReviewClick = (review: Review): void => {
-    console.log("클릭된 리뷰의 작성자 닉네임:", review.nickname);
-  };
+  const fetchReviews = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await reviewRecent40(page);
+      const data = response.data;
 
-  const handleKeyDown = (event: React.KeyboardEvent, review: Review): void => {
-    if (event.key === "Enter" || event.key === " ") {
-      handleReviewClick(review);
+      if (!Array.isArray(data)) {
+        throw new Error("데이터 형식이 올바르지 않습니다.");
+      }
+
+      if (data.length < 40) {
+        setHasMore(false);
+      }
+      setReviews((prevReviews) => [...prevReviews, ...data]);
+    } catch (error) {
+      console.error("리뷰 로딩 중 오류 발생:", error);
+      setError("리뷰를 불러오는 데 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) return <div>로딩 중...</div>;
-  if (error) return <div>{error}</div>;
+  const handleReviewClick = (reviewId: number) => {
+    setSelectedReviewId(reviewId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedReviewId(null);
+  };
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
 
   return (
-    <HeaderProvider>
-      <div className="pt-20"> 
-        <CommonHeader
-          isAuthenticated={isAuthenticated}
-          myNickname={myNickname}
-          nicknameModalOpen={nicknameModalOpen}
-          setNicknameModalOpen={setNicknameModalOpen}
-          checkAuthStatus={checkAuthStatus}
-        />
-        <div className="review-list p-4">
-      <h2 className="text-2xl font-bold mb-4">최근 리뷰</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {reviews.map((review) => (
-          <button
-            key={review.id}
-            className="review-item p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            onClick={() => handleReviewClick(review)}
-            onKeyDown={(e) => handleKeyDown(e, review)}
-            aria-label={`리뷰: ${review.title}, 작성자: ${review.nickname}`}
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-3xl font-bold mb-6 text-center">최근 리뷰</h2>
+      <button>
+        리뷰작성 <ReviewForm />
+      </button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {reviews.map((review, index) => (
+          <div
+            key={`${review.id}-${index}`}
+            ref={index === reviews.length - 1 ? lastReviewElementRef : null}
+            onClick={() => handleReviewClick(review.id)}
+            className="cursor-pointer"
           >
-            <h3 className="text-xl font-semibold mb-2">{review.title}</h3>
-            <p className="text-gray-600 mb-4">{review.content.substring(0, 100)}...</p>
-            <div className="review-meta text-sm text-gray-500">
-              <span className="block">작성자: {review.nickname}</span>
-              <span className="block">작성일: {new Date(review.createdAt).toLocaleDateString()}</span>
-              <span className="block">좋아요: {review.likeCount}</span>
-              <span className="block">조회수: {review.viewCount}</span>
-            </div>
-          </button>
+            <ReviewItem review={review} />
+          </div>
         ))}
       </div>
+      {loading && <p className="text-center mt-4">로딩 중...</p>}
+      {!hasMore && <p className="text-center mt-4">더 이상 리뷰가 없습니다.</p>}
+
+      <Modal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
+        {selectedReviewId && (
+          <ReviewDetail
+            reviewId={selectedReviewId}
+            onClose={handleCloseModal}
+          />
+        )}
+      </Modal>
     </div>
-      </div>
-    </HeaderProvider>
-    
   );
 };
 
