@@ -28,6 +28,9 @@ module.exports = {
           to: { opacity: 1 },
         },
       },
+      boxShadow: {
+        'chatBalloonShadow':'-19px -20px 19px -8px rgba(0,0,0,0.75) inset',
+      }
     },
   },
   variants: {

@@ -1,5 +1,5 @@
-// const DOMAIN = 'http://127.0.0.1:4040'; // 로컬에서 실행하기
-const DOMAIN = 'https://musicalspot-server2.azurewebsites.net';
+const DOMAIN = 'http://127.0.0.1:4040'; // 로컬에서 실행하기
+// const DOMAIN = 'https://musicalspot-server2.azurewebsites.net';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
 
@@ -57,5 +57,5 @@ export const REVIEWS_VIEWS_40 = (page :number) => `${API_DOMAIN}/public/reviews/
 export const REVIEW_LIKE = (reviewId : string) => `${API_DOMAIN}/private/review-like/${reviewId}`;
 export const TOGGLE_REVIEW_LIKE = (reviewId : string) => `${API_DOMAIN}/private/toggle-review-like/${reviewId}`;
 
-
+export const SOCKET_MAINADDRESS = () => `${DOMAIN}/ws`;
 

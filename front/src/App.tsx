@@ -1,5 +1,5 @@
 // src/App.tsx// src/App.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { HeaderProvider } from 'services/HeaderService/HeaderService';
 import OAuth from 'services/OAuth2SignInService/oAuthResponseService';
@@ -12,11 +12,18 @@ import TestPage from 'apages/test/TestPage';
 import MusicalPage from 'apages/musical/MusicalPage';
 import CategoryPage from 'apages/Category/CategoryPage';
 import WebSocketConnect from 'components/websocket/WebsocketTest';
+import ChatIconComponent from 'components/websocket/ChatBalloonIcon';
 
 function App() {
+  const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
+
+  const toggleChat = () => {
+    setIsChatVisible(!isChatVisible);
+  };
+
   return (
     <HeaderProvider>
-      <WebSocketConnect />
+       {isChatVisible ? <WebSocketConnect toggleChat={toggleChat} /> : <ChatIconComponent toggleChat={toggleChat} />}
       <Routes>
         <Route path='/auth'>
           <Route path='home' element={<Mainpage/>} />

@@ -3,28 +3,25 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { initializeWebSocket, ChatMessage, MessageType } from '../../hooks/connectWebSocketHook';
 import 'tailwindcss/tailwind.css';
 import styles from './WebsocketTest.module.css';
+import { SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
+import { FaMinus } from 'react-icons/fa';
+import { IoEnterOutline } from "react-icons/io5";
+import { IoIosSend } from "react-icons/io";
 
-const WebSocketConnect = () => {
+interface ChatComponentProps {
+  toggleChat: () => void;
+}
+const WebSocketConnect: React.FC<ChatComponentProps> = ({ toggleChat }) => {
   // 로컬 호스트 
-  // const serverAddr = 'http://localhost:4040/ws';
-  // 서버 url
-  const serverAddr = 'https://musicalspot-server2.azurewebsites.net/ws';
-  const isChatToggled = false;
-
+  const serverAddr = SOCKET_MAINADDRESS;
+  // 배포서버 url
+  // const serverAddr = 'https://musicalspot-server2.azurewebsites.net/ws';
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [messageInput, setMessageInput] = useState<string>('');
   const [userNickname, setUserNickname] = useState('엄준식');
   const [isJoined, setIsJoined] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-
-  const toggleChat = () => {
-    if (!isChatToggled) {
-      console.log('toggleChat() called');
-      const toggleBtn = document.getElementById('toggleTarget');
-      toggleBtn?.classList.toggle('hidden');
-    }
-  };
 
   const handleNewMessage = (message: ChatMessage) => {
     setMessages((prevMessages) => [...prevMessages, message]);
@@ -62,7 +59,9 @@ const WebSocketConnect = () => {
     if (!isJoined) {
       setMessageInput('');
       window.alert('아직 채팅에 참여하지 않았습니다.');
-    } else if (stompClient && messageInput.trim()) {
+    } else if (!messageInput.trim()) {
+      window.alert('빈 내용은 전송할 수 없습니다.');
+    } else if (stompClient) {
       const chatMessage: ChatMessage = {
         nickname: userNickname,
         messageText: messageInput,
@@ -74,11 +73,9 @@ const WebSocketConnect = () => {
         body: JSON.stringify(chatMessage),
       });
       setMessageInput('');
-    } else if (!!messageInput.trim()) {
-      window.alert('빈 내용은 전송할 수 없습니다.');
     }
   };
-
+  
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
   };
@@ -86,22 +83,30 @@ const WebSocketConnect = () => {
   return (
     <div
       id="chatContainer"
-      className={`fixed flex flex-col justify-center bottom-0 right-0 mr-11 mb-11 w-96 h-3/5 rounded-lg select-none ${styles.customBoxShadow} w-6`}
+      className={`z-50 fixed flex flex-col justify-center bottom-0 right-0 mr-11 mb-11 w-96 h-3/5 rounded-lg select-none ${styles.customBoxShadow} bg-white`}
     >
-      <button onClick={toggleChat}>toggle Chat</button>
-      {!isConnected && <button onClick={joinChat}>Join Chat</button>}
-      <div id="toggleTarget" className="hidden">
-        <div className={`h-maxHeight pt-top mb-10 w-full overflow-y-auto ${styles.customScrollbar}`}>
+      <div className="flex justify-end items-center p-2 bg-violet-400 rounded-t-lg opacity-70">
+        <button onClick={toggleChat} className="text-white"><FaMinus/></button>
+      </div>
+      {!isConnected && // 조건부 버튼 렌더링 
+      <button onClick={joinChat} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
+        <span>채팅 입장</span>
+        <IoEnterOutline size={24}/>
+      </button>}
+        <div className={`h-maxHeight pt-top mb-3 w-full overflow-y-auto  ${styles.customScrollbar}`}>
           {isConnected && !isJoined ? (
             <div className="absolute bottom-0 mb-10">
-              <button onClick={joinChat}>Join Chat</button>
+              <button onClick={joinChat} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
+                <span>채팅 입장</span>
+                <IoEnterOutline size={24}/>
+              </button>
             </div>
           ) : (
             messages.map((v, index) => (
               <div key={index} className={`animate-fade flex place-items-end`}>
                 {v.type === MessageType.JOIN ? (
-                  <div className="bg-green-500 p-2 m-1 rounded-xl rounded-bl-none w-fit text-white max-w-80 text-center">
-                    {v.messageText}
+                  <div className="flex justify-center bg-gray-300 py-1 px-4 m-1 rounded-xl w-fit ml-16 text-black text-xs font-mono font-semibold">
+                    <span>{v.messageText}</span>
                   </div>
                 ) : (
                   <div className="bg-signature p-2 m-1 rounded-xl rounded-bl-none w-fit text-white max-w-80">
@@ -114,13 +119,14 @@ const WebSocketConnect = () => {
           )}
           <div ref={messageEndRef}></div>
         </div>
-        <div id="inputContainer" className="bottom-0 w-full">
-          <div id="inputInnerContainer" className="relative bottom-0 w-full h-fit rounded-lg pt-s">
+        <div id="inputContainer" className="bottom-0 w-full rounded-b-lg">
+          <div id="inputInnerContainer" className="flex items-center  border-t border-signature rounded-b-lg">
             <input
               id="chatTransmitter"
-              className="absolute bottom-0 border-signature border rounded-b-lg outline-none p-2 h-12 w-full"
+              className="flex-1 h-12 pl-1 outline-none border-none rounded-b-lg"
               type="text"
               value={messageInput}
+              placeholder='이곳에 메시지를 입력하세요.'
               onChange={handleInputChange}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -130,13 +136,12 @@ const WebSocketConnect = () => {
               }}
             />
             <button
-              className="absolute bottom-1.5 right-2 w-fit bg-signature text-white p-s rounded-lg hover:text-signature hover:bg-sky-100"
+              className="m-1 p-1 bg-transparent text-signature rounded-lg hover:text-white hover:bg-signature transition-all"
               onClick={sendMessage}
             >
-              전송
+              <IoIosSend size={26}/>
             </button>
           </div>
-        </div>
       </div>
     </div>
   );
