@@ -47,11 +47,11 @@ const SignInComponent: React.FC = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-header">
-        <div className="home-icon"><HomeButton/></div>
-        <h2 className="auth-title">로그인</h2>
-        <div className="spacer"></div>
+    <div className="">
+      <div className="">
+        <div className=""><HomeButton/></div>
+        <h2 className="">로그인</h2>
+        <div className=""></div>
       </div>
       <Label text="아이디" />
       <Input 
@@ -71,7 +71,7 @@ const SignInComponent: React.FC = () => {
         onKeyDown={(e) => handlePasswordKeyDown(e, handleLogin)} 
         ref={passwordRef} 
       />
-      <div className="auth-checkbox">
+      <div className="">
         <input type="checkbox" id="save-id" />
         <label htmlFor="save-id">아이디 저장</label>
       </div>
