@@ -12,19 +12,12 @@ import TestPage from "apages/test/TestPage";
 import MusicalPage from "apages/musical/MusicalPage";
 import CategoryPage from "apages/Category/CategoryPage";
 import DetailPage from "apages/detail/DetailPage";
-import AllCategoryPage from "apages/Category/AllCategoryPage";
-import DynamicCategoryPage from "apages/Category/DynamicCategoryPage";
 
 function App() {
   return (
     <HeaderProvider>
       <Routes>
         <Route path="/auth">
-          <Route
-            path="category/:categoryId"
-            element={<DynamicCategoryPage />}
-          />
-          <Route path="all" element={<AllCategoryPage />} />
           <Route path="details/:musicalId" element={<DetailPage />} />
           <Route path="home" element={<Mainpage />} />
           <Route path="category" element={<CategoryPage />} />
