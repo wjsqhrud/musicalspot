@@ -1,197 +1,179 @@
-import React, { useState, useEffect } from "react";
-import { createReview } from "services/review/reviewService";
-import { categoryList, categoryMusical } from "services/musical/musicalService";
+// CreateReviewModal.tsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { createReview } from 'services/review/reviewService';
+import { categoryList, categoryMusical, musicalDetails } from 'services/musical/musicalService';
+import { getCookie } from "utils/CookieUtil/cookieUtis";
+import Modal from 'acomponents/review/Modal';
 
 interface CreateReviewModalProps {
+  isOpen: boolean;
   onClose: () => void;
-  onReviewCreated: () => void;
 }
 
-interface Category {
-  id: string;
-  name: string;
-}
+const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }) => {
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [musicals, setMusicals] = useState<any[]>([]);
+  const [selectedMusical, setSelectedMusical] = useState<any>(null);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-interface Musical {
-  id: string;
-  title: string;
-  imageUrl: string;
-}
-
-const CreateReviewModal: React.FC<CreateReviewModalProps> = ({
-  onClose,
-  onReviewCreated,
-}) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  const [selectedMusicalId, setSelectedMusicalId] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [musicals, setMusicals] = useState<Musical[]>([]);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const isLoggedIn = (): boolean => {
+    return !!getCookie('accessToken');
+  };
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    if (selectedCategoryId) {
-      fetchMusicals(selectedCategoryId);
+    if (isOpen) {
+      fetchCategories();
     }
-  }, [selectedCategoryId]);
+  }, [isOpen]);
 
   const fetchCategories = async () => {
-    setIsLoading(true);
     try {
-      const response = await categoryList();
-      if (response.code === "SU") {
-        setCategories(response.data);
-      } else {
-        setError("카테고리 목록을 불러오는데 실패했습니다.");
+      const token = getCookie('accessToken');
+      if (token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       }
+
+      const result = await categoryList();
+      setCategories(result.data);
     } catch (error) {
-      console.error("카테고리 목록 로딩 중 오류 발생:", error);
-      setError("카테고리 목록을 불러오는데 실패했습니다.");
-    } finally {
-      setIsLoading(false);
+      console.error('Error fetching categories:', error);
+      setError('카테고리를 불러오는 중에 오류가 발생했습니다.');
     }
   };
 
   const fetchMusicals = async (categoryId: string) => {
-    setIsLoading(true);
     try {
-      const response = await categoryMusical(categoryId);
-      if (response.code === "SU") {
-        setMusicals(response.data);
-      } else {
-        setError("뮤지컬 목록을 불러오는데 실패했습니다.");
-      }
+      const result = await categoryMusical(categoryId);
+      setMusicals(result.data);
     } catch (error) {
-      console.error("뮤지컬 목록 로딩 중 오류 발생:", error);
-      setError("뮤지컬 목록을 불러오는데 실패했습니다.");
-    } finally {
-      setIsLoading(false);
+      console.error('Error fetching musicals:', error);
+      setError('뮤지컬을 불러오는 중에 오류가 발생했습니다.');
     }
   };
+
+  const fetchMusicalDetails = async (musicalId: string) => {
+    try {
+      const result = await musicalDetails(musicalId);
+      setSelectedMusical(result.data);
+    } catch (error) {
+      console.error('Error fetching musical details:', error);
+      setError('뮤지컬 상세 정보를 불러오는 중에 오류가 발생했습니다.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    if (!selectedMusical) return;
 
-    if (!title || !content || !selectedMusicalId) {
-      setError("모든 필드를 입력해주세요.");
-      return;
-    }
-
+    setLoading(true);
     try {
-      await createReview(title, content, selectedMusicalId);
-      onReviewCreated();
+      await createReview(title, content, selectedMusical.id.toString());
+      setLoading(false);
+      onClose();
     } catch (error) {
-      console.error("리뷰 작성 중 오류 발생:", error);
-      setError("리뷰 작성에 실패했습니다. 다시 시도해주세요.");
+      console.error('Error creating review:', error);
+      setLoading(false);
+      setError('리뷰를 작성하는 중에 오류가 발생했습니다.');
     }
   };
 
-  if (isLoading) {
-    return <div>로딩 중...</div>;
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setSelectedMusical(null);
+    fetchMusicals(categoryId);
+  };
+
+  const handleMusicalChange = (musicalId: string) => {
+    setSelectedMusical(musicals.find(m => m.id.toString() === musicalId));
+    fetchMusicalDetails(musicalId);
+  };
+
+  if (!isLoggedIn()) {
+    return <div>로그인이 필요합니다.</div>;
   }
 
-  const selectedMusical = musicals.find(m => m.id === selectedMusicalId);
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-4xl w-full flex">
-        <div className="w-1/3 pr-4">
-          {selectedMusical && (
-            <img
-              src={selectedMusical.imageUrl}
-              alt={selectedMusical.title}
-              className="w-full h-auto rounded-lg"
-            />
-          )}
-        </div>
-        <div className="w-2/3">
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <div className="flex">
+        <div className="w-1/2 pr-4">
           <h2 className="text-2xl font-bold mb-4">리뷰 작성</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label htmlFor="category" className="block mb-2">
-                카테고리 선택
-              </label>
+              <label className="block mb-2 text-gray-700">카테고리</label>
               <select
-                id="category"
-                value={selectedCategoryId}
-                onChange={(e) => setSelectedCategoryId(e.target.value)}
-                className="w-full p-2 border rounded"
+                value={selectedCategory}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                className="w-full p-2 border rounded text-gray-700 bg-white"
               >
-                <option value="">카테고리를 선택해주세요</option>
+                <option value="">카테고리 선택</option>
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                  <option key={category.id} value={category.id} className="text-gray-700">
                     {category.name}
                   </option>
                 ))}
               </select>
             </div>
             <div className="mb-4">
-              <label htmlFor="musical" className="block mb-2">
-                뮤지컬 선택
-              </label>
+              <label className="block mb-2 text-gray-700">뮤지컬</label>
               <select
-                id="musical"
-                value={selectedMusicalId}
-                onChange={(e) => setSelectedMusicalId(e.target.value)}
-                className="w-full p-2 border rounded"
+                value={selectedMusical?.id || ''}
+                onChange={(e) => handleMusicalChange(e.target.value)}
+                className="w-full p-2 border rounded text-gray-700 bg-white"
               >
-                <option value="">뮤지컬을 선택해주세요</option>
+                <option value="">뮤지컬 선택</option>
                 {musicals.map((musical) => (
-                  <option key={musical.id} value={musical.id}>
+                  <option key={musical.id} value={musical.id} className="text-gray-700">
                     {musical.title}
                   </option>
                 ))}
               </select>
             </div>
             <div className="mb-4">
-              <label htmlFor="title" className="block mb-2">
-                제목
-              </label>
+              <label className="block mb-2 text-gray-700">제목</label>
               <input
                 type="text"
-                id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded text-gray-700 bg-white"
+                required
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="content" className="block mb-2">
-                내용
-              </label>
+              <label className="block mb-2 text-gray-700">내용</label>
               <textarea
-                id="content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full p-2 border rounded h-40"
+                className="w-full p-2 border rounded text-gray-700 bg-white"
+                rows={5}
+                required
               />
             </div>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={onClose}
-                className="bg-gray-300 text-black px-4 py-2 rounded mr-2 hover:bg-gray-400"
-              >
-                취소
-              </button>
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                작성
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              disabled={loading}
+            >
+              {loading ? '작성 중...' : '리뷰 작성'}
+            </button>
           </form>
+          {error && <p className="text-red-500 mt-4">{error}</p>}
+        </div>
+        <div className="w-1/2 pl-4">
+          {selectedMusical && (
+            <div>
+              <h3 className="text-xl font-bold mb-2">{selectedMusical.title}</h3>
+              <img src={selectedMusical.imageUrl} alt={selectedMusical.title} className="w-full h-64 object-cover mb-4" />
+              <p>{selectedMusical.description}</p>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

@@ -1,88 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import CommentList from './CommentList';
-import CommentForm from './CommentForm';
-import { privateReviewDetails, publicReviewDetails, reviewDetailsIncreaseView, toggleReviewLike } from 'services/review/reviewService';
+// ReviewDetail.tsx
+import React, { useState, useEffect } from "react";
+import { Review } from "./ReviewType";
+import { privateReviewDetails, publicReviewDetails, reviewDetailsIncreaseView } from "services/review/reviewService";
+import { getCookie } from "utils/CookieUtil/cookieUtis";
+import EditDeleteButtons from "acomponents/review/EditDeleteButton";
 
-interface ReviewDetail {
-  id: string;
-  title: string;
-  content: string;
-  nickname: string;
-  createdAt: string;
-  likeCount: number;
-  viewCount: number;
-  isLiked: boolean;
-  musicalTitle: string;
+interface ReviewDetailProps {
+  reviewId: number;
+  onClose: () => void;
 }
 
-const ReviewDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [review, setReview] = useState<ReviewDetail | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const ReviewDetail: React.FC<ReviewDetailProps> = ({ reviewId, onClose }) => {
+  const [review, setReview] = useState<Review | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const isLoggedIn = (): boolean => {
+    return !!getCookie('accessToken');
+  };
 
   useEffect(() => {
-    fetchReviewDetails();
-    checkLoginStatus();
-    incrementViewCount();
-  }, [id]);
+    const fetchReviewDetail = async () => {
+      try {
+        await reviewDetailsIncreaseView(reviewId.toString());
 
-  const checkLoginStatus = () => {
-    const token = localStorage.getItem('accessToken');
-    setIsLoggedIn(!!token);
-  };
+        const response = isLoggedIn() 
+          ? await privateReviewDetails(reviewId.toString())
+          : await publicReviewDetails(reviewId.toString());
 
-  const fetchReviewDetails = async () => {
-    try {
-      const data = isLoggedIn 
-        ? await privateReviewDetails(id as string)
-        : await publicReviewDetails(id as string);
-      setReview(data);
-    } catch (error) {
-      console.error('리뷰 상세 정보 로딩 중 오류 발생:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setReview(response.data);
+      } catch (error) {
+        console.error("Error fetching review details:", error);
+        setError("리뷰를 불러오는데 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const incrementViewCount = async () => {
-    try {
-      await reviewDetailsIncreaseView(id as string);
-    } catch (error) {
-      console.error('조회수 증가 중 오류 발생:', error);
-    }
-  };
+    fetchReviewDetail();
+  }, [reviewId]);
 
-  const handleLikeToggle = async () => {
-    if (!isLoggedIn) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-    try {
-      await toggleReviewLike(id as string);
-      fetchReviewDetails();
-    } catch (error) {
-      console.error('좋아요 토글 중 오류 발생:', error);
-    }
-  };
-
-  if (loading) return <p>로딩 중...</p>;
-  if (!review) return <p>리뷰를 찾을 수 없습니다.</p>;
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+  if (!review) return <div>리뷰를 찾을 수 없습니다.</div>;
 
   return (
-    <div className="review-detail">
-      <h2>{review.title}</h2>
-      <p>뮤지컬: {review.musicalTitle}</p>
-      <p>작성자: {review.nickname}</p>
-      <p>작성일: {new Date(review.createdAt).toLocaleDateString()}</p>
-      <p>좋아요: {review.likeCount} | 조회수: {review.viewCount}</p>
-      <button onClick={handleLikeToggle}>
-        {review.isLiked ? '좋아요 취소' : '좋아요'}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">{review.title}</h1>
+      <img src={review.musicalImageUrl} alt={review.musicalTitle} className="w-full h-64 object-cover mb-4" />
+      <p className="text-xl text-gray-700 mb-4">{review.musicalTitle}</p>
+      <p className="text-gray-600 mb-2">카테고리: {review.musicalCategory}</p>
+      <p className="text-gray-600 mb-2">작성자: {review.nickname}</p>
+      <p className="text-gray-600 mb-2">작성일: {new Date(review.createdAt).toLocaleDateString()}</p>
+      <p className="text-gray-600 mb-2">수정일: {new Date(review.updatedAt).toLocaleDateString()}</p>
+      <p className="text-gray-600 mb-2">조회수: {review.viewCount}</p>
+      <p className="text-gray-600 mb-2">좋아요: {review.likeCount}</p>
+      <div className="my-6">
+        <p className="text-gray-800 whitespace-pre-wrap">{review.content}</p>
+      </div>
+      <EditDeleteButtons 
+        reviewId={review.id.toString()} 
+        isOwner={review.owner}
+      />
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold mb-2">댓글 ({review.comments.length})</h3>
+        {review.comments.map(comment => (
+          <div key={comment.id} className="bg-gray-100 p-3 rounded mb-2">
+            <p className="font-semibold">{comment.nickname}</p>
+            <p>{comment.content}</p>
+            <p className="text-sm text-gray-500">{new Date(comment.createdAt).toLocaleString()}</p>
+          </div>
+        ))}
+      </div>
+      <button onClick={onClose} className="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+        닫기
       </button>
-      <div>{review.content}</div>
-      <CommentList reviewId={id as string} />
-      {isLoggedIn && <CommentForm reviewId={id as string} />}
     </div>
   );
 };

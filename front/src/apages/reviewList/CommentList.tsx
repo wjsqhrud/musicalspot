@@ -1,52 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { reviewCommentsDelete } from 'services/review/reviewService';
+// RenderComments.tsx
 
-interface Comment {
-  id: string;
-  content: string;
-  nickname: string;
-  createdAt: string;
+import React from "react";
+import { Review } from "./ReviewType";
+
+interface RenderCommentsProps {
+  review: Review;
 }
 
-interface CommentListProps {
-  reviewId: string;
-}
-
-const CommentList: React.FC<CommentListProps> = ({ reviewId }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
-
-  useEffect(() => {
-    fetchComments();
-  }, [reviewId]);
-
-  const fetchComments = async () => {
-    // 댓글 목록을 가져오는 API 호출 구현 필요
-    // const data = await getComments(reviewId);
-    // setComments(data);
-  };
-
-  const handleDelete = async (commentId: string) => {
-    try {
-      await reviewCommentsDelete(commentId);
-      setComments(comments.filter(comment => comment.id !== commentId));
-    } catch (error) {
-      console.error('댓글 삭제 중 오류 발생:', error);
-    }
-  };
+const RenderComments: React.FC<RenderCommentsProps> = ({ review }) => {
+  if (!review.comments || review.comments.length === 0) {
+    return (
+      <div className="mt-6">
+        <h3 className="text-lg font-bold mb-2">댓글</h3>
+        <p className="text-gray-600">댓글이 없습니다.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="comment-list">
-      <h3>댓글</h3>
-      {comments.map(comment => (
-        <div key={comment.id} className="comment">
-          <p>{comment.content}</p>
-          <p>작성자: {comment.nickname}</p>
-          <p>작성일: {new Date(comment.createdAt).toLocaleDateString()}</p>
-          <button onClick={() => handleDelete(comment.id)}>삭제</button>
+    <div className="mt-6">
+      <h3 className="text-lg font-bold mb-2">댓글</h3>
+      {review.comments.map((comment) => (
+        <div key={comment.id} className="bg-gray-100 p-4 rounded-lg mb-2">
+          <p className="text-sm text-gray-600 mb-2">
+            작성자: {comment.nickname}
+          </p>
+          <p className="text-sm text-gray-700">{comment.content}</p>
+          <p className="text-xs text-gray-500 mt-2">
+            작성일: {new Date(comment.createdAt).toLocaleDateString()}
+          </p>
         </div>
       ))}
     </div>
   );
 };
 
-export default CommentList;
+export default RenderComments;

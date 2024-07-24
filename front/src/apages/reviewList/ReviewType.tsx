@@ -1,5 +1,4 @@
-
-
+// types.ts
 
 export interface Review {
   id: number;
@@ -8,8 +7,22 @@ export interface Review {
   musicalId: number;
   musicalTitle: string;
   musicalImageUrl: string;
-  createdAt: string;
-  likeCount: number;
-  viewCount: number;
+  musicalCategory: string;
   nickname: string;
-};
+  createdAt: string;
+  updatedAt: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  owner:boolean;
+  comments: Comment[];
+}
+
+export interface Comment {
+  id: number;
+  nickname: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  owner: boolean;
+}
