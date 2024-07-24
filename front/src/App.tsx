@@ -1,5 +1,4 @@
-// src/App.tsx// src/App.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { HeaderProvider } from 'services/HeaderService/HeaderService';
 import OAuth from 'services/OAuth2SignInService/oAuthResponseService';

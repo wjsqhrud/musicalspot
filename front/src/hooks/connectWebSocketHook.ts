@@ -25,9 +25,7 @@ export function initializeWebSocket(config: WebSocketConfig, userNickname: strin
   const socket = new SockJS(String(config.serverAddr()));
   const client = new Client({
     webSocketFactory: () => socket,
-
-    reconnectDelay: 5000, // 5초 후 자동 재연결
-
+    
     onConnect: () => {
       console.log('WebSocket 연결됨');
 

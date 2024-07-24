@@ -3,10 +3,12 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { initializeWebSocket, ChatMessage, MessageType } from '../../hooks/connectWebSocketHook';
 import 'tailwindcss/tailwind.css';
 import styles from './WebsocketTest.module.css';
-import { SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
+import { REDIRECT_SIGN_IN, SIGN_IN_URL, SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
 import { FaMinus } from 'react-icons/fa';
 import { IoEnterOutline } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
+import SignUpRedirect from 'components/Modal/SignUpRedirectModal';
+import { useAuth } from 'hooks/useAuthHook';
 
 interface ChatComponentProps {
   toggleChat: () => void;
@@ -19,15 +21,33 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ toggleChat }) => {
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [messageInput, setMessageInput] = useState<string>('');
-  const [userNickname, setUserNickname] = useState('엄준식');
+  const [userNickname, setUserNickname] = useState('');
   const [isJoined, setIsJoined] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [showModal, setShowModal] = useState(false); // 모달 가시성 상태 추가
+  const { checkAuthStatus } = useAuth();
 
   const handleNewMessage = (message: ChatMessage) => {
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
-  const joinChat = () => {
+  const handleConnectWebSocket = () => {
+    checkAuthStatus(
+      (nickname) => {
+        setUserNickname(nickname);
+        connectWebSocket(nickname);
+      },
+      () => {
+        setShowModal(true);
+      }
+    );
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const connectWebSocket = (nickname: string) => {
     const config = {
       serverAddr,
       onMessage: handleNewMessage,
@@ -35,7 +55,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ toggleChat }) => {
       onDebug: (message: string) => console.log(message),
     };
 
-    const client = initializeWebSocket(config, userNickname, setIsJoined);
+    const client = initializeWebSocket(config, nickname, setIsJoined);
     setStompClient(client);
     setIsConnected(true); // WebSocket 연결 후 버튼 숨김
   };
@@ -89,14 +109,14 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ toggleChat }) => {
         <button onClick={toggleChat} className="text-white"><FaMinus/></button>
       </div>
       {!isConnected && // 조건부 버튼 렌더링 
-      <button onClick={joinChat} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
+      <button onClick={handleConnectWebSocket} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
         <span>채팅 입장</span>
         <IoEnterOutline size={24}/>
       </button>}
         <div className={`h-maxHeight pt-top mb-3 w-full overflow-y-auto  ${styles.customScrollbar}`}>
           {isConnected && !isJoined ? (
             <div className="absolute bottom-0 mb-10">
-              <button onClick={joinChat} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
+              <button onClick={handleConnectWebSocket} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
                 <span>채팅 입장</span>
                 <IoEnterOutline size={24}/>
               </button>
@@ -143,6 +163,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ toggleChat }) => {
             </button>
           </div>
       </div>
+      {showModal && <SignUpRedirect onClose={closeModal} signInUrl={REDIRECT_SIGN_IN()} toggleChat={toggleChat} />} {/* 모달 조건부 렌더링 */}
     </div>
   );
 };

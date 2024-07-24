@@ -32,18 +32,17 @@ public class WebSocketController {
         return messageDTO;
     }
 
-    // 채팅 참여버튼 누른 사용자 환영 메세지 출력 
-    // TODO: 채팅 참여 버튼 클릭 시 해당 클라이언트의 토큰검사 & 닉네임 참조
+    // 채팅 참여버튼 누른 사용자 닉네임과 환영 메세지 출력 
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/chatRoom")
     public MessageDTO addUser(MessageDTO messageDTO, SimpMessageHeaderAccessor headerAccessor) {
-        
+
         TimeFormatter timeFormatter = new TimeFormatter();
 
         messageDTO.setMessageText(messageDTO.getNickname() + 
-        " 님이 채팅에 참여했습니다.");
+        "님이 채팅에 참여했습니다.");
         messageDTO.setTransmitTime(timeFormatter.getTime());
         messageDTO.setType(MessageType.JOIN); // enum 메세지 타입에 채팅참가타입으로 설정
         return messageDTO;
     }
-} 
+}
