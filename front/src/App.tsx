@@ -109,10 +109,7 @@ function App() {
       <WebSocketConnect />
       <Routes>
         <Route path="/auth">
-          <Route
-            path="category/:categoryId"
-            element={<DynamicCategoryPage />}
-          />
+          <Route path="category/:categoryId" element={<DynamicCategoryPage />} />
           <Route path="all" element={<AllCategoryPage />} />
           <Route path="details/:musicalId" element={<DetailPage />} />
           <Route path="home" element={<Mainpage />} />
