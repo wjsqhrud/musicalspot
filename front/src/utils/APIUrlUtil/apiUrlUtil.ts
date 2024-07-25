@@ -58,4 +58,4 @@ export const REVIEW_LIKE = (reviewId : string) => `${API_DOMAIN}/private/review-
 export const TOGGLE_REVIEW_LIKE = (reviewId : string) => `${API_DOMAIN}/private/toggle-review-like/${reviewId}`;
 
 export const SOCKET_MAINADDRESS = () => `${DOMAIN}/ws`;
-export const REDIRECT_SIGN_IN = () => `auth/sign-in`;
+export const REDIRECT_SIGN_IN = () => `${API_DOMAIN}/auth/sign-in`;

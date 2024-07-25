@@ -10,30 +10,29 @@ import ReviewList from 'apages/reviewList/ReviewList';
 import TestPage from 'apages/test/TestPage';
 import MusicalPage from 'apages/musical/MusicalPage';
 import CategoryPage from 'apages/Category/CategoryPage';
-import WebSocketConnect from 'components/websocket/WebsocketTest';
+import WebSocketConnect from 'components/websocket/WebSocketConnect';
 import ChatIconComponent from 'components/websocket/ChatBalloonIcon';
 
 function App() {
   const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
-
   const toggleChat = () => {
     setIsChatVisible(!isChatVisible);
   };
 
   return (
     <HeaderProvider>
-       {isChatVisible ? <WebSocketConnect toggleChat={toggleChat} /> : <ChatIconComponent toggleChat={toggleChat} />}
+      <WebSocketConnect isVisible={isChatVisible} toggleChat={toggleChat} />
+      {!isChatVisible && <ChatIconComponent toggleChat={toggleChat} />}
       <Routes>
         <Route path='/auth'>
-          <Route path='home' element={<Mainpage/>} />
-          <Route path='category' element={<CategoryPage/>} />
-          <Route path='musical' element={<MusicalPage/>} />
-          <Route path='reviewlist' element={<ReviewList/>}/>
-          <Route path='sign-in' element={<SignInPage/>} />
-          <Route path='sign-up' element={<SignUpPage/>} />
-          <Route path='create-nickname' element={<CreateNickNamePage/>} />
-          <Route path='test' element={<TestPage/>} />          
-          {/* <Route path='oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} /> */}
+          <Route path='home' element={<Mainpage />} />
+          <Route path='category' element={<CategoryPage />} />
+          <Route path='musical' element={<MusicalPage />} />
+          <Route path='reviewlist' element={<ReviewList />} />
+          <Route path='sign-in' element={<SignInPage />} />
+          <Route path='sign-up' element={<SignUpPage />} />
+          <Route path='create-nickname' element={<CreateNickNamePage />} />
+          <Route path='test' element={<TestPage />} />
         </Route>
         <Route path='/auth/oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
         <Route path="*" element={<Navigate to="/auth/home" />} />
