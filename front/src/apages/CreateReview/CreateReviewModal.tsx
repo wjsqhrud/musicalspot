@@ -1,28 +1,35 @@
 // CreateReviewModal.tsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { createReview } from 'services/review/reviewService';
-import { categoryList, categoryMusical, musicalDetails } from 'services/musical/musicalService';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { createReview } from "services/review/reviewService";
+import {
+  categoryList,
+  categoryMusical,
+  musicalDetails,
+} from "services/musical/musicalService";
 import { getCookie } from "utils/CookieUtil/cookieUtis";
-import Modal from 'acomponents/review/Modal';
+import Modal from "acomponents/review/Modal";
 
 interface CreateReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }) => {
+const CreateReviewModal: React.FC<CreateReviewModalProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [musicals, setMusicals] = useState<any[]>([]);
   const [selectedMusical, setSelectedMusical] = useState<any>(null);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isLoggedIn = (): boolean => {
-    return !!getCookie('accessToken');
+    return !!getCookie("accessToken");
   };
 
   useEffect(() => {
@@ -33,16 +40,11 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
 
   const fetchCategories = async () => {
     try {
-      const token = getCookie('accessToken');
-      if (token) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      }
-
       const result = await categoryList();
       setCategories(result.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
-      setError('카테고리를 불러오는 중에 오류가 발생했습니다.');
+      console.error("Error fetching categories:", error);
+      setError("카테고리를 불러오는 중에 오류가 발생했습니다.");
     }
   };
 
@@ -51,8 +53,8 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
       const result = await categoryMusical(categoryId);
       setMusicals(result.data);
     } catch (error) {
-      console.error('Error fetching musicals:', error);
-      setError('뮤지컬을 불러오는 중에 오류가 발생했습니다.');
+      console.error("Error fetching musicals:", error);
+      setError("뮤지컬을 불러오는 중에 오류가 발생했습니다.");
     }
   };
 
@@ -61,8 +63,8 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
       const result = await musicalDetails(musicalId);
       setSelectedMusical(result.data);
     } catch (error) {
-      console.error('Error fetching musical details:', error);
-      setError('뮤지컬 상세 정보를 불러오는 중에 오류가 발생했습니다.');
+      console.error("Error fetching musical details:", error);
+      setError("뮤지컬 상세 정보를 불러오는 중에 오류가 발생했습니다.");
     }
   };
 
@@ -76,9 +78,9 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
       setLoading(false);
       onClose();
     } catch (error) {
-      console.error('Error creating review:', error);
+      console.error("Error creating review:", error);
       setLoading(false);
-      setError('리뷰를 작성하는 중에 오류가 발생했습니다.');
+      setError("리뷰를 작성하는 중에 오류가 발생했습니다.");
     }
   };
 
@@ -89,7 +91,7 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
   };
 
   const handleMusicalChange = (musicalId: string) => {
-    setSelectedMusical(musicals.find(m => m.id.toString() === musicalId));
+    setSelectedMusical(musicals.find((m) => m.id.toString() === musicalId));
     fetchMusicalDetails(musicalId);
   };
 
@@ -112,7 +114,11 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
               >
                 <option value="">카테고리 선택</option>
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id} className="text-gray-700">
+                  <option
+                    key={category.id}
+                    value={category.id}
+                    className="text-gray-700"
+                  >
                     {category.name}
                   </option>
                 ))}
@@ -121,13 +127,17 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
             <div className="mb-4">
               <label className="block mb-2 text-gray-700">뮤지컬</label>
               <select
-                value={selectedMusical?.id || ''}
+                value={selectedMusical?.id || ""}
                 onChange={(e) => handleMusicalChange(e.target.value)}
                 className="w-full p-2 border rounded text-gray-700 bg-white"
               >
                 <option value="">뮤지컬 선택</option>
                 {musicals.map((musical) => (
-                  <option key={musical.id} value={musical.id} className="text-gray-700">
+                  <option
+                    key={musical.id}
+                    value={musical.id}
+                    className="text-gray-700"
+                  >
                     {musical.title}
                   </option>
                 ))}
@@ -158,7 +168,7 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
               className="bg-blue-500 text-white px-4 py-2 rounded"
               disabled={loading}
             >
-              {loading ? '작성 중...' : '리뷰 작성'}
+              {loading ? "작성 중..." : "리뷰 작성"}
             </button>
           </form>
           {error && <p className="text-red-500 mt-4">{error}</p>}
@@ -166,8 +176,14 @@ const CreateReviewModal: React.FC<CreateReviewModalProps> = ({ isOpen, onClose }
         <div className="w-1/2 pl-4">
           {selectedMusical && (
             <div>
-              <h3 className="text-xl font-bold mb-2">{selectedMusical.title}</h3>
-              <img src={selectedMusical.imageUrl} alt={selectedMusical.title} className="w-full h-64 object-cover mb-4" />
+              <h3 className="text-xl font-bold mb-2">
+                {selectedMusical.title}
+              </h3>
+              <img
+                src={selectedMusical.imageUrl}
+                alt={selectedMusical.title}
+                className="w-full h-64 object-cover mb-4"
+              />
               <p>{selectedMusical.description}</p>
             </div>
           )}

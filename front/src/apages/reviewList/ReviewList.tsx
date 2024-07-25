@@ -6,6 +6,7 @@ import { Review } from "./ReviewType";
 import ReviewDetail from "./ReviewDetail";
 import Modal from "acomponents/review/Modal";
 import CreateReviewModal from "apages/CreateReview/CreateReviewModal";
+import ReviewFormModal from "acomponents/createReview/ReviewFormModal";
 
 const ReviewList: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -73,17 +74,17 @@ const ReviewList: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-6 text-center">최근 리뷰</h2>
-      <button 
+      <button
         onClick={() => setIsCreateModalOpen(true)}
         className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         리뷰 작성
       </button>
-      <CreateReviewModal
+      <ReviewFormModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
-     
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {reviews.map((review, index) => (
           <div

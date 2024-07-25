@@ -9,11 +9,11 @@ interface ReviewItemProps {
 
 const ReviewItem: React.FC<ReviewItemProps> = ({ review }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full md:w-1/2">
       <img
         src={review.musicalImageUrl}
         alt={review.musicalTitle}
-        className="w-full h-48 object-cover"
+        className="w- h-48 object-cover"
       />
       <div className="p-4">
         <h3 className="text-xl font-semibold mb-2 truncate">{review.title}</h3>
