@@ -1,15 +1,23 @@
 // ReviewDetail.tsx
+// <<<<<<< HEAD
 
+// import React, { useState, useEffect } from "react";
+// import {
+//   privateReviewDetails,
+//   publicReviewDetails,
+//   reviewDetailsIncreaseView,
+//   reviewLike,
+//   toggleReviewLike,
+// } from "services/review/reviewService";
+// import { Review } from "./ReviewType";
+// import RenderComments from "./CommentList";
+// =======
 import React, { useState, useEffect } from "react";
-import {
-  privateReviewDetails,
-  publicReviewDetails,
-  reviewDetailsIncreaseView,
-  reviewLike,
-  toggleReviewLike,
-} from "services/review/reviewService";
 import { Review } from "./ReviewType";
-import RenderComments from "./CommentList";
+import { privateReviewDetails, publicReviewDetails, reviewDetailsIncreaseView } from "services/review/reviewService";
+import { getCookie } from "utils/CookieUtil/cookieUtis";
+import EditDeleteButtons from "acomponents/review/EditDeleteButton";
+// >>>>>>> origin/hwanhee
 
 interface ReviewDetailProps {
   reviewId: number;
@@ -18,93 +26,77 @@ interface ReviewDetailProps {
 
 const ReviewDetail: React.FC<ReviewDetailProps> = ({ reviewId, onClose }) => {
   const [review, setReview] = useState<Review | null>(null);
-  const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true); // State to handle loading state
-  const isLoggedIn = true; // Replace with your actual login logic
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const isLoggedIn = (): boolean => {
+    return !!getCookie('accessToken');
+  };
 
   useEffect(() => {
-    const fetchReview = async () => {
+    const fetchReviewDetail = async () => {
       try {
-        await reviewDetailsIncreaseView(reviewId.toString()); // Increase view count
-        const reviewData = isLoggedIn
-          ? await privateReviewDetails(reviewId.toString()) // Fetch private review details if logged in
-          : await publicReviewDetails(reviewId.toString()); // Fetch public review details if not logged in
-        setReview(reviewData);
-        setLoading(false); // Set loading to false once data is fetched
+        await reviewDetailsIncreaseView(reviewId.toString());
 
-        if (isLoggedIn) {
-          const likeStatus = await reviewLike(reviewId.toString()); // Check if user has liked this review
-          setIsLiked(likeStatus);
-        }
+        const response = isLoggedIn() 
+          ? await privateReviewDetails(reviewId.toString())
+          : await publicReviewDetails(reviewId.toString());
+
+        setReview(response.data);
       } catch (error) {
-        console.error("Failed to fetch review details.", error);
-        setLoading(false); // Set loading to false in case of error
+        console.error("Error fetching review details:", error);
+        setError("리뷰를 불러오는데 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchReview();
-  }, [reviewId, isLoggedIn]);
+    fetchReviewDetail();
+  }, [reviewId]);
 
-  const handleLike = async () => {
-    try {
-      if (!isLiked) {
-        await toggleReviewLike(reviewId.toString()); // Toggle like status if not already liked
-        setIsLiked(true); // Update local state to liked
-        setReview((prevReview) => ({
-          ...prevReview!,
-          likeCount: prevReview!.likeCount + 1, // Increment like count locally
-        }));
-      } else {
-        // Handle case for unliking the review (if needed)
-      }
-    } catch (error) {
-      console.error("Failed to toggle like.", error);
-    }
-  };
-
-  if (loading) return <div className="text-center">로딩 중...</div>; // Show loading state while fetching data
-
-  if (!review) return <div className="text-center">Review not found.</div>; // Handle case where review is not found
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+  if (!review) return <div>리뷰를 찾을 수 없습니다.</div>;
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden">
-      <img
-        src={review.musicalImageUrl}
-        alt={review.musicalTitle}
-        className="w-full h-64 object-cover"
-      />
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-4">{review.title}</h2>
-        <p className="text-xl text-gray-700 mb-4">{review.musicalTitle}</p>
-        <p className="text-gray-600 mb-2">카테고리: {review.musicalCategory}</p>
-        <p className="text-gray-600 mb-2">작성자: {review.nickname}</p>
-        <p className="text-gray-600 mb-2">
-          작성일: {new Date(review.createdAt).toLocaleDateString()}
-        </p>
-        <p className="text-gray-600 mb-2">
-          수정일: {new Date(review.updatedAt).toLocaleDateString()}
-        </p>
-        <div className="my-6">
-          <p className="text-gray-800 whitespace-pre-wrap">{review.content}</p>
-        </div>
-        <div className="flex justify-between items-center mt-6">
-          <button
-            onClick={handleLike}
-            className={`px-4 py-2 rounded ${
-              !isLiked ? "bg-gray-200 text-gray-800" : "bg-red-500 text-white"
-            }`}
-            disabled={isLiked} // Disable button if already liked
-          >
-            {isLiked ? "좋아요 취소" : "좋아요"} ({review.likeCount})
-          </button>
-          <div className="text-gray-600">
-            <span className="mr-4">조회수: {review.viewCount}</span>
-          </div>
-        </div>
-        <RenderComments review={review} />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">{review.title}</h1>
+      <img src={review.musicalImageUrl} alt={review.musicalTitle} className="w-full h-64 object-cover mb-4" />
+      <p className="text-xl text-gray-700 mb-4">{review.musicalTitle}</p>
+      <p className="text-gray-600 mb-2">카테고리: {review.musicalCategory}</p>
+      <p className="text-gray-600 mb-2">작성자: {review.nickname}</p>
+      <p className="text-gray-600 mb-2">작성일: {new Date(review.createdAt).toLocaleDateString()}</p>
+      <p className="text-gray-600 mb-2">수정일: {new Date(review.updatedAt).toLocaleDateString()}</p>
+      <p className="text-gray-600 mb-2">조회수: {review.viewCount}</p>
+      <p className="text-gray-600 mb-2">좋아요: {review.likeCount}</p>
+      <div className="my-6">
+        <p className="text-gray-800 whitespace-pre-wrap">{review.content}</p>
       </div>
+      <EditDeleteButtons 
+        reviewId={review.id.toString()} 
+        isOwner={review.owner}
+      />
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold mb-2">댓글 ({review.comments.length})</h3>
+        {review.comments.map(comment => (
+          <div key={comment.id} className="bg-gray-100 p-3 rounded mb-2">
+            <p className="font-semibold">{comment.nickname}</p>
+            <p>{comment.content}</p>
+            <p className="text-sm text-gray-500">{new Date(comment.createdAt).toLocaleString()}</p>
+          </div>
+        ))}
+      </div>
+      <button onClick={onClose} className="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+        닫기
+      </button>
+{/* >>>>>>> origin/hwanhee */}
     </div>
   );
 };
 
+// <<<<<<< HEAD
+// export default ReviewDetail;
+// =======
 export default ReviewDetail;
+// >>>>>>> origin/hwanhee
