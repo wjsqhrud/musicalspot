@@ -57,5 +57,5 @@ export const REVIEWS_VIEWS_40 = (page :number) => `${API_DOMAIN}/public/reviews/
 export const REVIEW_LIKE = (reviewId : string) => `${API_DOMAIN}/private/review-like/${reviewId}`;
 export const TOGGLE_REVIEW_LIKE = (reviewId : string) => `${API_DOMAIN}/private/toggle-review-like/${reviewId}`;
 
-
-
+export const SOCKET_MAINADDRESS = () => `${DOMAIN}/ws`;
+export const REDIRECT_SIGN_IN = () => `${API_DOMAIN}/auth/sign-in`;
