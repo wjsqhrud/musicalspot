@@ -82,7 +82,7 @@ const AllCategoryPage: React.FC = () => {
     setCategories(response);
     console.log("Categories Data:", response);
   };
-
+//안녕하세요
   useEffect(() => {
     fetchMusicals();
     fetchCategories();
