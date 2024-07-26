@@ -7,6 +7,7 @@ import {
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
+import { useNavigate } from "react-router-dom"; // import useNavigate 추가
 import { GrPrevious, GrNext } from "react-icons/gr";
 
 interface Musical {
@@ -27,6 +28,7 @@ const Mainpage: React.FC = () => {
     checkAuthStatus,
   } = useAuth();
 
+  const navigate = useNavigate(); // useNavigate 훅 사용
   const [musicalsByStartDate, setMusicalsByStartDate] = useState<Musical[]>([]);
   const [musicalsByViewCount, setMusicalsByViewCount] = useState<Musical[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -117,7 +119,7 @@ const Mainpage: React.FC = () => {
 
   // 이미지 클릭 시 호출되는 함수
   const handleClick = (id: number) => {
-    console.log("Clicked ID:", id);
+    navigate(`/auth/details/${id}`); // DetailPage로 이동
   };
 
   return (
@@ -148,7 +150,7 @@ const Mainpage: React.FC = () => {
                     index === currentSlide
                       ? "transform scale-110"
                       : "transform scale-100"
-                  }`} // 현재 슬라이드 확대
+                  } cursor-pointer`} // 현재 슬라이드 확대 및 커서 변경
                   onClick={() => handleClick(musical.id)}
                 >
                   <img

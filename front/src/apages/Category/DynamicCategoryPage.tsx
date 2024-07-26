@@ -130,7 +130,7 @@ const DynamicCategoryPage: React.FC = () => {
 
   // 이미지 클릭 핸들러
   const handleClick = (id: number) => {
-    navigate(`/detail/${id}`); // DetailPage로 이동
+    navigate(`/auth/details/${id}`); // DetailPage로 이동
   };
 
   // 날짜 포맷팅 함수

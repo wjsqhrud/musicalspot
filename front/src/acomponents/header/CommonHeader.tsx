@@ -63,11 +63,15 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   };
 
   const handleAll = () => {
-    console.log("All");
+    navigate(`/auth/category/all`);
   };
 
   const handleCategory = (id: number) => {
-    console.log("카테고리 id : " + id);
+    navigate(`/auth/category/${id}`);
+  };
+
+  const handleReview = () => {
+    navigate(`/auth/reviewlist`);
   };
 
   const handleAuthButton = () => {
@@ -194,6 +198,12 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
               {category.category}
             </div>
           ))}
+          <div
+            className="bg-white text-[#33313B] p-2 min-w-[60px] text-center cursor-pointer box-border"
+            onClick={handleReview}
+          >
+            <span className="text-gray-300 mr-3 ">|</span> 리뷰
+          </div>
         </div>
         <div className="flex items-center space-x-4 relative">
           <div className="flex items-center border-b-2 border-black">

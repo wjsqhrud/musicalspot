@@ -89,7 +89,7 @@ const AllCategoryPage: React.FC = () => {
   }, []);
 
   const handleClick = (id: number) => {
-    console.log("Clicked ID:", id);
+    navigate(`/auth/details/${id}`);
   };
 
   const formatDate = (dateString: string | undefined) => {

@@ -84,6 +84,11 @@ const SearchPage: React.FC = () => {
     navigate(`/auth/details/${id}`);
   };
 
+  // 컴포넌트가 마운트될 때 검색 입력란 초기화
+  useEffect(() => {
+    setSearchInput(""); // 검색 입력란 초기화
+  }, []);
+
   // 컴포넌트가 마운트되거나 searchQuery가 변경될 때 호출되는 effect
   useEffect(() => {
     if (searchQuery) {
@@ -104,11 +109,11 @@ const SearchPage: React.FC = () => {
       <div className="max-w-[1250px] mx-auto pt-20">
         {/* 공통 헤더 컴포넌트 */}
         <CommonHeader
-          isAuthenticated={false}
-          myNickname={null}
-          nicknameModalOpen={false}
-          setNicknameModalOpen={() => {}}
-          checkAuthStatus={() => {}}
+          isAuthenticated={false} // 적절한 props를 전달
+          myNickname={null} // 적절한 props를 전달
+          nicknameModalOpen={false} // 적절한 props를 전달
+          setNicknameModalOpen={() => {}} // 적절한 props를 전달
+          checkAuthStatus={() => {}} // 적절한 props를 전달
         />
         <div className="search-page p-4 bg-whit">
           <header className="search-header mb-8">
@@ -116,8 +121,7 @@ const SearchPage: React.FC = () => {
               <span className="text-orange-500">'{searchQuery}'</span>에 대한
               검색 결과 입니다.
             </h1>
-            <div className="flex justify-center items-center mb-8 pb-2 mt-4 border-b-2 border-gray-400">
-              {/* 검색 필드 컨테이너 */}
+            <div className="flex justify-center items-center mb-8 border-b-2 border-gray-400 pb-2 mt-4">
               <div className="relative w-full max-w-lg">
                 <input
                   type="text"
@@ -151,7 +155,7 @@ const SearchPage: React.FC = () => {
                   <img
                     src={result.imageUrl}
                     alt={result.title}
-                    className="w-32 h-32 object-contain mr-4 cursor-pointer"
+                    className="w-32 h-32 object-contain mr-4 cursor-pointer" // 수정된 부분
                     onClick={() => handleImageClick(result.id)} // 이미지 클릭 시 DetailPage로 이동
                   />
                   <div className="flex-grow">
