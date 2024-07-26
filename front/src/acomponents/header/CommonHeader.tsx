@@ -8,6 +8,7 @@ import { combinedLogoutHandler } from "services/LogOutService/logOutService";
 import { deleteAccount } from "services/Auth/authService";
 import axios from "axios"; // axios 임포트
 import { SEARCH_MUSICALS_BY_TITLE } from "utils/APIUrlUtil/apiUrlUtil"; // 경로에 따라 적절히 수정
+import { useNavigate } from "react-router-dom"; // useNavigate 임포트
 
 type CommonHeaderProps = {
   isAuthenticated: boolean;
@@ -32,6 +33,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   setNicknameModalOpen,
   checkAuthStatus,
 }) => {
+  const navigate = useNavigate();
   const { navigateToCreateNickname, navigateToLogin, navigateToHome } =
     useNavigateHelper();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -147,24 +149,20 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   };
 
   // 검색 제출 핸들러
-  const handleSearchSubmit = async () => {
-    if (searchInput) {
-      const results = await searchMusicalsByTitle(searchInput);
-      if (results.data.length === 0) {
-        setNoResults(true);
-      } else {
-        setNoResults(false);
-        setSearchResults(results.data);
-      }
-      setIsSearchDropdownOpen(true);
+  const handleSearchSubmit = (
+    event: React.KeyboardEvent | React.MouseEvent
+  ) => {
+    if (
+      searchInput &&
+      (event.type === "click" || (event as React.KeyboardEvent).key === "Enter")
+    ) {
+      navigate(`/auth/search?query=${encodeURIComponent(searchInput)}`);
     }
   };
 
   // 검색 결과 클릭 핸들러
   const handleSearchResultClick = (result: any) => {
-    console.log("Search result clicked:", result);
-    setIsSearchDropdownOpen(false);
-    setSearchInput("");
+    navigate(`/auth/search?query=${encodeURIComponent(result.title)}`);
   };
 
   return (
@@ -205,6 +203,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
               className="p-1 focus:outline-none"
               value={searchInput}
               onChange={handleSearchInputChange}
+              onKeyDown={handleSearchSubmit}
               onClick={() => setIsSearchDropdownOpen(true)}
             />
             <button className="p-1" onClick={handleSearchSubmit}>
@@ -246,12 +245,6 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
         onClose={() => setNicknameModalOpen(false)}
         onConfirm={nicknameModalConfirm}
         message="닉네임 생성은 필수 입니다."
-      />
-      <Modal
-        isOpen={logOutModalOpen}
-        onClose={() => setLogOutModalOpen(false)}
-        onConfirm={logOutModalConfirm}
-        message="로그아웃 성공"
       />
       <Modal
         isOpen={logOutModalOpen}

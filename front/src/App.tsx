@@ -1,4 +1,3 @@
-// src/App.tsx// src/App.tsx
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
