@@ -14,12 +14,14 @@ import CategoryPage from "apages/Category/CategoryPage";
 import DetailPage from "apages/detail/DetailPage";
 import AllCategoryPage from "apages/Category/AllCategoryPage";
 import DynamicCategoryPage from "apages/Category/DynamicCategoryPage";
+import SearchPage from "apages/search/SearchPage";
 
 function App() {
   return (
     <HeaderProvider>
       <Routes>
         <Route path="/auth">
+          <Route path="search" element={<SearchPage />} />
           <Route
             path="category/:categoryId"
             element={<DynamicCategoryPage />}
