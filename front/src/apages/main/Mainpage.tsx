@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import {
   musicalSortedByStartDate,
   musicalSortedByViewCount,
+  musicalDetailsIncrementView, // 조회수 증가 함수 import
 } from "services/musical/musicalService";
 
 import { HeaderProvider } from "services/HeaderService/HeaderService";
@@ -118,8 +119,14 @@ const Mainpage: React.FC = () => {
   };
 
   // 이미지 클릭 시 호출되는 함수
-  const handleClick = (id: number) => {
-    navigate(`/auth/details/${id}`); // DetailPage로 이동
+  const handleClick = async (id: number) => {
+    try {
+      const result = await musicalDetailsIncrementView(id.toString()); // 조회수 증가 함수 호출
+      console.log("View Count Increment Response:", result); // 결과 콘솔 출력
+      navigate(`/auth/details/${id}`); // DetailPage로 이동
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+    }
   };
 
   return (

@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { SEARCH_MUSICALS_BY_TITLE } from "utils/APIUrlUtil/apiUrlUtil";
+import {
+  SEARCH_MUSICALS_BY_TITLE,
+  MUSICAL_DETAILS_INCREMENT_VIEW,
+} from "utils/APIUrlUtil/apiUrlUtil";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 
@@ -18,6 +21,17 @@ const formatDate = (dateString: string | undefined) => {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}.${month}.${day}`;
+};
+
+// 조회수 증가 함수
+const musicalDetailsIncrementView = async (musicalId: string) => {
+  try {
+    const result = await axios.get(MUSICAL_DETAILS_INCREMENT_VIEW(musicalId));
+    return result.data;
+  } catch (error) {
+    console.error("Error", error);
+    throw error;
+  }
 };
 
 // 검색 페이지 컴포넌트
@@ -80,8 +94,14 @@ const SearchPage: React.FC = () => {
   };
 
   // 이미지 클릭 시 DetailPage로 이동하는 핸들러
-  const handleImageClick = (id: number) => {
-    navigate(`/auth/details/${id}`);
+  const handleImageClick = async (id: number) => {
+    try {
+      const result = await musicalDetailsIncrementView(id.toString()); // 조회수 증가 함수 호출
+      console.log("View Count Increment Response:", result); // 결과 콘솔 출력
+      navigate(`/auth/details/${id}`); // DetailPage로 이동
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+    }
   };
 
   // 컴포넌트가 마운트될 때 검색 입력란 초기화

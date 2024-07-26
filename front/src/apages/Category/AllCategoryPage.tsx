@@ -5,7 +5,11 @@ import { FaChevronDown } from "react-icons/fa";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
-import { ALL_MUSICALS, CATEGORY_LIST } from "utils/APIUrlUtil/apiUrlUtil";
+import {
+  ALL_MUSICALS,
+  CATEGORY_LIST,
+  MUSICAL_DETAILS_INCREMENT_VIEW,
+} from "utils/APIUrlUtil/apiUrlUtil"; // import 추가
 
 interface Musical {
   id: number;
@@ -21,6 +25,17 @@ interface Category {
   id: string;
   category: string;
 }
+
+// 조회수 증가 함수
+const musicalDetailsIncrementView = async (musicalId: string) => {
+  try {
+    const result = await axios.get(MUSICAL_DETAILS_INCREMENT_VIEW(musicalId));
+    return result.data;
+  } catch (error) {
+    console.error("Error", error);
+    throw error;
+  }
+};
 
 const allMusicals = async (): Promise<Musical[]> => {
   try {
@@ -88,8 +103,15 @@ const AllCategoryPage: React.FC = () => {
     fetchCategories();
   }, []);
 
-  const handleClick = (id: number) => {
-    navigate(`/auth/details/${id}`);
+  // 이미지 클릭 시 호출되는 함수
+  const handleClick = async (id: number) => {
+    try {
+      const result = await musicalDetailsIncrementView(id.toString()); // 조회수 증가 함수 호출
+      console.log("View Count Increment Response:", result); // 결과 콘솔 출력
+      navigate(`/auth/details/${id}`); // DetailPage로 이동
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+    }
   };
 
   const formatDate = (dateString: string | undefined) => {
