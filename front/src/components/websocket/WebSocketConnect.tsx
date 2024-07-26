@@ -1,4 +1,4 @@
-import { Client } from '@stomp/stompjs';
+import { Client, Stomp } from '@stomp/stompjs';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { initializeWebSocket, ChatMessage, MessageType } from '../../hooks/connectWebSocketHook';
 import 'tailwindcss/tailwind.css';
@@ -11,11 +11,6 @@ import SignUpRedirect from 'components/Modal/SignUpRedirectModal';
 import { useAuth } from 'hooks/useAuthHook';
 
 // TODO: 채팅 로그 내의 욕설 필터링 및 도배방지 기능 구현하기 
-
-// TODO: 채팅창 길이 제한, 이전 메세지들 삭제하도록 구현하기 clear
-
-// TODO: 채팅창 토글 시 웹소켓 연결 끊기는 문제 해결하기 clear
-
 // TODO: 채팅창이 말풍선으로 토글상태일 시 채팅 로그 올라오면 새로운 채팅 알림하는 기능 구현하기
 
 interface ChatComponentProps {
@@ -37,27 +32,33 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat 
   const [isMuted, setIsMuted] = useState(false); // 채팅 금지 상태 변수
   const MUTE_DURATION = 10000; // 채팅 금지 시간 (밀리초 단위, 여기서는 10초)
 
-
+  // 정상 메세지 전송
   const handleNewMessage = (message: ChatMessage) => {
-    const filtered = "저는 공공장소에서 비속어를 사용하는 쓰레기입니다.";
+    setMessages((prevMessages) => [...prevMessages, message]);
+  };
 
-    // 비속어 감지 후 메세지 전송 분기
-    if(message.messageText?.includes("비속어")) {
-      message.messageText = filtered;
+  // 필터링 된 개인메세지 전송
+  const handlePersonalMessage = (message: ChatMessage) => {
+
+    const filteredSwear = "저는 공공장소에서 비속어를 사용하는 쓰레기입니다.";
+
+    if (message.messageText?.includes("비속어")) {
+      window.alert("비속어 사용은 금지되어 있습니다.");
+      message.messageText = filteredSwear;
       setMessages((prevMessages) => [...prevMessages, message]);
+      setIsMuted(true);
+      setTimeout(() => setIsMuted(false), MUTE_DURATION);
 
-    } else if(message.messageText?.includes("동일문자열")) {
+    } else if (message.messageText?.includes("동일문자열")) {
       window.alert("동일한 내용을 연속해서 전송할 수 없습니다.");
 
     } else if (message.messageText?.includes("도배감지")) {
       window.alert("도배 감지됨. 일정 시간 동안 채팅이 금지됩니다.");
       setIsMuted(true);
-      setTimeout(() => setIsMuted(false), MUTE_DURATION); // MUTE_DURATION 후 채팅 금지 해제
-
-    } else {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      setTimeout(() => setIsMuted(false), MUTE_DURATION);
     }
   };
+  
 
   const handleConnectWebSocket = () => {
     checkAuthStatus(
@@ -79,8 +80,10 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat 
     const config = {
       serverAddr,
       onMessage: handleNewMessage,
+      onPersonalMessage: handlePersonalMessage,
       onError: (error: any) => console.error(error),
       onDebug: (message: string) => console.log(message),
+      
     };
 
     const client = initializeWebSocket(config, nickname, setIsJoined);
@@ -88,9 +91,24 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat 
     setIsConnected(true);
   };
 
+  const disconnectWebSocket = () => {
+    if (stompClient && stompClient.active) {
+      stompClient.publish({
+        destination: '/app/chat.removeUser',
+        body: JSON.stringify({ nickname: userNickname }),
+      });
+      stompClient.deactivate();
+      setIsJoined(false);
+      setIsConnected(false);
+      setMessages([]);
+      setMessageInput('');
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (stompClient && stompClient.active) {
+        setIsJoined(false);
         console.log('WebSocket 연결 해제');
         stompClient.deactivate();
       }
@@ -123,7 +141,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat 
 
   const sendMessage = () => {
     if (isMuted) {
-      window.alert('현재 도배로 인해 채팅이 금지되어 있습니다. 잠시 후 다시 시도하세요.');
+      window.alert('현재 도배 및 욕설로 인해 채팅이 금지되어 있습니다. 잠시 후 다시 시도하세요.');
       return;
     }
 
@@ -158,71 +176,90 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat 
   return (
     <div
       id="chatContainer"
-      className={`z-50 fixed flex flex-col justify-center bottom-0 right-0 mr-11 mb-11 w-96 h-3/5 rounded-lg select-none ${styles.customBoxShadow} bg-white`}
+      className={`z-50 fixed flex flex-col justify-between bottom-0 right-0 mr-11 mb-11 w-96 h-3/5 rounded-lg select-none bg-white ${styles.combinedShadow}`}
     >
       <div className="flex justify-end items-center p-2 bg-violet-400 rounded-t-lg opacity-70">
-        <button onClick={toggleChat} className="text-white"><FaMinus/></button>
+        <button onClick={toggleChat} className={`text-white rounded-full hover:text-red-500 hover:bg-slate-200 p-1 ${styles.transition}`}><FaMinus/></button>
+        <button onClick={disconnectWebSocket} className="ml-2 text-white">나가기</button> {/* 나가기 버튼 추가 */}
       </div>
       
-      {!isConnected && // 조건부 버튼 렌더링
-      <button onClick={handleConnectWebSocket} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
-        <span>채팅 입장</span>
-        <IoEnterOutline size={24}/>
-      </button>}
-      
-      <div className={`h-maxHeight pt-top mb-3 w-full overflow-y-auto ${styles.customScrollbar}`}>
-        {isConnected && !isJoined ? (
-          <div className="absolute bottom-0 mb-10">
-            <button onClick={handleConnectWebSocket} className='flex items-center justify-center space-x-2 text-xl mx-auto my-auto'>
-              <span>채팅 입장</span>
-              <IoEnterOutline size={24}/>
-            </button>
-          </div>
-        ) : (
-          messages.map((v, index) => (
-            <div key={index} className={`animate-fade flex ${v.nickname === userNickname && v.type === MessageType.CHAT ? 'justify-end' : 'justify-start'}`}>
-              {v.type === MessageType.JOIN ? (
-                <div className="flex justify-center bg-gray-300 py-1 px-4 m-1 rounded-xl w-fit ml-16 text-black text-xs font-mono font-semibold">
-                  <span>{v.messageText}</span>
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <span className="text-gray-400 text-xxs bg-white justify-items-end">{v.transmitTime}</span>
-                  <div className={`${v.nickname === userNickname ? 'bg-signature' : 'bg-violet-400'} p-2 m-1 rounded-xl ${v.nickname === userNickname ? 'rounded-br-none' : 'rounded-bl-none'} w-fit text-white max-w-80`}>
-                    {v.nickname === userNickname ? `${v.messageText}` : `${v.nickname} : ${v.messageText}`}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
-        )}
-        <div ref={messageEndRef}></div>
-      </div>
-
-      <div id="inputContainer" className="bottom-0 w-full rounded-b-lg">
-        <div id="inputInnerContainer" className="flex items-center border-t border-signature rounded-b-lg">
-          <input
-            id="chatTransmitter"
-            className="flex-1 h-12 pl-1 outline-none border-none rounded-b-lg"
-            type="text"
-            value={messageInput}
-            placeholder='이곳에 메시지를 입력하세요.'
-            onChange={handleInputChange}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-          />
-          <button
-            className="m-1 p-1 bg-transparent text-signature rounded-lg hover:text-white hover:bg-signature transition-all"
-            onClick={sendMessage}
-          >
-            <IoIosSend size={26}/>
+      {!isConnected && (
+        <div className="flex-grow flex items-center justify-center">
+          <button onClick={handleConnectWebSocket} className={`
+            flex items-center justify-center px-6 py-3 text-lg
+            bg-gradient-to-r from-green-600 to-emerald-500 rounded-full
+            transition-all duration-300 ease-in-out
+            hover:scale-105 hover:shadow-lg hover:from-green-700 hover:to-emerald-600
+            ${styles.pulseAnimation}
+          `}>
+            <span className="mr-2 text-white font-sans tracking-wide">채팅 입장</span>
+            <IoEnterOutline size={24}/>
           </button>
         </div>
-      </div>
+      )}
+      
+      {isConnected && (
+        <>
+          <div className={`flex-grow pt-top mb-3 w-full overflow-y-auto ${styles.customScrollbar}`}>
+            {!isJoined ? (
+              <div className="h-full flex items-center justify-center">
+                <button onClick={handleConnectWebSocket} className={`
+                    flex items-center justify-center px-6 py-3 text-lg
+                    bg-gradient-to-r from-green-600 to-emerald-500 rounded-full
+                    transition-all duration-300 ease-in-out
+                    hover:scale-105 hover:shadow-lg hover:from-green-700 hover:to-emerald-600
+                    ${styles.pulseAnimation}
+                  `}>
+                  <span className="mr-2 text-white font-sans tracking-wide">채팅 입장</span>
+                  <IoEnterOutline size={24}/>
+                </button>
+              </div>
+            ) : (
+              messages.map((v, index) => (
+                <div key={index} className={`animate-fade flex ${v.nickname === userNickname && v.type === MessageType.CHAT ? 'justify-end' : 'justify-start'}`}>
+                  {v.type === MessageType.JOIN ? (
+                    <div className="flex bg-gray-300 py-1 px-4 m-1 rounded-xl w-fit ml-16 text-black text-xs font-mono font-semibold">
+                      <span>{v.messageText}</span>
+                    </div>
+                  ) : (
+                    <div className={`flex items-center ${v.nickname === userNickname ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div className={`${v.nickname === userNickname ? 'bg-lime-500' : 'bg-signature'} p-2 m-1 rounded-xl ${v.nickname === userNickname ? 'rounded-br-none' : 'rounded-bl-none'} w-fit text-white max-w-80`}>
+                        {v.nickname === userNickname ? `${v.messageText}` : `${v.nickname} : ${v.messageText}`}
+                      </div>
+                      <span className="text-gray-400 text-xxs bg-white self-end">{v.transmitTime}</span>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+            <div ref={messageEndRef}></div>
+          </div>
+          <div id="inputContainer" className="w-full rounded-b-lg">
+            <div id="inputInnerContainer" className="flex items-center border-t border-signature rounded-b-lg">
+              <input
+                id="chatTransmitter"
+                className="flex-1 h-12 pl-4 outline-none border-none rounded-b-lg"
+                type="text"
+                value={messageInput}
+                placeholder='이곳에 메시지를 입력하세요.'
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+              />
+              <button
+                className="m-1 p-1 bg-transparent text-signature rounded-lg hover:text-white hover:bg-signature transition-all"
+                onClick={sendMessage}
+              >
+                <IoIosSend size={26}/>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
       {showModal && <SignUpRedirect onClose={closeModal} signInUrl={REDIRECT_SIGN_IN()} toggleChat={toggleChat} />}
     </div>
   );

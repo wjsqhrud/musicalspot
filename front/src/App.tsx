@@ -26,7 +26,7 @@ function App() {
   return (
     <HeaderProvider>
       <WebSocketConnect isVisible={isChatVisible} toggleChat={toggleChat} />
-      {!isChatVisible && <ChatIconComponent toggleChat={toggleChat} />}
+      {!isChatVisible && <ChatIconComponent toggleChat={toggleChat}/>}
       <Routes>
         <Route path="/auth">
           <Route path="category/:categoryId" element={<DynamicCategoryPage />} />
