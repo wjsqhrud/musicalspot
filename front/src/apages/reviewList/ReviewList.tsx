@@ -1,12 +1,10 @@
-// ReviewList.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import ReviewItem from "./ReviewItem";
 import { reviewRecent40 } from "services/review/reviewService";
 import { Review } from "./ReviewType";
 import ReviewDetail from "./ReviewDetail";
-import Modal from "acomponents/review/Modal";
-import CreateReviewModal from "apages/CreateReview/CreateReviewModal";
 import ReviewFormModal from "acomponents/createReview/ReviewFormModal";
+import Modal from "acomponents/review/Modal";
 
 const ReviewList: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -32,10 +30,6 @@ const ReviewList: React.FC = () => {
     [loading, hasMore]
   );
 
-  useEffect(() => {
-    fetchReviews();
-  }, [page]);
-
   const fetchReviews = async () => {
     setLoading(true);
     setError(null);
@@ -59,12 +53,24 @@ const ReviewList: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchReviews();
+  }, [page]);
+
   const handleReviewClick = (reviewId: number) => {
     setSelectedReviewId(reviewId);
   };
 
   const handleCloseModal = () => {
     setSelectedReviewId(null);
+  };
+
+  const handleCreateReviewClick = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
   };
 
   if (error) {
@@ -75,14 +81,14 @@ const ReviewList: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-6 text-center">최근 리뷰</h2>
       <button
-        onClick={() => setIsCreateModalOpen(true)}
+        onClick={handleCreateReviewClick}
         className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         리뷰 작성
       </button>
       <ReviewFormModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={handleCloseCreateModal}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

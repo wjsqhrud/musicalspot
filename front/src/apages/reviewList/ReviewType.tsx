@@ -14,11 +14,11 @@ export interface Review {
   viewCount: number;
   likeCount: number;
   commentCount: number;
-  owner:boolean;
+  owner: boolean;
   comments: Comment[];
 }
 
-export interface Comment {
+interface Comment {
   id: number;
   nickname: string;
   content: string;

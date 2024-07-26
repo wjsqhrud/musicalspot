@@ -11,19 +11,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
 
@@ -36,20 +36,20 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
       onClick={onClose}
     >
-      <div 
+      <div
         ref={modalRef}
-        className="bg-white p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white p-6 rounded-lg max-w-2xl w-3/4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
       >
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="float-right text-xl p-2"
           aria-label="Close modal"
         >

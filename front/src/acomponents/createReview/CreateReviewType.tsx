@@ -7,12 +7,12 @@ export interface Review {
 
 export interface Category {
   id: string;
-  name: string;
+  category: string;
 }
 
 export interface Musical {
   id: string;
   title: string;
   imageUrl: string;
-  description: string;
+  category: Category[];
 }
