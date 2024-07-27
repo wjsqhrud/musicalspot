@@ -1,4 +1,3 @@
-// CommentForm.tsx
 import React, { useState } from "react";
 import { reviewCommentsCreate } from "services/review/reviewService";
 
@@ -7,34 +6,31 @@ interface CommentFormProps {
   onCommentAdded: () => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({
-  reviewId,
-  onCommentAdded,
-}) => {
-  const [commentContent, setCommentContent] = useState("");
+const CommentForm: React.FC<CommentFormProps> = ({ reviewId, onCommentAdded }) => {
+  const [content, setContent] = useState("");
 
-  const handleCommentSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentContent.trim()) return;
+    if (!content.trim()) return;
 
     try {
-      await reviewCommentsCreate(reviewId, commentContent);
-      setCommentContent("");
-      onCommentAdded(); // 댓글 추가 후 부모 컴포넌트에 알림
+      await reviewCommentsCreate(reviewId, content);
+      setContent("");
+      onCommentAdded();
     } catch (error) {
-      console.error("Error creating comment:", error);
-      // 에러 처리 로직 추가 (예: 사용자에게 알림)
+      console.error("댓글 작성 실패:", error);
+      alert("댓글 작성에 실패했습니다.");
     }
   };
 
   return (
-    <form onSubmit={handleCommentSubmit} className="mt-4">
+    <form onSubmit={handleSubmit} className="mt-4">
       <textarea
-        value={commentContent}
-        onChange={(e) => setCommentContent(e.target.value)}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
         className="w-full p-2 border rounded"
+        placeholder="댓글을 작성하세요"
         rows={3}
-        placeholder="댓글을 작성해주세요"
       />
       <button
         type="submit"

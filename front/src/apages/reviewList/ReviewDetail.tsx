@@ -11,6 +11,7 @@ import EditDeleteButtons from "acomponents/review/EditDeleteButton";
 import CommentForm from "acomponents/reviewComments/CommentsForm";
 import ReviewLike from "acomponents/review/ReviewLike";
 import ReviewForm from "acomponents/createReview/ReviewForm";
+import CommentList from "./CommentList";
 
 interface ReviewDetailProps {
   reviewId: number;
@@ -121,15 +122,8 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ reviewId, onClose }) => {
         <h3 className="text-xl font-semibold mb-2">
           댓글 ({review.comments.length})
         </h3>
-        {review.comments.map((comment) => (
-          <div key={comment.id} className="bg-gray-100 p-3 rounded mb-2">
-            <p className="font-semibold">{comment.nickname}</p>
-            <p>{comment.content}</p>
-            <p className="text-sm text-gray-500">
-              {new Date(comment.createdAt).toLocaleString()}
-            </p>
-          </div>
-        ))}
+        <CommentList comments={review.comments} onCommentUpdated={handleCommentAdded} />
+
         {isLoggedIn() && (
           <CommentForm
             reviewId={reviewId.toString()}

@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     >
       <div
         ref={modalRef}
-        className="bg-white p-6 rounded-lg max-w-2xl w-3/4 max-h-[90vh] overflow-y-auto"
+        className="bg-white p-6 rounded-lg w-3/4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
         role="dialog"
