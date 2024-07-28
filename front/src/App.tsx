@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import { HeaderProvider } from 'services/HeaderService/HeaderService';
-import OAuth from 'services/OAuth2SignInService/oAuthResponseService';
-import SignInPage from 'apages/auth/SignInPage';
-import SignUpPage from 'apages/auth/SignUpPage';
-import CreateNickNamePage from 'apages/auth/CreateNickNamePage';
+import React, { useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { HeaderProvider } from "services/HeaderService/HeaderService";
+import OAuth from "services/OAuth2SignInService/oAuthResponseService";
+import SignInPage from "apages/auth/SignInPage";
+import SignUpPage from "apages/auth/SignUpPage";
+import CreateNickNamePage from "apages/auth/CreateNickNamePage";
 import Mainpage from "apages/main/Mainpage";
 import TestPage from "apages/test/TestPage";
 import MusicalPage from "apages/musical/MusicalPage";
@@ -15,7 +15,7 @@ import AllCategoryPage from "apages/Category/AllCategoryPage";
 import DynamicCategoryPage from "apages/Category/DynamicCategoryPage";
 import WebSocketConnect from 'components/websocket/WebSocketConnect';
 import ChatIconComponent from 'components/websocket/ChatBalloonIcon';
-
+import SearchPage from "apages/search/SearchPage";
 
 function App() {
   const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
@@ -29,7 +29,13 @@ function App() {
       {!isChatVisible && <ChatIconComponent toggleChat={toggleChat} />}
       <Routes>
         <Route path="/auth">
-          <Route path="category/:categoryId" element={<DynamicCategoryPage />} />
+
+          <Route path="search" element={<SearchPage />} />
+          <Route
+            path="category/:categoryId"
+            element={<DynamicCategoryPage />}
+          />
+
           <Route path="all" element={<AllCategoryPage />} />
           <Route path="details/:musicalId" element={<DetailPage />} />
           <Route path="home" element={<Mainpage />} />

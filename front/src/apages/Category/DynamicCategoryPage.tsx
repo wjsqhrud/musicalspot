@@ -5,7 +5,11 @@ import { FaChevronDown } from "react-icons/fa"; // 드롭다운 아이콘 import
 import CommonHeader from "acomponents/header/CommonHeader"; // 공통 헤더 컴포넌트 import
 import { useAuth } from "hooks/useAuthHook"; // 인증 훅 import
 import { HeaderProvider } from "services/HeaderService/HeaderService"; // 헤더 서비스 import
-import { CATEGORY_MUSICAL, CATEGORY_LIST } from "utils/APIUrlUtil/apiUrlUtil"; // API URL 유틸리티 import
+import {
+  CATEGORY_MUSICAL,
+  CATEGORY_LIST,
+  MUSICAL_DETAILS_INCREMENT_VIEW,
+} from "utils/APIUrlUtil/apiUrlUtil"; // API URL 유틸리티 import
 
 // 뮤지컬 데이터 인터페이스 정의
 interface Musical {
@@ -54,6 +58,17 @@ const categoryList = async (): Promise<Category[]> => {
       console.error("Unexpected response format:", result.data);
       return [];
     }
+  } catch (error) {
+    console.error("Error", error);
+    throw error;
+  }
+};
+
+// 조회수 증가 함수
+const musicalDetailsIncrementView = async (musicalId: string) => {
+  try {
+    const result = await axios.get(MUSICAL_DETAILS_INCREMENT_VIEW(musicalId));
+    return result.data;
   } catch (error) {
     console.error("Error", error);
     throw error;
@@ -129,8 +144,14 @@ const DynamicCategoryPage: React.FC = () => {
   }, [categories, categoryId]);
 
   // 이미지 클릭 핸들러
-  const handleClick = (id: number) => {
-    navigate(`/detail/${id}`); // DetailPage로 이동
+  const handleClick = async (id: number) => {
+    try {
+      const result = await musicalDetailsIncrementView(id.toString()); // 조회수 증가 함수 호출
+      console.log("View Count Increment Response:", result); // 결과 콘솔 출력
+      navigate(`/auth/details/${id}`); // DetailPage로 이동
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+    }
   };
 
   // 날짜 포맷팅 함수

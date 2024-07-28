@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { musicalDetails } from "services/musical/musicalService";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
@@ -27,6 +27,7 @@ const DetailPage: React.FC = () => {
   const [liked, setLiked] = useState(false); // 좋아요 상태를 저장하는 상태
   const [likeCount, setLikeCount] = useState(0); // 좋아요 수를 저장하는 상태
   const [modalIsOpen, setModalIsOpen] = useState(false); // 모달 창의 열림/닫힘 상태를 저장하는 상태
+  const navigate = useNavigate(); // 페이지 이동을 위한 훅
 
   // 인증 관련 훅에서 필요한 값들을 가져옴
   const {
@@ -86,9 +87,9 @@ const DetailPage: React.FC = () => {
     setModalIsOpen(false);
   };
 
-  // 리뷰 클릭 시 호출되는 함수 (콘솔에 뮤지컬 ID 출력)
+  // 리뷰 클릭 시 호출되는 함수
   const handleReviewClick = () => {
-    console.log(`Musical ID: ${musicalId}`);
+    navigate(`/auth/reviewlist`);
   };
 
   return (
