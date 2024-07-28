@@ -40,7 +40,7 @@ const CommentList: React.FC<CommentListProps> = ({ comments, onCommentUpdated })
   };
 
   return (
-    <div>
+    <div className="h-64 overflow-y-auto pr-2">
       {comments.map((comment) => (
         <div key={comment.id} className="bg-gray-100 p-4 rounded-lg mb-2">
           <p className="font-semibold">{comment.nickname}</p>
@@ -76,5 +76,6 @@ const CommentList: React.FC<CommentListProps> = ({ comments, onCommentUpdated })
     </div>
   );
 };
+
 
 export default CommentList;

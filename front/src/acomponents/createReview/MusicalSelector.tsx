@@ -3,7 +3,7 @@ import { Category, Musical } from "./CreateReviewType";
 import { categoryList, categoryMusical } from "services/musical/musicalService";
 
 interface MusicalSelectorProps {
-  onMusicalSelect: (musicalId: string) => void;
+  onMusicalSelect: (musicalId: string, imageUrl?: string) => void;
 }
 
 const MusicalSelector: React.FC<MusicalSelectorProps> = ({
@@ -13,7 +13,7 @@ const MusicalSelector: React.FC<MusicalSelectorProps> = ({
   const [musicals, setMusicals] = useState<Musical[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedMusical, setSelectedMusical] = useState<string>("");
-  const [selectedImage, setSelectedImage] = useState<string | undefined>();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -31,34 +31,37 @@ const MusicalSelector: React.FC<MusicalSelectorProps> = ({
       setCategories(result.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setError("카테고리를 불러오는데 실패했습니다.");
     }
   };
 
   const fetchMusicals = async (categoryId: string) => {
     try {
       const result = await categoryMusical(categoryId);
-      setMusicals(result.data);
-      console.log("Fetched Musicals:", result.data);
+      if (result.code === "SU") {
+        setMusicals(result.data);
+        setError(null);
+      } else if (result.code === "NF") {
+        setMusicals([]);
+        setError("해당 카테고리에 뮤지컬이 없습니다.");
+      }
     } catch (error) {
       console.error("Error fetching musicals:", error);
+      setError("뮤지컬 목록을 불러오는데 실패했습니다.");
     }
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(e.target.value);
     setSelectedMusical("");
-    setSelectedImage(undefined);
+    onMusicalSelect("", undefined);
   };
 
   const handleMusicalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
     setSelectedMusical(selectedId);
-    onMusicalSelect(selectedId);
-    console.log("Selected Musical ID:", selectedId);
-
-    const selectedMusicalData = musicals.find((v) => v.id === selectedId);
-    setSelectedImage(selectedMusicalData?.imageUrl);
-    console.log("Selected Image URL:", selectedMusicalData?.imageUrl);
+    const selectedMusicalData = musicals.find((v) => v.id.toString() === selectedId);
+    onMusicalSelect(selectedId, selectedMusicalData?.imageUrl);
   };
 
   return (
@@ -72,7 +75,7 @@ const MusicalSelector: React.FC<MusicalSelectorProps> = ({
         >
           <option value="">카테고리 선택</option>
           {categories.map((category) => (
-            <option key={category.id} value={category.id}>
+            <option key={category.id} value={category.id.toString()}>
               {category.category}
             </option>
           ))}
@@ -87,20 +90,13 @@ const MusicalSelector: React.FC<MusicalSelectorProps> = ({
         >
           <option value="">뮤지컬 선택</option>
           {musicals.map((musical) => (
-            <option key={musical.id} value={musical.id}>
+            <option key={musical.id} value={musical.id.toString()}>
               {musical.title}
             </option>
           ))}
         </select>
-
-        {selectedImage && (
-          <img
-            src={selectedImage}
-            alt="Selected Musical"
-            className="w-full h-64 object-cover rounded mt-4"
-          />
-        )}
       </div>
+      {error && <p className="text-red-500 mt-2">{error}</p>}
     </>
   );
 };

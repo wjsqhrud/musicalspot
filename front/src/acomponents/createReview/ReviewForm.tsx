@@ -10,9 +10,11 @@ import MusicalSelector from "./MusicalSelector";
 interface ReviewFormProps {
   existingReview?: string;
   onClose: () => void;
+  onReviewSubmitted: () => void; // 새로운 prop 추가
+
 }
 
-const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose, onReviewSubmitted }) => {
   const [formData, setFormData] = useState<Review>({
     reviewId: "",
     title: "",
@@ -21,6 +23,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>();
 
   useEffect(() => {
     if (existingReview) {
@@ -33,6 +36,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
       const response = await privateReviewDetails(reviewId);
       const reviewData = response.data;
       setFormData(reviewData);
+      setSelectedImage(reviewData.musical?.imageUrl);
     } catch (error) {
       console.error("Error fetching existing review:", error);
       setError("기존 리뷰를 불러오는데 실패했습니다.");
@@ -60,6 +64,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
         );
       }
       setLoading(false);
+      onReviewSubmitted();
       onClose();
     } catch (error) {
       console.error("Error submitting review:", error);
@@ -68,8 +73,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
     }
   };
 
-  const handleMusicalSelect = (musicalId: string) => {
+  const handleMusicalSelect = (musicalId: string, imageUrl?: string) => {
     setFormData((prev) => ({ ...prev, musicalId }));
+    setSelectedImage(imageUrl);
   };
 
   const handleInputChange = (
@@ -81,10 +87,24 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
 
   return (
     <div className="flex">
-      <div className="w-1/2 pr-4">
+      <div className="w-1/3 pr-4">
+        {selectedImage ? (
+          <img
+            src={selectedImage}
+            alt="Selected Musical"
+            className="w-full h-full object-cover rounded"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded">
+            뮤지컬을 선택해주세요
+          </div>
+        )}
+      </div>
+      <div className="w-1/3 px-2">
+        <MusicalSelector onMusicalSelect={handleMusicalSelect} />
+      </div>
+      <div className="w-1/3 pl-4">
         <form onSubmit={handleSubmit}>
-          <MusicalSelector onMusicalSelect={handleMusicalSelect} />
-
           <div className="mb-4">
             <label className="block mb-2 text-gray-700">제목</label>
             <input

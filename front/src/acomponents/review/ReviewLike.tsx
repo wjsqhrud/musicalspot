@@ -1,3 +1,4 @@
+import { HeartIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import { toggleReviewLike } from "services/review/reviewService";
 
@@ -32,9 +33,10 @@ const ReviewLike: React.FC<ReviewLikeProps> = ({
         }`}
         aria-label={isLiked ? "좋아요 취소" : "좋아요"}
       >
-        👍
+      <HeartIcon className="w-4 h-4 mr-1 text-red-500" />
+
       </button>
-      <span>{likeCount} 좋아요</span>
+      <span>{likeCount}</span>
     </div>
   );
 };

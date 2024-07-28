@@ -5,6 +5,7 @@ import { Review } from "./ReviewType";
 import ReviewDetail from "./ReviewDetail";
 import ReviewFormModal from "acomponents/createReview/ReviewFormModal";
 import Modal from "acomponents/review/Modal";
+import 'styles/style.css';
 
 type SortType = 'recent' | 'likes' | 'views';
 
@@ -83,6 +84,13 @@ const ReviewList: React.FC = () => {
     }
   }, [page]);
 
+  const handleReviewSubmitted = useCallback(() => {
+    setPage(0);
+    setReviews([]);
+    setHasMore(true);
+    fetchReviews();
+  }, []);
+
   const handleReviewClick = (reviewId: number) => {
     setSelectedReviewId(reviewId);
   };
@@ -114,7 +122,7 @@ const ReviewList: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-6 text-center">최근 리뷰</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center">후기 게시판</h2>
       <div className="flex justify-between mb-4">
         <button
           onClick={handleCreateReviewClick}
@@ -144,6 +152,7 @@ const ReviewList: React.FC = () => {
       <ReviewFormModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseCreateModal}
+        onReviewSubmitted={handleReviewSubmitted}
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3">
