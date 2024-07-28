@@ -16,7 +16,6 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.housing.back.common.TimeFormatter;
 import com.housing.back.dto.request.websocket.MessageDTO;
@@ -159,20 +158,6 @@ public class WebSocketController {
     }
 
     // 클라이언트가 나갔을 때 처리
-    @EventListener
-    public void handleSessionDisconnected(SessionDisconnectEvent event) {
-        SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headers.getSessionId();
-        String user = headers.getUser() != null ? headers.getUser().getName() : null;
-
-        if (user != null) {
-            logger.info("Disconnected user: {}", user);
-            userPreviousMessages.remove(user);
-            userMessageTimestamps.remove(user);
-        }
-    }
-
-    // 클라이언트가 나갔을 때 처리
     @MessageMapping("/chat.removeUser")
     @SendTo("/topic/chatRoom")
     public MessageDTO removeUser(MessageDTO messageDTO) {
@@ -185,10 +170,9 @@ public class WebSocketController {
             userPreviousMessages.remove(userNickname);
             userMessageTimestamps.remove(userNickname);
             userSessionMap.remove(userNickname);
-
+            messageDTO.setType(MessageType.JOIN);
             messageDTO.setNickname(userNickname);
             messageDTO.setMessageText(userNickname + "님이 채팅을 나갔습니다.");
-            messageDTO.setType(MessageType.JOIN);
             
             return messageDTO;
         }

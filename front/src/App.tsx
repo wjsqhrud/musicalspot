@@ -37,7 +37,8 @@ function App() {
       <WebSocketConnect 
         isVisible={isChatVisible} 
         toggleChat={toggleChat} 
-        messages={messages} 
+        messages={messages}
+        setMessages={setMessages}
         handleNewMessage={handleNewMessage} 
       />
       {!isChatVisible && (

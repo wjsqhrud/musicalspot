@@ -18,7 +18,6 @@ public class MessageDTO {
     public enum MessageType {
         CHAT,
         JOIN,
-        FILTER,
     }
 
 }
