@@ -63,9 +63,7 @@ function App() {
           <Route path="category" element={<CategoryPage />} />
           <Route path="musical" element={<MusicalPage />} />
           <Route path="reviewlist" element={<ReviewList />} />
-          {/* <Route path="sign-in" element={<SignInPage />} /> */}
           <Route path="sign-in" element={<LoginPage />} />
-          {/* <Route path="sign-up" element={<SignUpPage />} /> */}
           <Route path="sign-up" element={<SignUpPage />} />
           <Route path="create-nickname" element={<CreateNickNamePage />} />
           <Route path="test" element={<TestPage />} />

@@ -10,9 +10,9 @@ interface ButtonProps {
 
 const AuthButton: React.FC<ButtonProps> = ({ text, onClick, variant = 'primary', className,style  }) => {
   const baseStyle = "w-full p-2 rounded focus:outline-none focus:ring-2 ";
-  const primaryStyle = "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500";
-  const secondaryStyle = "border border-indigo-600 text-indigo-600 hover:bg-indigo-700 hover:text-white focus:ring-indigo-500";
-
+  const primaryStyle = "bg-signature text-white hover:bg-violet-300 hover:text-signature focus:ring-signature";
+  const secondaryStyle = "border border-signature text-signature hover:bg-signature hover:text-white focus:ring-signature";
+  // text-signature bg-violet-300
   const buttonStyle = variant === 'primary' ? primaryStyle : secondaryStyle;
 
   return (

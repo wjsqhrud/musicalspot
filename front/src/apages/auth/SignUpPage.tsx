@@ -11,6 +11,7 @@ import { onSignUpButtonClickHandler } from 'services/SignUpService/signUpService
 import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 import HomeButton from 'acommons/auth/HomeButton';
 import Modal from 'components/Modal/Modal';
+import musicalSpotLogo from 'assets/images/musical-spot-logo.png';
 
 const SignUpPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -36,7 +37,7 @@ const SignUpPage: React.FC = () => {
   const emailRef = useRef<HTMLInputElement | null>(null);
   const verificationCodeRef = useRef<HTMLInputElement | null>(null);
 
-  const { navigateToLogin } = useNavigateHelper(); 
+  const { navigateToLogin, navigateToHome } = useNavigateHelper(); 
 
   const usernameErrorType = !validateUsernameFormat(username) ? 'smallError' : idError ? 'error' : 'success';
   const passwordErrorType = !validPasswordFormat(password) ? 'smallError' : passwordMessage === '사용 가능한 비밀번호입니다.' ? 'success' : 'error';
@@ -49,11 +50,18 @@ const SignUpPage: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-    <div className="bg-white p-6 rounded shadow-md w-96">
-      <div className="flex items-center justify-center mb-4">
-        <HomeButton/>
-        <h2 className="text-2xl font-semibold text-indigo-600 flex-grow text-center">회원가입</h2>
-        <div className="w-6"></div> {/* 빈 공간을 추가하여 텍스트가 중앙에 위치하도록 조정 */}
+    <div className="bg-white w-full max-w-xl h-auto md:h-3/4 flex justify-center items-center rounded shadow-md">
+    <div className=" p-6  w-96">
+        <div className="flex items-center justify-center mb-4">
+          <div className="flex flex-col items-center gap-8">
+          <div
+            className="text-2xl max-w-40 max-h-40 font-bold cursor-pointer pl-5"
+            onClick={navigateToHome}
+          >
+            <img src={musicalSpotLogo} alt="Musical Spot-logo" className="scale-125 hover:animate-pulse"/>
+          </div>
+          <h2 className="text-2xl font-semibold text-signature mt-4">회원가입</h2>
+        </div>
       </div>
       <AuthInputComponent
         value={username}
@@ -156,6 +164,7 @@ const SignUpPage: React.FC = () => {
         }}
         message="회원가입에 성공하였습니다."
       />
+    </div>
     </div>
     </div>
   );

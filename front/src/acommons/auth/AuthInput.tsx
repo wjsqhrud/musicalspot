@@ -14,7 +14,7 @@ const AuthInput = forwardRef<HTMLInputElement, InputProps>(({ placeholder, type,
   return (
     <input
       ref={ref}
-      className={`w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 h-10 ${className}`}
+      className={`w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-signature h-10 ${className}`}
       placeholder={placeholder}
       type={type}
       value={value}
