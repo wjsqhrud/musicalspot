@@ -25,6 +25,10 @@ public class IpUtils {
         if ("0:0:0:0:0:0:0:1".equals(ipAddress)) {
             ipAddress = "127.0.0.1";
         }
+        // 저장할때 ip주소의 포트번호를 제거
+        if (ipAddress.contains(":")) {
+            ipAddress = ipAddress.split(":")[0];
+        }
         return ipAddress;
     }
     
