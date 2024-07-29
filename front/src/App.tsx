@@ -16,17 +16,39 @@ import DynamicCategoryPage from "apages/Category/DynamicCategoryPage";
 import WebSocketConnect from 'components/websocket/WebSocketConnect';
 import ChatIconComponent from 'components/websocket/ChatBalloonIcon';
 import SearchPage from "apages/search/SearchPage";
+import { ChatMessage } from 'hooks/connectWebSocketHook'; // import ChatMessage type
+
 
 function App() {
   const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [showNotification, setShowNotification] = useState<boolean>(false);
+
   const toggleChat = () => {
     setIsChatVisible(!isChatVisible);
+    setShowNotification(false);
+  };
+
+  const handleNewMessage = (message: ChatMessage) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+    setShowNotification(true);
   };
 
   return (
     <HeaderProvider>
-      <WebSocketConnect isVisible={isChatVisible} toggleChat={toggleChat} />
-      {!isChatVisible && <ChatIconComponent toggleChat={toggleChat} />}
+      <WebSocketConnect 
+        isVisible={isChatVisible} 
+        toggleChat={toggleChat} 
+        messages={messages}
+        setMessages={setMessages}
+        handleNewMessage={handleNewMessage} 
+      />
+      {!isChatVisible && (
+        <ChatIconComponent 
+          toggleChat={toggleChat} 
+          showNotification={showNotification} 
+        />
+      )}
       <Routes>
         <Route path="/auth">
 

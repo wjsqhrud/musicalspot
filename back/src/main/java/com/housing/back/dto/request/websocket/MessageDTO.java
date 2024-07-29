@@ -1,7 +1,5 @@
 package com.housing.back.dto.request.websocket;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -9,7 +7,7 @@ import lombok.Data;
 public class MessageDTO {  
     
     @NotBlank
-    private MessageType type; // 'JOIN' or 'CHAT'
+    private MessageType type; // 'JOIN' or 'CHAT' or 'FILTER'
     @NotBlank
     private String nickname;
     @NotBlank

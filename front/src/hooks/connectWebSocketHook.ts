@@ -16,6 +16,7 @@ export enum MessageType {
 export interface WebSocketConfig {
   serverAddr: ()=>{};
   onMessage: (message: ChatMessage) => void;
+  onPersonalMessage: (message: ChatMessage) => void;
   onError?: (error: any) => void;
   onDebug?: (message: string) => void;
 }
@@ -35,6 +36,12 @@ export function initializeWebSocket(config: WebSocketConfig, userNickname: strin
         config.onMessage(receivedMessage);
       });
 
+      client.subscribe('/user/queue/reply', (message: Message) => {
+        const receivedMessage: ChatMessage = JSON.parse(message.body);
+        console.log("reply로 받은 문자 : " + receivedMessage);
+        config.onPersonalMessage(receivedMessage);
+      });
+
       // WebSocket이 연결된 후 joinChat 함수 호출
       const joinMessage: ChatMessage = {
         nickname: userNickname,
@@ -50,7 +57,12 @@ export function initializeWebSocket(config: WebSocketConfig, userNickname: strin
 
       setIsJoined(true);
     },
-
+    
+    onDisconnect: () => {
+      console.log('WebSocket 연결 해제');
+      setIsJoined(false);
+    },
+    
     onStompError: (frame) => {
       console.error('Broker reported error: ' + frame.headers['message']);
       console.error('Additional details: ' + frame.body);
@@ -73,7 +85,6 @@ export function initializeWebSocket(config: WebSocketConfig, userNickname: strin
         console.log(str);
       }
     },
-
   });
 
   client.activate();
