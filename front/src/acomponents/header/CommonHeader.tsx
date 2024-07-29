@@ -262,7 +262,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
             </button>
           </div>
           {isSearchDropdownOpen && (
-            <div className="absolute top-12 left-0 right-0 bg-white border border-gray-300 z-10">
+            <div className="absolute top-12 left-0 right-0 bg-white border border-gray-300 z-10" style={{ height: '300px', overflowY: 'scroll' }}>
               {noResults ? (
                 <div className="p-2">No results found</div>
               ) : searchResults.length > 0 ? (
