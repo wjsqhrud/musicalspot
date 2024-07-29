@@ -45,3 +45,16 @@
   .pulseAnimation {
     animation: pulse 1.5s infinite;
   }
+
+  @font-face {
+    font-family: 'GowunBatang-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.customFont {
+  font-family: 'GowunBatang-Regular';
+  font-size: 14px;
+  font-weight: 600;
+}

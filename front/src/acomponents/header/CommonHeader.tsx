@@ -8,7 +8,8 @@ import { combinedLogoutHandler } from "services/LogOutService/logOutService";
 import { deleteAccount } from "services/Auth/authService";
 import axios from "axios"; // axios 임포트
 import { SEARCH_MUSICALS_BY_TITLE } from "utils/APIUrlUtil/apiUrlUtil"; // 경로에 따라 적절히 수정
-import { useNavigate } from "react-router-dom"; // useNavigate 임포트
+import { useLocation, useNavigate } from "react-router-dom"; // useNavigate 임포트
+import musicalSpotLogo from 'assets/images/musical-spot-logo.png';
 
 type CommonHeaderProps = {
   isAuthenticated: boolean;
@@ -182,42 +183,52 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     navigate(`/auth/search?query=${encodeURIComponent(result.title)}`);
   };
 
+  // 클라이언트가 접속 중인 주소링크를 Navigate 하거나 연결하는 버튼 스타일 바꾸기
+  const location = useLocation();
+  const currentCategoryId = location.pathname.split('/').pop();
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 flex justify-between items-center bg-white text-[#33313B] w-full min-w-[1300px] p-4 border-b border-gray-300 z-50">
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
-            <h1
-              className="text-2xl font-bold cursor-pointer"
+            <div
+              className="text-2xl max-w-40 max-h-40 font-bold cursor-pointer pl-5"
               onClick={navigateToHome}
             >
-              MusicalSpot
-            </h1>
+             <img src={musicalSpotLogo} alt="Musical Spot-logo" className="scale-125 hover:animate-pulse"/>
+            </div>
           </div>
         </div>
         <div className="flex gap-1 flex-wrap">
-          <div
-            className="bg-white text-[#33313B] p-2 min-w-[60px] text-center cursor-pointer box-border"
-            onClick={handleAll}
-          >
-            All
-          </div>
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              className="bg-white text-[#33313B] p-2 min-w-[60px] text-center cursor-pointer box-border"
-              onClick={() => handleCategory(category.id)}
-            >
-              {category.category}
-            </div>
-          ))}
-          <div
-            className="bg-white text-[#33313B] p-2 min-w-[60px] text-center cursor-pointer box-border"
-            onClick={handleReview}
-          >
-            <span className="text-gray-300 mr-3 ">|</span> 리뷰
-          </div>
+      <div
+        className={`bg-white p-2 min-w-[60px] text-center cursor-pointer box-border transition-all ${
+          currentCategoryId === 'all' ? 'text-signature font-bold text-lg border-b-violet-500' : 'text-[#33313B]'
+        }`}
+        onClick={handleAll}
+      >
+        All
+      </div>
+      {categories.map((category) => (
+        <div
+          key={category.id}
+          className={`bg-white p-2 min-w-[60px] text-center cursor-pointer box-border transition-all ${
+            currentCategoryId === category.id.toString() ? 'text-signature font-bold text-lg border-b-violet-500' : 'text-[#33313B]'
+          }`}
+          onClick={() => handleCategory(category.id)}
+        >
+          {category.category}
         </div>
+      ))}
+      <div
+        className={`bg-white p-2 min-w-[60px] text-center cursor-pointer box-border transition-all ${
+          location.pathname.includes('reviewlist') ? 'text-signature font-bold text-lg border-b-violet-500' : 'text-[#33313B]'
+        }`}
+        onClick={handleReview}
+      >
+        <span className="text-gray-300 mr-3 ">|</span> 리뷰
+      </div>
+    </div>
         <div className="flex items-center space-x-4 relative">
           <div className="flex items-center border-b-2 border-black">
             <input

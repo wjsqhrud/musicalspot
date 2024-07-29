@@ -139,62 +139,64 @@ const Mainpage: React.FC = () => {
           setNicknameModalOpen={setNicknameModalOpen}
           checkAuthStatus={checkAuthStatus}
         />
-        <div className="relative w-full pt-[5%] mb-10">
-          {/* 슬라이드 컨테이너 */}
+        <div className="relative flex justify-around mb-10">
+  {/* 슬라이드 버튼 컨테이너 */}
+  <div className="absolute top-0 -left-12 -right-12 bottom-0 flex items-center justify-between z-10 overflow-hidden">
+    {/* 이전 슬라이드 버튼 */}
+    <button
+      className="bg-black text-white bg-opacity-50 rounded-full p-2 m-2 hover:bg-opacity-100 hover:scale-110 transition-all"
+      onClick={handlePrev}
+    >
+      <GrPrevious />
+    </button>
+    {/* 다음 슬라이드 버튼 */}
+    <button
+      className="bg-black text-white bg-opacity-50 rounded-full p-2 m-2 hover:bg-opacity-100 hover:scale-110 transition-all"
+      onClick={handleNext}
+    >
+      <GrNext />
+    </button>
+  </div>
+  
+  {/* 슬라이드 컨테이너 */}
+  <div className="flex-wrap relative w-full h-[600px] pt-[5%] overflow-hidden">
+    <div
+      className="flex transition-transform duration-500 ease-in-out"
+      style={{
+        transform: `translateX(-${
+          currentSlide * (100 / musicalsByStartDate.length)
+        }%)`,
+      }}
+    >
+      {musicalsByStartDate.length > 0 &&
+        musicalsByStartDate.map((musical, index) => (
           <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{
-              transform: `translateX(-${
-                currentSlide * (100 / musicalsByStartDate.length)
-              }%)`,
-            }}
-          >
-            {musicalsByStartDate.length > 0 &&
-              musicalsByStartDate.map((musical, index) => (
-                <div
-                  key={musical.id}
-                  className={`flex-shrink-0 w-1/4 h-full mx-4 transition-transform duration-500 ease-in-out ${
-                    index === currentSlide
-                      ? "transform scale-110"
-                      : "transform scale-100"
-                  } cursor-pointer`} // 현재 슬라이드 확대 및 커서 변경
-                  onClick={() => handleClick(musical.id)}
-                >
-                  <img
-                    src={musical.imageUrl}
-                    alt={musical.title}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              ))}
+            key={musical.id} className={`flex-shrink-0 w-1/4 h-fit mx-2 transition-all duration-500 ease-in-out  
+              ${ index === currentSlide ? "opacity-100 transform scale-110" : "opacity-65 transform scale-90"} cursor-pointer`}
+            onClick={() => handleClick(musical.id)}>
+            <img
+              src={musical.imageUrl}
+              alt={musical.title}
+              className="w-full h-full object-fit shadow-modalShadow shadow-stone-600 mx-auto"
+            />
           </div>
-          {/* 이전 슬라이드 버튼 */}
-          <button
-            className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
-            onClick={handlePrev}
-          >
-            <GrPrevious />
-          </button>
-          {/* 다음 슬라이드 버튼 */}
-          <button
-            className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2"
-            onClick={handleNext}
-          >
-            <GrNext />
-          </button>
+        ))}
+    </div>
+    
           {/* 슬라이드 네비게이션 */}
           <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2 mt-2">
             {musicalsByStartDate.map((_, index) => (
               <div
                 key={index}
                 className={`h-1 cursor-pointer ${
-                  index === currentSlide ? "bg-black w-16" : "bg-gray-300 w-10"
-                }`} // 클릭 가능한 굵은 선 추가
+                  index === currentSlide ? "bg-black w-16 h-1 rounded-lg" : "bg-gray-300 w-6 h-1 rounded-lg"
+                } transition-all duration-300`}
                 onClick={() => handleLineClick(index)}
               />
             ))}
           </div>
         </div>
+      </div>
 
         {/* Grid Section */}
         <div className="p-5 grid grid-cols-5 gap-4">
@@ -210,7 +212,7 @@ const Mainpage: React.FC = () => {
                   alt={musical.title}
                   className="w-full h-full object-contain rounded"
                 />
-                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center">
+                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 hover:bg-opacity-65 transition-opacity duration-300 flex flex-col justify-center items-center">
                   <div>{musical.title}</div>
                   <div>{formatDate(musical.startDate)}</div>
                   {musical.startDate !== musical.endDate ? (
@@ -232,7 +234,7 @@ const Mainpage: React.FC = () => {
                   alt={musical.title}
                   className="w-full h-full object-contain rounded"
                 />
-                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-30 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center">
+                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 hover:bg-opacity-65 transition-opacity duration-300 flex flex-col justify-center items-center">
                   <div>{musical.title}</div>
                   <div>{formatDate(musical.startDate)}</div>
                   {musical.startDate !== musical.endDate ? (
