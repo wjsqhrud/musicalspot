@@ -54,6 +54,22 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     handleCategoryList();
   }, [isAuthenticated, myNickname]);
 
+  // 마우스 바깥클릭시 검색드랍다운 삭제
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        (event.target as HTMLElement).closest(".search-container") === null
+      ) {
+        setIsSearchDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleCategoryList = async () => {
     try {
       const response = await categoryList();
