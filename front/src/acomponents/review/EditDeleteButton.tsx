@@ -10,27 +10,17 @@ import {
 interface EditDeleteButtonsProps {
   reviewId: string;
   isOwner: boolean;
-
   onEdit: (reviewData: any) => void;
-
+  onDelete: () => void;
 }
 
 const EditDeleteButtons: React.FC<EditDeleteButtonsProps> = ({
   reviewId,
-// <<<<<<< HEAD
-//   authorId,
-//   currentUserId,
-// }) => {
-//   const navigate = useNavigate();
-
-//   if (currentUserId !== authorId) return null;
-// =======
   isOwner,
   onEdit,
+  onDelete,
 }) => {
   const navigate = useNavigate();
-
-
   const handleEdit = async () => {
     try {
       const response = await privateReviewDetails(reviewId);
@@ -46,11 +36,8 @@ const EditDeleteButtons: React.FC<EditDeleteButtonsProps> = ({
     if (window.confirm("정말로 이 리뷰를 삭제하시겠습니까?")) {
       try {
         await deleteReview(reviewId);
-// <<<<<<< HEAD
-//         navigate("/reviews"); // 리뷰 목록 페이지로 이동
-// =======
-        navigate("/reviewlist");
-// >>>>>>> origin/hwanhee
+        navigate(`/auth/reviewlist`);
+        onDelete();
       } catch (error) {
         console.error("리뷰 삭제 중 오류 발생:", error);
       }
