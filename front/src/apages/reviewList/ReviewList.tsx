@@ -28,11 +28,8 @@ type SortType = "recent" | "likes" | "views";
 const ReviewList: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-<<<<<<< HEAD
-// >>>>>>> origin/hwanhee
-=======
-  // >>>>>>> origin/hwanhee
->>>>>>> origin/hwanhee
+
+
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -255,7 +252,7 @@ const ReviewList: React.FC = () => {
           </Modal>
         </div>
       </div>
-<<<<<<< HEAD
+{/* <<<<<<< HEAD
       <ReviewFormModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseCreateModal}
@@ -285,9 +282,9 @@ const ReviewList: React.FC = () => {
         )}
       </Modal>
     </div>
-=======
+======= */}
     </HeaderProvider>
->>>>>>> origin/hwanhee
+
   );
 };
 
