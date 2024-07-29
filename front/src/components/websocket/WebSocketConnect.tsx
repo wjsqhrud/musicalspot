@@ -165,7 +165,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
         <div
           id="chatContainer"
           className={`z-50 fixed flex flex-col justify-between bottom-0 right-0
-            mr-11 mb-11 w-[400px]  h-[700px]  rounded-lg select-none ${styles.customBoxShadow} bg-white`}
+            mr-11 mb-11 w-[400px]  h-[650px]  rounded-lg select-none ${styles.customBoxShadow} bg-white`}
         >
           <div className="flex justify-end items-center p-2 bg-violet-400 rounded-t-lg opacity-70">
             <button onClick={toggleChat} className="rounded-full p-2 text-white hover:bg-white hover:text-red-600 transition-all">
@@ -217,7 +217,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
               </div>
             ) : (
               messages.map((v, index) => (
-                <div key={index} className={`animate-fade flex 
+                <div key={index} className={`animate-fade flex  ${styles.customFont}
                 ${v.nickname === userNickname && v.type === MessageType.CHAT ? 'justify-end' : 'justify-start'}`}>
                   {v.type === MessageType.JOIN ? (
                     <div className="flex justify-center bg-gray-300 py-1 px-4 m-1 rounded-xl w-fit ml-16 
@@ -225,8 +225,8 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                       <span>{v.messageText}</span>
                     </div>
                   ) : (
-                    <div className="flex items-center">
-                      <span className="text-gray-400 text-xxs bg-white justify-items-end">{v.transmitTime}</span>
+                    <div className={`flex items-end ${v.nickname === userNickname ? 'flex-row': 'flex-row-reverse'}`}>
+                      <span className="text-gray-400 text-xxs bg-white">{v.transmitTime}</span>
                       <div className={`${v.nickname === userNickname ? 'bg-signature' : 'bg-violet-400'} p-2 m-1 rounded-xl 
                       ${v.nickname === userNickname ? 'rounded-br-none' : 'rounded-bl-none'} w-fit text-white max-w-80`}>
                         {v.nickname === userNickname ? `${v.messageText}` : `${v.nickname} : ${v.messageText}`}

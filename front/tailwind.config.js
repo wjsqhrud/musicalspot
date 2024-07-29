@@ -20,7 +20,7 @@ module.exports = {
         'signature': '#9747ff',
       },
       animation: {
-        fade: 'fadeIn 0.4s ease',
+        fade: 'fadeIn 0.8s ease',
       },
       keyframes: {
         fadeIn: {
