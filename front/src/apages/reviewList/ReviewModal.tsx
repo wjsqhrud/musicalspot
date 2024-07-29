@@ -5,21 +5,6 @@ interface ReviewModalProps {
   review: Review;
   isOpen: boolean;
   onClose: () => void;
-// <<<<<<< HEAD
-//   children: React.ReactNode;
-// }
-
-// const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
-//   if (!isOpen) return null;
-
-//   return (
-//     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-//       <div className="bg-white p-6 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-//         <button onClick={onClose} className="float-right text-xl">
-//           &times;
-//         </button>
-//         {children}
-// =======
   isLoggedIn: boolean;
 }
 
@@ -54,14 +39,11 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ review, onClose, isLoggedIn }
         >
           닫기
         </button>
-{/* >>>>>>> origin/hwanhee */}
+
       </div>
     </div>
   );
 };
 
-// <<<<<<< HEAD
-// export default Modal;
-// =======
 export default ReviewModal;
-// >>>>>>> origin/hwanhee
+

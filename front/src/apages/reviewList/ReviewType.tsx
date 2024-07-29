@@ -14,10 +14,7 @@ export interface Review {
   viewCount: number;
   likeCount: number;
   commentCount: number;
-// <<<<<<< HEAD
-// =======
-  owner:boolean;
-// >>>>>>> origin/hwanhee
+  owner: boolean;
   comments: Comment[];
 }
 
