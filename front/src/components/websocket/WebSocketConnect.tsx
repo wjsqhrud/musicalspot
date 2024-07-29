@@ -208,7 +208,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                 <button
                   onClick={handleConnectWebSocket}
                   className="relative z-10 flex items-center justify-center space-x-2 text-xl px-6 py-3 
-                  bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-full transition-all 
+                text-white rounded-full transition-all 
                   duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   <span className='group-hover:text-green-400 transition-colors duration-300'>채팅 입장</span>
@@ -227,7 +227,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                   ) : (
                     <div className={`flex items-end ${v.nickname === userNickname ? 'flex-row': 'flex-row-reverse'}`}>
                       <span className="text-gray-400 text-xxs bg-white">{v.transmitTime}</span>
-                      <div className={`${v.nickname === userNickname ? 'bg-signature' : 'bg-violet-400'} p-2 m-1 rounded-xl 
+                      <div className={`${v.nickname === userNickname ? 'bg-green-500' : 'bg-signature'} p-2 m-1 rounded-xl 
                       ${v.nickname === userNickname ? 'rounded-br-none' : 'rounded-bl-none'} w-fit text-white max-w-80`}>
                         {v.nickname === userNickname ? `${v.messageText}` : `${v.nickname} : ${v.messageText}`}
                       </div>
