@@ -173,7 +173,9 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     const value = event.target.value;
     setSearchInput(value);
     if (value) {
-      const results = await searchMusicalsByTitle(value); // API 호출로 검색 결과 가져오기
+      const encodedValue = encodeURIComponent(value);
+      console.log(encodedValue);
+      const results = await searchMusicalsByTitle(encodedValue); // API 호출로 검색 결과 가져오기
       if (results.data.length === 0) {
         setNoResults(true);
       } else {
