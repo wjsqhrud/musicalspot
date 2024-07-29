@@ -93,6 +93,19 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     navigateToCreateNickname();
   };
 
+  const handleMyPage =  () => {
+    checkAuthStatus(
+      (nickname) => {
+        // todo: 인증성공시 로직실행하시면됩니다.
+        console.log("인증된 사용자:", nickname);
+      },
+      () => {
+        // todo: 인증실패시에는 로그인하라는 알림을 띄울지, 로그인화면으로 보낼지 정하면됩니다.
+        console.log("인증 필요함");
+      }
+    );
+  }
+
   const handleLogOut = async () => {
     const result = await combinedLogoutHandler(navigateToHome);
     if (result) {
@@ -243,6 +256,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
             <FaRegUser size={24} onClick={handleAuthButton} />
             {dropdownOpen && (
               <CommonDropDown
+                onMyPageClick={handleMyPage}
                 onLogoutClick={handleLogOut}
                 onDeleteAccountClick={handleDeleteAccount}
               />

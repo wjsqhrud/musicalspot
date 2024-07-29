@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import OAuth from "services/OAuth2SignInService/oAuthResponseService";
-import SignInPage from "apages/auth/SignInPage";
-import SignUpPage from "apages/auth/SignUpPage";
 import CreateNickNamePage from "apages/auth/CreateNickNamePage";
 import Mainpage from "apages/main/Mainpage";
 import TestPage from "apages/test/TestPage";
@@ -17,6 +15,8 @@ import WebSocketConnect from 'components/websocket/WebSocketConnect';
 import ChatIconComponent from 'components/websocket/ChatBalloonIcon';
 import SearchPage from "apages/search/SearchPage";
 import { ChatMessage } from 'hooks/connectWebSocketHook'; // import ChatMessage type
+import LoginPage from "apages/auth/LoginPage";
+import SignUpPage from "apages/auth/SignUpPage";
 
 
 function App() {
@@ -57,14 +57,15 @@ function App() {
             path="category/:categoryId"
             element={<DynamicCategoryPage />}
           />
-
           <Route path="all" element={<AllCategoryPage />} />
           <Route path="details/:musicalId" element={<DetailPage />} />
           <Route path="home" element={<Mainpage />} />
           <Route path="category" element={<CategoryPage />} />
           <Route path="musical" element={<MusicalPage />} />
           <Route path="reviewlist" element={<ReviewList />} />
-          <Route path="sign-in" element={<SignInPage />} />
+          {/* <Route path="sign-in" element={<SignInPage />} /> */}
+          <Route path="sign-in" element={<LoginPage />} />
+          {/* <Route path="sign-up" element={<SignUpPage />} /> */}
           <Route path="sign-up" element={<SignUpPage />} />
           <Route path="create-nickname" element={<CreateNickNamePage />} />
           <Route path="test" element={<TestPage />} />
