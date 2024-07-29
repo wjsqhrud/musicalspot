@@ -4,83 +4,67 @@ import {
   updateReview,
   privateReviewDetails,
 } from "services/review/reviewService";
-import {
-  categoryList,
-  categoryMusical,
-  musicalDetails,
-} from "services/musical/musicalService";
-import { Category, Musical, Review } from "./CreateReviewType";
-import MusicalPreview from "./MusicalCategory";
+import { Review } from "./CreateReviewType";
+import MusicalSelector from "./MusicalSelector";
 
 interface ReviewFormProps {
-  existingReview?: string; // reviewId
+  existingReview?: string;
   onClose: () => void;
+  onReviewSubmitted: () => void; // 새로운 prop 추가
+
 }
 
-const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [musicals, setMusicals] = useState<Musical[]>([]);
-  const [selectedMusical, setSelectedMusical] = useState<string>("");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose, onReviewSubmitted }) => {
+  const [formData, setFormData] = useState<Review>({
+    reviewId: "",
+    title: "",
+    content: "",
+    musicalId: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>();
 
   useEffect(() => {
-    fetchCategories();
     if (existingReview) {
       fetchExistingReview(existingReview);
     }
   }, [existingReview]);
 
-  const fetchCategories = async () => {
-    try {
-      const result = await categoryList();
-      setCategories(result.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      setError("카테고리를 불러오는 중에 오류가 발생했습니다.");
-    }
-  };
-
   const fetchExistingReview = async (reviewId: string) => {
     try {
       const response = await privateReviewDetails(reviewId);
       const reviewData = response.data;
-      setTitle(reviewData.title);
-      setContent(reviewData.content);
-      setSelectedCategory(reviewData.categoryId);
-      setSelectedMusical(reviewData.musicalId);
-      fetchMusicals(reviewData.categoryId);
+      setFormData(reviewData);
+      setSelectedImage(reviewData.musical?.imageUrl);
     } catch (error) {
       console.error("Error fetching existing review:", error);
       setError("기존 리뷰를 불러오는데 실패했습니다.");
     }
   };
 
-  const fetchMusicals = async (categoryId: string) => {
-    try {
-      const result = await categoryMusical(categoryId);
-      setMusicals(result.data);
-    } catch (error) {
-      console.error("Error fetching musicals:", error);
-      setError("뮤지컬을 불러오는 중에 오류가 발생했습니다.");
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedMusical) return;
+    if (!formData.musicalId) return;
 
     setLoading(true);
     try {
       if (existingReview) {
-        await updateReview(existingReview, title, content, selectedMusical);
+        await updateReview(
+          existingReview,
+          formData.title,
+          formData.content,
+          formData.musicalId
+        );
       } else {
-        await createReview(title, content, selectedMusical);
+        await createReview(
+          formData.title,
+          formData.content,
+          formData.musicalId
+        );
       }
       setLoading(false);
+      onReviewSubmitted();
       onClose();
     } catch (error) {
       console.error("Error submitting review:", error);
@@ -89,52 +73,45 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
     }
   };
 
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setSelectedMusical("");
-    fetchMusicals(categoryId);
+  const handleMusicalSelect = (musicalId: string, imageUrl?: string) => {
+    setFormData((prev) => ({ ...prev, musicalId }));
+    setSelectedImage(imageUrl);
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="flex">
-      <div className="w-1/2 pr-4">
+      <div className="w-1/3 pr-4">
+        {selectedImage ? (
+          <img
+            src={selectedImage}
+            alt="Selected Musical"
+            className="w-full h-full object-cover rounded"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded">
+            뮤지컬을 선택해주세요
+          </div>
+        )}
+      </div>
+      <div className="w-1/3 px-2">
+        <MusicalSelector onMusicalSelect={handleMusicalSelect} />
+      </div>
+      <div className="w-1/3 pl-4">
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700">카테고리</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full p-2 border rounded text-gray-700 bg-white"
-            >
-              <option value="">카테고리 선택</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block mb-2 text-gray-700">뮤지컬</label>
-            <select
-              value={selectedMusical}
-              onChange={(e) => setSelectedMusical(e.target.value)}
-              className="w-full p-2 border rounded text-gray-700 bg-white"
-            >
-              <option value="">뮤지컬 선택</option>
-              {musicals.map((musical) => (
-                <option key={musical.id} value={musical.id}>
-                  {musical.title}
-                </option>
-              ))}
-            </select>
-          </div>
           <div className="mb-4">
             <label className="block mb-2 text-gray-700">제목</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
               className="w-full p-2 border rounded text-gray-700 bg-white"
               required
             />
@@ -142,8 +119,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
           <div className="mb-4">
             <label className="block mb-2 text-gray-700">내용</label>
             <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              name="content"
+              value={formData.content}
+              onChange={handleInputChange}
               className="w-full p-2 border rounded text-gray-700 bg-white"
               rows={5}
               required
@@ -163,7 +141,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ existingReview, onClose }) => {
         </form>
         {error && <p className="text-red-500 mt-4">{error}</p>}
       </div>
-      <div className="w-1/2 pl-4"></div>
     </div>
   );
 };
