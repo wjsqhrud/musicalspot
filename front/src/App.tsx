@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import OAuth from "services/OAuth2SignInService/oAuthResponseService";
 import CreateNickNamePage from "apages/auth/CreateNickNamePage";
@@ -49,7 +49,7 @@ function App() {
           showNotification={showNotification} 
         />
       )}
-          <BrowserRouter>
+      
       <Routes>
         <Route path="/auth">
 
@@ -72,7 +72,6 @@ function App() {
         <Route path='/auth/oauth-response/:token/:expirationTime/:refreshToken/:refreshExpirationTime' element={<OAuth />} />
         <Route path="*" element={<Navigate to="/auth/home" />} />
       </Routes>
-      </BrowserRouter>
     </HeaderProvider>
   );
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-// import { BrowserRouter, HashRouter as Router } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import App from './App';
 import './index.css'; 
 // import { BrowserRouter } from 'react-router-dom';
@@ -11,12 +10,12 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   // <React.StrictMode>
-
-      <App />
-    //  </BrowserRouter>
-  //   <Router>
-  //   <App />
-  // </Router>
+    // <BrowserRouter>
+    //   <App />
+    // </BrowserRouter>
+    <Router>
+    <App />
+  </Router>
   // </React.StrictMode>
 );
 // StrictMode를 키면 useeffect가 두번실행되서 껐습니다.

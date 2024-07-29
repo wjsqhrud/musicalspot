@@ -1,14 +1,23 @@
 {
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["*.{css,svg,js,ts,png,jpeg,jpg,ico}"]
+  },
   "routes": [
     {
-      "route": "/static/*",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000"
-      }
+      "route": "/auth/*",
+      "serve": "/index.html",
+      "statusCode": 200
     },
     {
       "route": "/*",
-      "rewrite": "/index.html"
+      "serve": "/index.html",
+      "statusCode": 200
+    },
+    {
+      "route": "/auth/oauth-response/*",
+      "rewrite": "/index.html",
+      "statusCode": 200
     }
   ]
   
