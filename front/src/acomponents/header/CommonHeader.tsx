@@ -35,7 +35,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   checkAuthStatus,
 }) => {
   const navigate = useNavigate();
-  const { navigateToCreateNickname, navigateToLogin, navigateToHome } =
+  const { navigateToCreateNickname, navigateToLogin, navigateToHome, navigateToMyblog } =
     useNavigateHelper();
   const [categories, setCategories] = useState<Category[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
@@ -115,6 +115,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
       (nickname) => {
         // todo: 인증성공시 로직실행하시면됩니다.
         console.log("인증된 사용자:", nickname);
+        navigateToMyblog();
       },
       () => {
         // todo: 인증실패시에는 로그인하라는 알림을 띄울지, 로그인화면으로 보낼지 정하면됩니다.

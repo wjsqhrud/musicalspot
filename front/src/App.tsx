@@ -17,6 +17,7 @@ import SearchPage from "apages/search/SearchPage";
 import { ChatMessage } from 'hooks/connectWebSocketHook'; // import ChatMessage type
 import LoginPage from "apages/auth/LoginPage";
 import SignUpPage from "apages/auth/SignUpPage";
+import MyPage from "apages/auth/MyPage";
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
             path="category/:categoryId"
             element={<DynamicCategoryPage />}
           />
+          <Route path="My" element={<MyPage />} />
           <Route path="all" element={<AllCategoryPage />} />
           <Route path="details/:musicalId" element={<DetailPage />} />
           <Route path="home" element={<Mainpage />} />
