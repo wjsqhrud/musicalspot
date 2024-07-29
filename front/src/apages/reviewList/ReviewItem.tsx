@@ -2,7 +2,7 @@ import React from "react";
 import { Review } from "./ReviewType";
 import { truncateString } from "acomponents/review/ReviewContentLength";
 import { HeartIcon, EyeIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
-import '../../styles/style.css';
+
 
 interface ReviewItemProps {
   review: Review;

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { ContentInput } from "acomponents/createReview/ContentLength";
+import React from "react";
 import { reviewCommentsCreate } from "services/review/reviewService";
 
 interface CommentFormProps {
@@ -6,16 +7,15 @@ interface CommentFormProps {
   onCommentAdded: () => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ reviewId, onCommentAdded }) => {
-  const [content, setContent] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const CommentForm: React.FC<CommentFormProps> = ({
+  reviewId,
+  onCommentAdded,
+}) => {
+  const handleSubmit = async (content: string) => {
     if (!content.trim()) return;
 
     try {
       await reviewCommentsCreate(reviewId, content);
-      setContent("");
       onCommentAdded();
     } catch (error) {
       console.error("댓글 작성 실패:", error);
@@ -24,21 +24,15 @@ const CommentForm: React.FC<CommentFormProps> = ({ reviewId, onCommentAdded }) =
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="w-full p-2 border rounded"
+    <div className="mt-4">
+      <ContentInput
+        minLength={1}
+        maxLength={200}
         placeholder="댓글을 작성하세요"
-        rows={3}
+        onSubmit={handleSubmit}
+        isTextArea={true}
       />
-      <button
-        type="submit"
-        className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        댓글 작성
-      </button>
-    </form>
+    </div>
   );
 };
 
