@@ -1,5 +1,5 @@
 import Modal from "components/Modal/Modal";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaRegUser, FaSearch } from "react-icons/fa";
 import { categoryList } from "services/musical/musicalService";
 import useNavigateHelper from "utils/NavigationUtil/navigationUtil";
@@ -46,6 +46,8 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] =
     useState<boolean>(false); // 검색 드롭다운 상태
   const [noResults, setNoResults] = useState<boolean>(false); // 검색 결과 없음 상태
+  const searchDropdownRef = useRef<HTMLDivElement>(null); // 드롭다운 요소에 대한 참조
+  const searchInputRef = useRef<HTMLDivElement>(null); // 검색 입력 박스에 대한 참조
 
   useEffect(() => {
     console.log("첫 번째 로직");
@@ -58,7 +60,10 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        (event.target as HTMLElement).closest(".search-container") === null
+        searchDropdownRef.current && 
+        !searchDropdownRef.current.contains(event.target as Node) &&
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
       ) {
         setIsSearchDropdownOpen(false);
       }
@@ -187,10 +192,12 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   const handleSearchSubmit = (
     event: React.KeyboardEvent | React.MouseEvent
   ) => {
+    console.log("클릭옴?")
     if (
       searchInput &&
       (event.type === "click" || (event as React.KeyboardEvent).key === "Enter")
     ) {
+      
       navigate(`/auth/search?query=${encodeURIComponent(searchInput)}`);
     }
   };
@@ -247,7 +254,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
       </div>
     </div>
         <div className="flex items-center space-x-4 relative">
-          <div className="flex items-center border-b-2 border-black">
+          <div ref={searchInputRef} className="flex items-center border-b-2 border-black">
             <input
               type="text"
               placeholder="Search"
@@ -262,7 +269,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
             </button>
           </div>
           {isSearchDropdownOpen && (
-            <div className="absolute top-12 left-0 right-0 bg-white border border-gray-300 z-10" style={{ height: '300px', overflowY: 'scroll' }}>
+            <div ref={searchDropdownRef} className="absolute top-12 left-0 right-0 bg-white border border-gray-300 z-10" style={{ height: '300px', overflowY: 'scroll' }}>
               {noResults ? (
                 <div className="p-2">No results found</div>
               ) : searchResults.length > 0 ? (
