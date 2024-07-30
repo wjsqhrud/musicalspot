@@ -481,6 +481,7 @@ public class AuthServiceImplement implements AuthService {
         return ResponseEntity.ok(response);
     }
 
+    @Transactional
     public ResponseEntity<TestResponseDto> deleteUserByNickname(HttpServletRequest request, Map<String, String> requestBody) {
         String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
@@ -512,7 +513,7 @@ public class AuthServiceImplement implements AuthService {
         musicalLikeRepository.deleteByUser(user);
         reviewCommentRepository.deleteByUser(user);
         reviewRepository.deleteByUser(user);
-        nicknameRepository.deleteByUser(user);
+        nicknameRepository.deleteByUser(user);  
         userRepository.delete(user);
 
         return TestResponseDto.success();
