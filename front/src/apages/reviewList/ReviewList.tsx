@@ -6,29 +6,21 @@ import {
   reviewViews40,
 } from "services/review/reviewService";
 import { Review } from "./ReviewType";
-// <<<<<<< HEAD
-// import Modal from "./ReviewModal";
-// import ReviewDetail from "./ReviewDetail";
-// import ReviewForm from "apages/CreateReview/CreateReviewModal";
-
-// const ReviewList: React.FC = () => {
-//   const [reviews, setReviews] = useState<Review[]>([]);
-// =======
 import ReviewDetail from "./ReviewDetail";
 import ReviewFormModal from "acomponents/createReview/ReviewFormModal";
 import Modal from "acomponents/review/Modal";
 import "styles/style.css";
-import { getCookie } from "utils/CookieUtil/cookieUtis";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
+import { link } from "fs";
+import { useNavigate } from "react-router-dom";
 
 type SortType = "recent" | "likes" | "views";
 
 const ReviewList: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  // >>>>>>> origin/hwanhee
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -37,8 +29,8 @@ const ReviewList: React.FC = () => {
   const [sortType, setSortType] = useState<SortType>("recent");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
+  const navigate = useNavigate();
 
-  //인증관련 훅 헤드
   const {
     isAuthenticated,
     myNickname,
@@ -46,10 +38,6 @@ const ReviewList: React.FC = () => {
     setNicknameModalOpen,
     checkAuthStatus,
   } = useAuth();
-
-  const isLoggedIn = useCallback((): boolean => {
-    return !!getCookie("accessToken");
-  }, []);
 
   const lastReviewElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -131,11 +119,17 @@ const ReviewList: React.FC = () => {
   };
 
   const handleCreateReviewClick = () => {
-    if (isLoggedIn()) {
-      setIsCreateModalOpen(true);
-    } else {
-      alert("리뷰를 작성하려면 로그인이 필요합니다.");
-    }
+    checkAuthStatus(
+      (nickname) => {
+        console.log("인증된 사용자:", nickname);
+        setIsCreateModalOpen(true);
+      },
+      () => {
+        console.log("인증 필요함");
+        alert("로그인 상태에서만 작성가능합니다.");
+        navigate("/auth/sign-in");
+      }
+    );
   };
 
   const handleCloseCreateModal = () => {
@@ -158,7 +152,6 @@ const ReviewList: React.FC = () => {
   return (
     <HeaderProvider>
       <div className="max-w-[1250px] mx-auto pt-20">
-        {/* 공통 헤더 */}
         <CommonHeader
           isAuthenticated={isAuthenticated}
           myNickname={myNickname}
@@ -198,19 +191,19 @@ const ReviewList: React.FC = () => {
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
                   <button
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={(e) => handleSortChange("recent")}
+                    onClick={() => handleSortChange("recent")}
                   >
                     최신순
                   </button>
                   <button
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={(e) => handleSortChange("likes")}
+                    onClick={() => handleSortChange("likes")}
                   >
                     좋아요순
                   </button>
                   <button
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={(e) => handleSortChange("views")}
+                    onClick={() => handleSortChange("views")}
                   >
                     조회수순
                   </button>
@@ -231,7 +224,7 @@ const ReviewList: React.FC = () => {
                 onClick={() => handleReviewClick(review.id)}
                 className="cursor-pointer"
               >
-                <ReviewItem review={review} />
+                <ReviewItem review={review} isAuthenticated={isAuthenticated} />
               </div>
             ))}
           </div>
@@ -243,6 +236,7 @@ const ReviewList: React.FC = () => {
           <Modal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
             {selectedReviewId && (
               <ReviewDetail
+                isAuthenticated={isAuthenticated}
                 reviewId={selectedReviewId}
                 onClose={handleCloseModal}
                 onDelete={handleReviewSubmitted}

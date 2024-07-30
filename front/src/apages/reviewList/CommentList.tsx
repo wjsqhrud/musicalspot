@@ -1,24 +1,29 @@
 import React, { useState } from "react";
-import { reviewCommentsUpdate, reviewCommentsDelete } from "services/review/reviewService";
+import {
+  reviewCommentsUpdate,
+  reviewCommentsDelete,
+} from "services/review/reviewService";
 import { Comment } from "./ReviewType";
+import { ContentInput } from "acomponents/createReview/ContentLength";
 
 interface CommentListProps {
   comments: Comment[];
   onCommentUpdated: () => void;
 }
 
-const CommentList: React.FC<CommentListProps> = ({ comments, onCommentUpdated }) => {
+const CommentList: React.FC<CommentListProps> = ({
+  comments,
+  onCommentUpdated,
+}) => {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
-  const [editContent, setEditContent] = useState("");
 
   const handleEdit = (comment: Comment) => {
     setEditingCommentId(comment.id);
-    setEditContent(comment.content);
   };
 
-  const handleUpdate = async (commentId: number) => {
+  const handleUpdate = async (commentId: number, content: string) => {
     try {
-      await reviewCommentsUpdate(commentId.toString(), editContent);
+      await reviewCommentsUpdate(commentId.toString(), content);
       setEditingCommentId(null);
       onCommentUpdated();
     } catch (error) {
@@ -40,15 +45,18 @@ const CommentList: React.FC<CommentListProps> = ({ comments, onCommentUpdated })
   };
 
   return (
-    <div className="h-64 overflow-y-auto pr-2">
+    <div className="h-fit overflow-y-auto pr-2">
       {comments.map((comment) => (
         <div key={comment.id} className="bg-gray-100 p-4 rounded-lg mb-2">
           <p className="font-semibold">{comment.nickname}</p>
           {editingCommentId === comment.id ? (
-            <textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              className="w-full p-2 border rounded mt-2"
+            <ContentInput
+              minLength={5}
+              maxLength={200}
+              placeholder="수정할 내용을 입력하세요"
+              onSubmit={(content) => handleUpdate(comment.id, content)}
+              isTextArea={true}
+              textAreaHeight="40px"
             />
           ) : (
             <p className="mt-2">{comment.content}</p>
@@ -59,14 +67,26 @@ const CommentList: React.FC<CommentListProps> = ({ comments, onCommentUpdated })
           {comment.owner && (
             <div className="mt-2">
               {editingCommentId === comment.id ? (
-                <>
-                  <button onClick={() => handleUpdate(comment.id)} className="text-blue-500 mr-2">저장</button>
-                  <button onClick={() => setEditingCommentId(null)} className="text-gray-500">취소</button>
-                </>
+                <button
+                  onClick={() => setEditingCommentId(null)}
+                  className="text-gray-500"
+                >
+                  취소
+                </button>
               ) : (
                 <>
-                  <button onClick={() => handleEdit(comment)} className="text-blue-500 mr-2">수정</button>
-                  <button onClick={() => handleDelete(comment.id)} className="text-red-500">삭제</button>
+                  <button
+                    onClick={() => handleEdit(comment)}
+                    className="text-blue-500 mr-2"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={() => handleDelete(comment.id)}
+                    className="text-red-500"
+                  >
+                    삭제
+                  </button>
                 </>
               )}
             </div>
@@ -76,6 +96,5 @@ const CommentList: React.FC<CommentListProps> = ({ comments, onCommentUpdated })
     </div>
   );
 };
-
 
 export default CommentList;
