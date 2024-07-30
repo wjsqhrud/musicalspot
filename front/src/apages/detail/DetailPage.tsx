@@ -72,6 +72,7 @@ const DetailPage: React.FC = () => {
           }
           if (isAuthenticated) {
             const likeResponse = await musicalLike(musicalId);
+            console.log("좋아요상태는 ? " + likeResponse.data)
             setLiked(likeResponse.data);
           }
         }
@@ -82,7 +83,7 @@ const DetailPage: React.FC = () => {
     };
 
     getDetails();
-  }, [musicalId, isAuthenticated]);
+  }, [musicalId, isAuthenticated,liked]);
 
   const handleLikeClick = async () => {
     if (!isAuthenticated) {
