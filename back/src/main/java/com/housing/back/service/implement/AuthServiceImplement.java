@@ -545,4 +545,26 @@ public class AuthServiceImplement implements AuthService {
         return TestResponseDto.success();
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<TestResponseDto> getUserInfo(String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        String userId = jwtUtils.extractUserId(token);
+
+        Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+        if (!optionalUser.isPresent()) {
+            return TestResponseDto.userNotFound();
+        }
+        UserEntity user = optionalUser.get();
+
+        Optional<NickNameEntity> optionalNickname = nicknameRepository.findByUser(user);
+        if (!optionalNickname.isPresent()) {
+            return TestResponseDto.customValidationFail("닉네임이 존재하지 않습니다.");
+        }
+        String nickname = optionalNickname.get().getNickname();
+
+        String userInfo = "UserId: " + user.getUserId() + ", Email: " + user.getEmail() + ", Nickname: " + nickname + ", PasswordLength: " + user.getPassword().length();
+
+        return TestResponseDto.success(userInfo);
+    }
 }

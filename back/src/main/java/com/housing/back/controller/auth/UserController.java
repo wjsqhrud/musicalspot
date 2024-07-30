@@ -102,4 +102,9 @@ public class UserController {
         return authService.changePassword(authorizationHeader, requestBody);
     }
 
+    @GetMapping("/user-info")
+    public ResponseEntity<?> getUserInfo(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        return authService.getUserInfo(authorizationHeader);
+    }
 }

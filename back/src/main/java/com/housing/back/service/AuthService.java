@@ -42,4 +42,5 @@ public interface AuthService {
     ResponseEntity<?> processDeviceInfo(String accessToken, String refreshToken, String deviceInfo, HttpServletRequest request);
     ResponseEntity<TestResponseDto> deleteUserByNickname(HttpServletRequest request, Map<String, String> requestBody);
     ResponseEntity<TestResponseDto> changePassword(String authorizationHeader, Map<String, String> requestBody);
+    ResponseEntity<TestResponseDto> getUserInfo(String authorizationHeader);
 }
