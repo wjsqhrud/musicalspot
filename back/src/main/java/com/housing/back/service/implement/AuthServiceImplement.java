@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +26,7 @@ import com.housing.back.dto.request.auth.NicknameRequestDto;
 import com.housing.back.dto.request.auth.SignInRequestDto;
 import com.housing.back.dto.request.auth.SignUpRequestDto;
 import com.housing.back.dto.response.ResponseDto;
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.dto.response.auth.CheckCertificationResponseDto;
 import com.housing.back.dto.response.auth.EmailCertificationResponseDto;
 import com.housing.back.dto.response.auth.GenerateNewTokensResponseDto;
@@ -43,6 +45,10 @@ import com.housing.back.repository.auth.CertificationRepository;
 import com.housing.back.repository.auth.NicknameRepository;
 import com.housing.back.repository.auth.RefreshTokenRepository;
 import com.housing.back.repository.auth.UserRepository;
+import com.housing.back.repository.musical.MusicalLikeRepository;
+import com.housing.back.repository.review.ReviewCommentRepository;
+import com.housing.back.repository.review.ReviewLikeRepository;
+import com.housing.back.repository.review.ReviewRepository;
 import com.housing.back.service.AuthService;
 import com.housing.back.service.JwtBlacklistService;
 
@@ -62,9 +68,10 @@ public class AuthServiceImplement implements AuthService {
     private final EmailProvider emailProvider;
     private final JwtBlacklistService  jwtBlacklistService;
     private final JwtUtils jwtUtils;
-    
-
-    
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final MusicalLikeRepository musicalLikeRepository;
+    private final ReviewCommentRepository reviewCommentRepository;
+    private final ReviewRepository reviewRepository;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -472,6 +479,50 @@ public class AuthServiceImplement implements AuthService {
         response.put("ipAddress", ipAddress);
 
         return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<TestResponseDto> deleteUserByNickname(HttpServletRequest request, Map<String, String> requestBody) {
+       
+         try {
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                return TestResponseDto.unAuthorized();
+            }
+
+            token = token.substring(7);
+            String userId = jwtUtils.extractUserId(token);
+
+            Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+            if (!optionalUser.isPresent()) {
+                return TestResponseDto.userNotFound();
+            }
+            UserEntity user = optionalUser.get();
+
+            String nickname = requestBody.get("nickname");
+            if (nickname == null) {
+                return TestResponseDto.validationFail();
+            }
+
+            Optional<NickNameEntity> optionalNickname = nicknameRepository.findByNickname(nickname);
+            if (!optionalNickname.isPresent() || !optionalNickname.get().getUser().equals(user)) {
+                return TestResponseDto.customValidationFail("닉네임이 일치하지 않습니다.");
+            }
+
+            // 연관된 모든 데이터 삭제
+            refreshTokenRepository.deleteByUser(user);
+            reviewLikeRepository.deleteByUser(user);
+            musicalLikeRepository.deleteByUser(user);
+            reviewCommentRepository.deleteByUser(user);
+            reviewRepository.deleteByUser(user);
+            nicknameRepository.deleteByUser(user);
+            userRepository.delete(user);
+
+            return TestResponseDto.success("회원탈퇴가 완료되었습니다.");
+        } catch (DataAccessException e) {
+            return TestResponseDto.databaseError();
+        } catch (Exception e) {
+            return TestResponseDto.databaseError();
+        }
     }
 
 }

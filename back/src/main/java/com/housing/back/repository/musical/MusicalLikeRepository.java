@@ -11,4 +11,5 @@ import java.util.Optional;
 @Repository
 public interface MusicalLikeRepository extends JpaRepository<MusicalLikeEntity, Long> {
     Optional<MusicalLikeEntity> findByUserAndMusical(UserEntity user, MusicalEntity musical);
+    void deleteByUser(UserEntity user);
 }

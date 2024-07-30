@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.housing.back.dto.request.auth.NicknameRequestDto;
 import com.housing.back.dto.response.ResponseDto;
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.dto.response.auth.NicknameResponseDto;
 import com.housing.back.service.AuthService;
 
@@ -23,7 +24,6 @@ import jakarta.validation.Valid;
 
 import java.util.Map;
 
-// todo: aaa였는데 aaa삭제하고 url정리하면서 저게안됐나보다
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -90,5 +90,9 @@ public class UserController {
         return response;
     }
 
+    @PostMapping("/delete")
+    public ResponseEntity<TestResponseDto> deleteUser(HttpServletRequest request, @RequestBody Map<String, String> requestBody) {
+        return authService.deleteUserByNickname(request, requestBody);
+    }
 
 }

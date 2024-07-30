@@ -13,6 +13,7 @@ import com.housing.back.dto.request.auth.NicknameRequestDto;
 import com.housing.back.dto.request.auth.SignInRequestDto;
 import com.housing.back.dto.request.auth.SignUpRequestDto;
 import com.housing.back.dto.response.ResponseDto;
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.dto.response.auth.CheckCertificationResponseDto;
 import com.housing.back.dto.response.auth.EmailCertificationResponseDto;
 import com.housing.back.dto.response.auth.GenerateNewTokensResponseDto;
@@ -46,5 +47,6 @@ public interface AuthService {
     ResponseEntity<ResponseDto> accessSecureArea(HttpServletRequest request);
     /////////////////////////////////////////
     ResponseEntity<?> processDeviceInfo(String accessToken, String refreshToken, String deviceInfo, HttpServletRequest request);
+    ResponseEntity<TestResponseDto> deleteUserByNickname(HttpServletRequest request, Map<String, String> requestBody);
 
 }
