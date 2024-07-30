@@ -565,6 +565,7 @@ public class AuthServiceImplement implements AuthService {
         String nickname = optionalNickname.get().getNickname();
 
          UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(
+                user.getType(),
                 user.getUserId(),
                 user.getEmail(),
                 nickname

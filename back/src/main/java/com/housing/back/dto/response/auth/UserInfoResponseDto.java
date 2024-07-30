@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserInfoResponseDto {
+    private String type;
     private String userId;
     private String email;
     private String nickname;
