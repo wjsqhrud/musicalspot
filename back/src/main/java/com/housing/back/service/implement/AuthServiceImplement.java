@@ -507,16 +507,16 @@ public class AuthServiceImplement implements AuthService {
             return TestResponseDto.customValidationFail("닉네임이 일치하지 않습니다.");
         }
 
-        // 연관된 모든 데이터 삭제
-        refreshTokenRepository.deleteByUser(user);
-        reviewLikeRepository.deleteByUser(user);
-        musicalLikeRepository.deleteByUser(user);
-        reviewCommentRepository.deleteByUser(user);
-        reviewRepository.deleteByUser(user);
-        nicknameRepository.deleteByUser(user);  
-        userRepository.delete(user);
+        try {
+            // 사용자 삭제 - 연관된 모든 데이터는 자동으로 삭제됨 (ON DELETE CASCADE)
+            userRepository.delete(user);
 
-        return TestResponseDto.success();
+            return TestResponseDto.success();
+        } catch (DataAccessException e) {
+            return TestResponseDto.databaseError();
+        } catch (Exception e) {
+            return TestResponseDto.databaseError();
+        }
         
     }
 
