@@ -49,7 +49,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, message, show
               type="password"
               value={inputValue}
               onChange={handleInputChange}
-              className="border border-gray-300 focus:ring-signature p-2 rounded mb-2 w-full"
+              className="border border-gray-300  p-2 rounded mb-2 w-full focus:outline-none focus:ring-2 focus:ring-signature"
               placeholder={placeholder}
             />
             <div className={`text-sm ${validPasswordFormat(inputValue) ? 'text-blue-500' : 'text-red-500'}`}>

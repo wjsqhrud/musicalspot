@@ -106,7 +106,7 @@ export const deleteAccount = async (nickname:string) => {
   .then(response => response.data)
   .catch(error => {
       console.error('Error finding nickname', error);
-      return null;
+      throw error;
   });
   return result;
 };

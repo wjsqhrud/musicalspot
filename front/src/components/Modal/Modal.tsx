@@ -32,16 +32,16 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, message, show
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="border border-gray-300 p-2 rounded mb-4 w-full"
+            className="border border-gray-300 p-2 rounded mb-4 w-full focus:outline-none focus:ring-2 focus:ring-signature"
             placeholder={placeholder}
           />
-          <div>안녕하세요</div>
+          
         </>
         )}
         <div className="flex justify-end mt-4">
           <button 
             onClick={handleConfirm} 
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-signature text-white px-4 py-2 rounded hover:bg-violet-300"
           >
             확인
           </button>

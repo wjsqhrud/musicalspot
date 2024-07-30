@@ -10,6 +10,7 @@ import axios from "axios"; // axios 임포트
 import { SEARCH_MUSICALS_BY_TITLE } from "utils/APIUrlUtil/apiUrlUtil"; // 경로에 따라 적절히 수정
 import { useLocation, useNavigate } from "react-router-dom"; // useNavigate 임포트
 import musicalSpotLogo from 'assets/images/musical-spot-logo.png';
+import DeleteAccountModal from "components/Modal/deleteAcoountModal";
 
 type CommonHeaderProps = {
   isAuthenticated: boolean;
@@ -148,8 +149,16 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   const deleteAccountModalConfirm = async (inputNickname?: string) => {
     if (inputNickname) {
       console.log("회원탈퇴 진행: " + inputNickname);
-      await deleteAccount(inputNickname);
-      window.location.reload();
+      try {
+        await deleteAccount(inputNickname);
+        alert("회원탈퇴에 성공하였습니다. 그동안 이용해주셔서 감사합니다.");
+        window.location.reload();
+        console.log("시도는한거야?")
+      } catch (error) {
+        console.error("회원탈퇴 실패:", error);
+        alert("회원탈퇴에 실패하였습니다. 다시 시도해주세요.");
+        window.location.reload();
+      }
     } else {
       console.log("닉네임이 입력되지 않았습니다.");
     }
@@ -313,7 +322,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
         onConfirm={logOutModalConfirm}
         message="로그아웃 성공"
       />
-      <Modal
+      <DeleteAccountModal
         isOpen={deleteAccountModalOpen}
         onClose={() => setDeleteAccountModalOpen(false)}
         onConfirm={deleteAccountModalConfirm}
