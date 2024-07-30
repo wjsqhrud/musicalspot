@@ -215,9 +215,20 @@ const DetailPage: React.FC = () => {
                     <strong className="text-2xl border-b-2 mr-2 border-signature">공연장소</strong> {details.venue}
                   </p>
 
-                  <p className="tracking-widest">
-                    <strong className="text-2xl border-b-2 mr-2 border-signature">티켓가격</strong> {details.price}원
-                  </p>
+                  <div className="tracking-widest">
+                    <strong className="text-2xl border-b-2 mr-2 border-signature">티켓가격</strong>
+                    {details.tickets && details.tickets.length > 0 ? (
+                      <ul className="list-disc list-inside">
+                        {details.tickets.map((ticket) => (
+                          <li key={ticket.id}>
+                            {ticket.name}: {ticket.price.toLocaleString()}원
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>티켓정보가 없습니다.</p>
+                    )}
+                  </div>
 
                 </div>
               </div>
