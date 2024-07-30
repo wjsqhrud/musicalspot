@@ -7,6 +7,7 @@ interface ContentInputProps {
   placeholder: string;
   onSubmit: (content: string) => void;
   isTextArea?: boolean;
+  textAreaHeight: string;
 }
 
 export const ContentInput: React.FC<ContentInputProps> = ({
@@ -15,6 +16,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
   placeholder,
   onSubmit,
   isTextArea = false,
+  textAreaHeight,
 }) => {
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,8 +50,9 @@ export const ContentInput: React.FC<ContentInputProps> = ({
           value={content}
           onChange={handleContentChange}
           placeholder={placeholder}
-          className="w-full p-2 border rounded text-gray-700 bg-white"
+          className="w-full p-2 border rounded text-gray-700 bg-white no-scrollbar"
           rows={isTextArea ? 5 : undefined}
+          style={{ height: isTextArea ? textAreaHeight : "auto" }}
         />
         <span className="absolute bottom-2 right-2 text-sm text-gray-500">
           {content.length}/{maxLength}
