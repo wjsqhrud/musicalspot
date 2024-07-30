@@ -35,6 +35,7 @@ import com.housing.back.dto.response.auth.JwtResponseDto;
 import com.housing.back.dto.response.auth.NicknameResponseDto;
 import com.housing.back.dto.response.auth.SignInResponseDto;
 import com.housing.back.dto.response.auth.SignUpResponseDto;
+import com.housing.back.dto.response.auth.UserInfoResponseDto;
 import com.housing.back.entity.auth.NickNameEntity;
 import com.housing.back.entity.auth.RefreshTokenEntity;
 import com.housing.back.entity.auth.UserEntity;
@@ -563,8 +564,13 @@ public class AuthServiceImplement implements AuthService {
         }
         String nickname = optionalNickname.get().getNickname();
 
-        String userInfo = "UserId: " + user.getUserId() + ", Email: " + user.getEmail() + ", Nickname: " + nickname + ", PasswordLength: " + user.getPassword().length();
+         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(
+                user.getUserId(),
+                user.getEmail(),
+                nickname,
+                user.getPassword().length()
+        );
 
-        return TestResponseDto.success(userInfo);
+        return TestResponseDto.success(userInfoResponseDto);
     }
 }
