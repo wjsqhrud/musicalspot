@@ -5,6 +5,7 @@ import { HeaderProvider } from 'services/HeaderService/HeaderService';
 import CommonHeader from 'acomponents/header/CommonHeader';
 import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 import Modal from 'components/Modal/Modal';
+import { userInfo } from 'services/Auth/authService';
 // import Modal from 'components/Modal/Modal';
 
 
@@ -12,6 +13,7 @@ import Modal from 'components/Modal/Modal';
 const MyPage: React.FC = () => {
   const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [changePwdModalOpen, setChangePwdModalOpen] = useState(false);
+  const [userData, setUserData] = useState({ userId: '', email: '', nickname: '', type: '' });
 
   const deleteAccountModalConfirm = async (inputNickname?: string) => {
     if (inputNickname) {
@@ -23,7 +25,21 @@ const MyPage: React.FC = () => {
     }
   };
 
+  const fetchUserData = async () => {
+    try {
+      const response = await userInfo();
+      if (response.data) {
+        console.log(response.data)
+        setUserData(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user info:", error);
+    }
+  };
 
+  useEffect(() => {
+    fetchUserData();
+  }, [isAuthenticated]);
 
 
 
@@ -49,24 +65,19 @@ const MyPage: React.FC = () => {
     
   }, [isAuthenticated, myNickname]);
 
-  // Dummy data
-  const dummyData = {
-    email: "dummyemail@example.com",
-    userId: "dummyUserId",
-    password: "dummyPassword"
-  };
+
 
   // Handle password change
   const handlePasswordChange = () => {
     console.log("Change password button clicked");
     checkAuthStatus(
       (nickname) => {
-        // todo: 인증성공시 로직실행하시면됩니다.
+        // 인증 성공 시 로직
         console.log("인증된 사용자:", nickname);
         setChangePwdModalOpen(true);
       },
       () => {
-        // todo: 인증실패시에는 로그인하라는 알림을 띄울지, 로그인화면으로 보낼지 정하면됩니다.
+        // 인증 실패 시 로직
         console.log("인증 필요함");
       }
     );
@@ -95,7 +106,7 @@ const MyPage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700">회원종류</label>
                   <input
                     type="text"
-                    value="네이버"
+                    value={userData.type}
                     disabled
                     className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
                   />
@@ -104,7 +115,7 @@ const MyPage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700">이메일</label>
                   <input
                     type="email"
-                    value={dummyData.email}
+                    value={userData.email}
                     disabled
                     className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
                   />
@@ -113,7 +124,7 @@ const MyPage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700">아이디</label>
                   <input
                     type="text"
-                    value={dummyData.userId}
+                    value={userData.userId} 
                     disabled
                     className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
                   />
@@ -122,7 +133,7 @@ const MyPage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700">닉네임</label>
                   <input
                     type="test"
-                    value="첫번째 호석이"
+                    value={userData.nickname}
                     disabled
                     className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
                   />
@@ -132,7 +143,7 @@ const MyPage: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700">비밀번호</label>
                     <input
                       type="password"
-                      value={dummyData.password}
+                      value="*************"
                       readOnly
                       className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
                     />

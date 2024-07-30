@@ -5,7 +5,7 @@ import { ResponseDto } from "utils/DtoUtil/response";
 import NicknameResponseDto from "utils/DtoUtil/response/auth/nickname.response.dto";
 import { getDeviceInfo } from "utils/DeviceInfoUtil/deviceInfoUtil";
 import { getCookie, setCookie } from "utils/CookieUtil/cookieUtis";
-import { SIGN_IN_URL, SIGN_UP_URL, ID_CHECK_URL, EMAIL_CERTIFICATION_URL, CHECK_CERTIFICATION_URL, NICKNAME_CHECK_URL, NICKNAME_CREATE_URL, NICKNAME_FIND_URL, LOGOUT_URL, REFRESH_TOKEN_URL, ACCESS_URL, POST_DELETE_ACCOUNT} from "utils/APIUrlUtil/apiUrlUtil";
+import { SIGN_IN_URL, SIGN_UP_URL, ID_CHECK_URL, EMAIL_CERTIFICATION_URL, CHECK_CERTIFICATION_URL, NICKNAME_CHECK_URL, NICKNAME_CREATE_URL, NICKNAME_FIND_URL, LOGOUT_URL, REFRESH_TOKEN_URL, ACCESS_URL, POST_DELETE_ACCOUNT, USER_INFO} from "utils/APIUrlUtil/apiUrlUtil";
 
 const responseHandler = <T> (response: AxiosResponse<any,any>) => {
     const responseBody: T = response.data;
@@ -110,6 +110,21 @@ export const deleteAccount = async (nickname:string) => {
   });
   return result;
 };
+
+export const userInfo = async () => {
+  const result = await axios.get(USER_INFO(),
+  {
+    headers: {
+      Authorization: `Bearer ${getCookie('accessToken')}`
+    }
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error('Error finding nickname', error);
+    return null;
+  })
+  return result;
+}
 
   export const combinedLogoutHandler = async (navigateToHome: () => void) => {
     const accessToken: string | undefined = getCookie('accessToken');

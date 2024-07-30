@@ -23,6 +23,7 @@ export const REFRESH_TOKEN_URL = () => `${API_DOMAIN}/refresh-token`;
 export const ACCESS_URL = () => `${API_DOMAIN}/access`;
 // todo: 회원탈퇴는 아직 X
 export const POST_DELETE_ACCOUNT = () => `${API_DOMAIN}/delete`;
+export const USER_INFO = () => `${API_DOMAIN}/user-info`;
 
 
 export const SEARCH_MUSICALS_BY_TITLE = (title: string) => `${API_DOMAIN}/public/musical/search-by-title?title=${title}`;
