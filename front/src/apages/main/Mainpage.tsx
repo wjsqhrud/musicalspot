@@ -10,6 +10,7 @@ import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
 import { useNavigate } from "react-router-dom"; // import useNavigate 추가
 import { GrPrevious, GrNext } from "react-icons/gr";
+import styles from './Mainpage.module.css';
 
 interface Musical {
   id: number;
@@ -131,7 +132,7 @@ const Mainpage: React.FC = () => {
 
   return (
     <HeaderProvider>
-      <div className="max-w-[1250px] mx-auto pt-20">
+      <div className={styles.headerStyle}>
         <CommonHeader
           isAuthenticated={isAuthenticated}
           myNickname={myNickname}
@@ -139,19 +140,19 @@ const Mainpage: React.FC = () => {
           setNicknameModalOpen={setNicknameModalOpen}
           checkAuthStatus={checkAuthStatus}
         />
-        <div className="relative flex justify-around mb-10">
+        <div className={styles.slideContainer}>
   {/* 슬라이드 버튼 컨테이너 */}
-  <div className="absolute top-0 -left-12 -right-12 bottom-0 flex items-center justify-between overflow-hidden">
+  <div className={styles.slideBtnContainer}>
     {/* 이전 슬라이드 버튼 */}
     <button
-      className="bg-black text-white bg-opacity-50 rounded-full p-2 m-2 hover:bg-opacity-100 hover:scale-110 transition-all"
+      className={styles.slideBtn}
       onClick={handlePrev}
     >
       <GrPrevious />
     </button>
     {/* 다음 슬라이드 버튼 */}
     <button
-      className="bg-black text-white bg-opacity-50 rounded-full p-2 m-2 hover:bg-opacity-100 hover:scale-110 transition-all"
+      className={styles.slideBtn}
       onClick={handleNext}
     >
       <GrNext />
@@ -159,9 +160,9 @@ const Mainpage: React.FC = () => {
   </div>
   
   {/* 슬라이드 컨테이너 */}
-  <div className="flex-wrap relative w-full h-[600px] pt-[5%] overflow-hidden">
+  <div className={styles.slideContainerInner}>
   <div
-    className="flex transition-transform duration-500 ease-in-out"
+    className={styles.slideBoxAnimation}
     style={{
       transform: `translateX(-${
         currentSlide * (100 / musicalsByStartDate.length)
@@ -172,11 +173,11 @@ const Mainpage: React.FC = () => {
       musicalsByStartDate.map((musical, index) => (
         <div
           key={musical.id}
-          className={`flex-shrink-0 w-1/4 h-fit mx-2 transition-all duration-500 ease-in-out  
+          className={`${styles.slideSortBox}  
             ${
               index === currentSlide
-                ? "opacity-100 transform scale-110"
-                : "opacity-65 transform scale-90"
+                ? styles.currentImgStyle
+                : styles.normalImgStyle
             } cursor-pointer`}
           onClick={() => handleClick(musical.id)}
           style={{ zIndex: 100 }} // z-index 설정
@@ -184,7 +185,7 @@ const Mainpage: React.FC = () => {
           <img
             src={musical.imageUrl}
             alt={musical.title}
-            className="w-full h-full object-fit shadow-modalShadow shadow-stone-600 mx-auto"
+            className="w-full h-full shadow-modalShadow shadow-stone-600 mx-auto"
             style={{ pointerEvents: 'auto' }} // pointer-events 설정
           />
         </div>
@@ -192,14 +193,14 @@ const Mainpage: React.FC = () => {
       ))}
   </div>
   {/* 슬라이드 네비게이션 */}
-  <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2 mt-2">
+  <div className={"absolute bottom-2 left-0 right-0 flex justify-center space-x-2 mt-2"}>
     {musicalsByStartDate.map((_, index) => (
       <div
         key={index}
         className={`h-1 cursor-pointer ${
           index === currentSlide
-            ? "bg-black w-16 h-1 rounded-lg"
-            : "bg-gray-300 w-6 h-1 rounded-lg"
+            ? styles.currentSlideBarStyle
+            : styles.normalSlideBarStyle
         } transition-all duration-300`}
         onClick={() => handleLineClick(index)}
       />
@@ -208,25 +209,27 @@ const Mainpage: React.FC = () => {
 </div>
 </div>
 
-      <div className="flex flex-row items-center justify-start w-fit ml-7 border-b-2 border-signature">
-        <span className="text-2xl text-signature font-extrabold left-4 pt-7 italic">What's Hot</span>
+      <div className={styles.recommendContent}>
+        <span className={styles.recommendText}>What's Hot</span>
       </div>
 
         {/* Grid Section */}
-        <div className="p-5 grid grid-cols-5 gap-4">
+        <div className={styles.gridContainer}>
           {musicalsByViewCount.slice(0, 1).map((musical) => (
             <div
               key={musical.id}
-              className="col-span-2 row-span-2 text-white p-2.5 rounded flex flex-col items-center cursor-pointer overflow-hidden group"
+              className={styles.gridInner}
               onClick={() => handleClick(musical.id)}
             >
-              <div className="relative w-full h-full">
+              <div className={styles.gridImage}>
                 <img
                   src={musical.imageUrl}
                   alt={musical.title}
-                  className="w-full h-full object-contain rounded"
+                  className={styles.gridImgContainer}
                 />
-                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 hover:bg-opacity-65 transition-opacity duration-300 flex flex-col justify-center items-center">
+                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 
+                text-white text-center p-2.5 opacity-0 group-hover:opacity-100 hover:bg-opacity-65 
+                transition-opacity duration-300 flex flex-col justify-center items-center">
                   <div>{musical.title}</div>
                   <div>{formatDate(musical.startDate)}</div>
                   {musical.startDate !== musical.endDate ? (
@@ -239,14 +242,14 @@ const Mainpage: React.FC = () => {
           {musicalsByViewCount.slice(1, 7).map((musical) => (
             <div
               key={musical.id}
-              className="text-white p-2.5 rounded flex flex-col items-center cursor-pointer overflow-hidden group"
+              className={styles.sortedImgContainer}
               onClick={() => handleClick(musical.id)}
             >
-              <div className="relative w-full h-full">
+              <div className={styles.gridImage}>
                 <img
                   src={musical.imageUrl}
                   alt={musical.title}
-                  className="w-full h-full object-contain rounded"
+                  className={styles.gridImgContainer}
                 />
                 <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center 
                 p-2.5 opacity-0 group-hover:opacity-100 hover:bg-opacity-65 transition-opacity duration-300 flex flex-col 
@@ -263,7 +266,7 @@ const Mainpage: React.FC = () => {
         </div>
 
         {/* Footer Section */}
-        <footer className="bg-gray-100 text-center py-2.5 border-t border-gray-300">
+        <footer className={styles.footerStyle}>
           <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
         </footer>
       </div>
