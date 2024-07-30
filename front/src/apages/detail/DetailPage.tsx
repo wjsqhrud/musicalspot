@@ -4,8 +4,13 @@ import { musicalDetails } from "services/musical/musicalService";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+// <<<<<<< HEAD
+// import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
+
+// =======
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // 아이콘 사용을 위해 react-icons 패키지 사용
+import styles from './DetailPage.module.css';
 interface Link {
   id: number;
   siteName: string;
@@ -104,7 +109,10 @@ const DetailPage: React.FC = () => {
 
   return (
     <HeaderProvider>
-      <div className="max-w-[1250px] mx-auto pt-20">
+
+      <div className="max-w-[1250px] mx-auto pt-20 select-none">
+        {/* 공통 헤더 */}
+
         <CommonHeader
           isAuthenticated={isAuthenticated}
           myNickname={myNickname}
@@ -116,14 +124,20 @@ const DetailPage: React.FC = () => {
           {error && <div>{error}</div>}
           {details && (
             <>
-              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">{details.title}</h1>
-                <button
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
-                  onClick={openModal}
-                >
+
+              <div className="max-w-[1200px] pt-6 flex justify-between mb-4 overflow-hidden">
+                <div className="w-full flex flex-row justify-between border-b-2 border-black">
+                  <h1 className="text-2xl font-bold pt-2">{details.title}</h1>
+                  {/* 예매처 버튼 */}
+                  <button
+                    className="px-4 py-2 bg-blue-500 text-white rounded font-normal tracking-widest text-xl mb-1 ml-2"
+                    onClick={openModal}
+                  >
                   예매처
-                </button>
+                  </button>
+                </div>
+                {/* 모달 창 */}
+
                 {modalIsOpen && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div
@@ -151,15 +165,18 @@ const DetailPage: React.FC = () => {
                 )}
               </div>
               <div className="flex mb-4 space-x-4">
-                <div className="w-1/2 relative z-10">
+
+                <div className="w-fit relative z-10">
+                  {/* 뮤지컬 이미지 */}
+
                   <img
                     src={details.imageUrl}
                     alt={details.title}
-                    className="w-full h-auto"
+                    className="w-[full] h-[700px]"
                   />
                   <div className="flex justify-between mt-2">
                     <div
-                      className="flex items-center cursor-pointer"
+                      className={`flex items-center cursor-pointer transition-colors duration-150 ${liked ? styles.heartPulse : ''}`}
                       onClick={handleLikeClick}
                     >
                       {liked ? (
@@ -171,7 +188,7 @@ const DetailPage: React.FC = () => {
                     </div>
                     <div className="flex items-center text-black">
                       <span
-                        className="text-lg underline cursor-pointer"
+                        className="text-lg border-b border-black cursor-pointer"
                         onClick={handleReviewClick}
                       >
                         {details.reviewCount} reviews
@@ -179,28 +196,22 @@ const DetailPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="w-1/2 p-4">
-                  <p className="mb-2">
-                    <strong>공연기간:</strong> {formatDate(details.startDate)} -{" "}
+
+                <div className="w-1/2 p-4 flex flex-col justify-around">
+                  {/* 뮤지컬 정보 */}
+                  <p className="tracking-widest">
+                    <strong className="text-2xl border-b-2 mr-2 border-signature">공연기간</strong> {formatDate(details.startDate)} -{" "}
+
                     {formatDate(details.endDate)}
                   </p>
-                  <p className="mb-2">
-                    <strong>공연장소:</strong> {details.venue}
+                  <p className="tracking-widest">
+                    <strong className="text-2xl border-b-2 mr-2 border-signature">공연장소</strong> {details.venue}
                   </p>
-                  <div className="mb-2">
-                    <strong>티켓가격:</strong>
-                    {details.tickets && details.tickets.length > 0 ? (
-                      <ul className="list-disc list-inside">
-                        {details.tickets.map((ticket) => (
-                          <li key={ticket.id}>
-                            {ticket.name}: {ticket.price.toLocaleString()}원
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>티켓 정보가 없습니다.</p>
-                    )}
-                  </div>
+
+                  <p className="tracking-widest">
+                    <strong className="text-2xl border-b-2 mr-2 border-signature">티켓가격</strong> {details.price}원
+                  </p>
+
                 </div>
               </div>
             </>

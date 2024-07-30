@@ -34,6 +34,7 @@ public class WebSocketController {
 
     private static final int SPAM_THRESHOLD = 8; // 허용되는 최대 메시지 수
     private static final long TIME_WINDOW = 10000; // 시간 창 (밀리초 단위, 임시로 10초 설정)
+    private static final int MAX_MSG_LENGTH = 50; // 최대 문자열 길이 제한
 
     // 사용자 닉네임과 세션 ID를 매핑하기 위한 맵
     private Map<String, String> userSessionMap = new ConcurrentHashMap<>();
@@ -54,7 +55,7 @@ public class WebSocketController {
         long currentTime = System.currentTimeMillis();
         String userNickname = messageDTO.getNickname(); // 사용자 닉네임을 가져옴
         String sessionId = headerAccessor.getSessionId(); // 클라이언트 세션 ID를 가져옴
-
+        
         // 사용자 닉네임과 세션 ID 매핑
         userSessionMap.put(userNickname, sessionId);
 
@@ -68,25 +69,26 @@ public class WebSocketController {
         // 무작위 도배 감지 메서드
         Queue<Long> timestamps = userMessageTimestamps.computeIfAbsent(userNickname, k -> new LinkedList<>());
 
-        logger.debug("Before cleaning timestamps for user {}: {}", userNickname, timestamps);
-
         while (!timestamps.isEmpty() && currentTime - timestamps.peek() > TIME_WINDOW) {
             timestamps.poll(); // TIME_WINDOW를 벗어난 오래된 메시지 타임스탬프 제거
         }
 
-        logger.debug("After cleaning timestamps for user {}: {}", userNickname, timestamps);
-
         if (timestamps.size() >= SPAM_THRESHOLD) {
             messageDTO.setMessageText("도배감지");
             sendMessageToUser(sessionId, messageDTO);
-            logger.debug("Detected spam from user: {}", userNickname);
+            return null;
+        }
+
+        // 문자열 최대 길이 50자 초과 감지 메서드
+        if (transmittedMsg.length() >= MAX_MSG_LENGTH) {
+            messageDTO.setMessageText("길이초과");
+            sendMessageToUser(sessionId, messageDTO);
             return null;
         }
 
         // 모든 조건을 통과한 경우 메시지 전송
         timestamps.offer(currentTime);
         userMessageTimestamps.put(userNickname, timestamps); // 다시 put으로 업데이트
-        logger.debug("After adding current timestamp for user {}: {}", userNickname, timestamps);
 
         // 사용자별 동일 문자열 도배 감지 메서드
         String prevMsg = userPreviousMessages.getOrDefault(userNickname, "");
@@ -147,7 +149,6 @@ public class WebSocketController {
     @EventListener
     public void handleSessionConnected(SessionConnectEvent event) {
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headers.getSessionId();
         String user = headers.getUser() != null ? headers.getUser().getName() : null;
 
         if (user != null) {
