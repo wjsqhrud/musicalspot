@@ -7,9 +7,11 @@ import Modal from 'components/Modal/Modal';
 import { handleNicknameChange, checkNicknameAvailability, handleCreateNickname } from 'services/NicknameService/nicknameService';
 import Button from 'acommons/Button';
 import Input from 'acommons/Input';
+import { useAuth } from 'hooks/useAuthHook';
 
 
 const CreateNickNameComponent: React.FC = () => {
+  const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [nickname, setNickname] = useState('');
   const [nicknameError, setNicknameError] = useState('');
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
@@ -19,7 +21,14 @@ const CreateNickNameComponent: React.FC = () => {
   const [logOutModalOpen, setLogOutModalOpen] = useState(false);
   const [createNicknameModalOpen, setCreateNicknameModalOpen] = useState(false);
 
-  
+  useEffect(() => {
+    console.log("Running checkAuthStatus on mount..." + isAuthenticated);
+    if(isAuthenticated){
+      console.log("홈으로가라")
+      navigateToHome();
+    }
+    
+  }, [isAuthenticated]);
 
   useEffect(() => {
     console.log("Hello World");
