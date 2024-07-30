@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { musicalDetails } from "services/musical/musicalService";
+import { musicalDetails, musicalLike, toggleMusicalLike } from "services/musical/musicalService";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
@@ -75,6 +75,10 @@ const DetailPage: React.FC = () => {
             setDetails(data); // 불러온 데이터를 상태에 저장
             setLikeCount(data.likeCount); // 초기 좋아요 수 설정
           }
+          if (isAuthenticated) {
+            const likeResponse = await musicalLike(musicalId);
+            setLiked(likeResponse.data);
+          }
         }
       } catch (error) {
         console.error("Error fetching musical details:", error);
@@ -83,15 +87,22 @@ const DetailPage: React.FC = () => {
     };
 
     getDetails();
-  }, [musicalId]);
+  }, [musicalId, isAuthenticated]);
 
-  const handleLikeClick = () => {
-    if (liked) {
-      setLiked(false);
-      setLikeCount(likeCount - 1);
-    } else {
-      setLiked(true);
-      setLikeCount(likeCount + 1);
+  const handleLikeClick = async () => {
+    if (!isAuthenticated) {
+      alert("좋아요를 누르려면 로그인이 필요합니다.");
+      return;
+    }
+    try {
+      const response = await toggleMusicalLike(musicalId!);
+      if (response.code === "SU") {
+        setLiked(!liked);
+        setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      setError("좋아요 처리 중 오류가 발생했습니다.");
     }
   };
 
