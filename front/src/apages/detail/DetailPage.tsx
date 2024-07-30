@@ -4,11 +4,6 @@ import { musicalDetails, musicalLike, toggleMusicalLike } from "services/musical
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
-// <<<<<<< HEAD
-// import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-
-
-// =======
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // 아이콘 사용을 위해 react-icons 패키지 사용
 import styles from './DetailPage.module.css';
 interface Link {
