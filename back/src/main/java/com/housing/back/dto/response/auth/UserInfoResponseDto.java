@@ -11,5 +11,4 @@ public class UserInfoResponseDto {
     private String userId;
     private String email;
     private String nickname;
-    private int passwordLength;
 }

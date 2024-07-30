@@ -567,8 +567,7 @@ public class AuthServiceImplement implements AuthService {
          UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(
                 user.getUserId(),
                 user.getEmail(),
-                nickname,
-                user.getPassword().length()
+                nickname
         );
 
         return TestResponseDto.success(userInfoResponseDto);
