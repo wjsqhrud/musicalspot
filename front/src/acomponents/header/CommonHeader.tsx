@@ -183,7 +183,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
               className="text-2xl max-w-40 max-h-40 font-bold cursor-pointer pl-5"
               onClick={navigateToHome}
             >
-             <img src={musicalSpotLogo} alt="Musical Spot-logo" className="scale-125 hover:animate-pulse"/>
+             <img src={musicalSpotLogo} alt="Musical Spot-logo" className="scale-125 hover:animate-pulse duration-75"/>
             </div>
           </div>
         </div>

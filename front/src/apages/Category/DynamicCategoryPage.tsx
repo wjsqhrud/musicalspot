@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa"; // 드롭다운 아이콘 import
 import CommonHeader from "acomponents/header/CommonHeader"; // 공통 헤더 컴포넌트 import
 import { useAuth } from "hooks/useAuthHook"; // 인증 훅 import
@@ -75,16 +75,19 @@ const musicalDetailsIncrementView = async (musicalId: string) => {
   }
 };
 
+
 // DynamicCategoryPage 컴포넌트 정의
 const DynamicCategoryPage: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>(); // URL에서 카테고리 ID를 가져옴
   const [musicals, setMusicals] = useState<Musical[]>([]); // 뮤지컬 데이터 상태
   const [categories, setCategories] = useState<Category[]>([]); // 카테고리 데이터 상태
   const [showDropdown, setShowDropdown] = useState(false); // 드롭다운 메뉴 상태
-  const [sortOption, setSortOption] = useState(" "); // 정렬 옵션 상태
-  const [categoryName, setCategoryName] = useState("뮤지컬"); // 선택된 카테고리 이름 상태
+  const [sortOption, setSortOption] = useState(""); // 정렬 옵션 상태
+  const [categoryName, setCategoryName] = useState(""); // 선택된 카테고리 이름 상태
   const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 훅
-
+  const [currentCategoryId, setCurrentCategoryId] = useState<string | undefined>("");
+  const location = useLocation();
+ 
   // 사용자 인증 정보와 관련된 상태 및 함수
   const {
     isAuthenticated,
@@ -127,11 +130,12 @@ const DynamicCategoryPage: React.FC = () => {
 
   // 카테고리 ID가 변경될 때마다 뮤지컬 데이터 불러오기
   useEffect(() => {
-    if (categoryId) {
+    if (categories.length > 0 && categoryId) {
       console.log(`Fetching musicals for category: ${categoryId}`);
       fetchMusicals(categoryId);
     }
-  }, [categoryId]);
+  }, [categories, categoryId]);
+  
 
   // 카테고리 데이터가 변경될 때마다 선택된 카테고리 이름 설정
   useEffect(() => {
@@ -139,9 +143,27 @@ const DynamicCategoryPage: React.FC = () => {
       const selectedCategory = categories.find(
         (category) => category.id === categoryId
       );
-      setCategoryName(selectedCategory ? selectedCategory.category : "뮤지컬");
+      setCategoryName(selectedCategory ? selectedCategory.category : "장르 선택");
     }
-  }, [categories, categoryId]);
+  }, [categories, currentCategoryId]);
+  
+  useEffect(() => {
+    const currentCategoryId = location.pathname.split('/').pop();
+    switch(currentCategoryId) {
+      case 'all' : setCategoryName("전체보기");
+        break;
+     case '1' : setCategoryName("라이선스")
+        break;
+      case '2' : setCategoryName("오리지널");
+        break;
+      case '3' : setCategoryName("창작");
+        break;
+      case '4' : setCategoryName("넘버별 퍼포먼스");
+        break;
+      default :
+        break;
+    }
+  },[location])
 
   // 이미지 클릭 핸들러
   const handleClick = async (id: number) => {
@@ -207,7 +229,7 @@ const DynamicCategoryPage: React.FC = () => {
 
   // 선택된 정렬 옵션에 따라 뮤지컬 데이터 정렬
   const sortedMusicals = sortMusicals(musicals, sortOption);
-
+  
   return (
     <HeaderProvider>
       <div className="max-w-[1250px] mx-auto pt-20">

@@ -89,8 +89,14 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   }, [messages, handleNewMessage]);
 
   const sendMessage = () => {
+    const inputContent: HTMLInputElement | any = document.getElementById("chatTransmitter");
     if (isMuted) {
       window.alert('도배 및 욕설로 인해 채팅이 금지되어 있습니다. 잠시 후 다시 시도하세요.');
+      return;
+    } 
+    else if (messageInput.length > 50) {
+      window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
+      inputContent.value = "";
       return;
     }
 
@@ -156,6 +162,9 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
       window.alert("도배 감지됨. 일정 시간 동안 채팅이 금지됩니다.");
       setIsMuted(true);
       setTimeout(() => setIsMuted(false), MUTE_DURATION);
+
+    } else if (message.messageText?.includes("길이초과")) {
+      window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
     }
   };
 
@@ -177,7 +186,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
               </button>
           </div>
   
-          <div className={`flex-grow flex items-center justify-center ${isConnected ? 'hidden' : ''}`}>
+          <div className={`flex-grow flex items-center justify-center bg-slate-300 ${isConnected ? 'hidden' : ''}`}>
             <button
               onClick={handleConnectWebSocket}
               className="relative flex items-center justify-center px-8 py-3 text-lg
@@ -211,13 +220,13 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                 text-white rounded-full transition-all 
                   duration-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
-                  <span className='group-hover:text-green-400 transition-colors duration-300'>채팅 입장</span>
+                  <span className={`group-hover:text-green-400 transition-colors duration-300`}>채팅 입장</span>
                   <IoEnterOutline size={24} />
                 </button>
               </div>
             ) : (
               messages.map((v, index) => (
-                <div key={index} className={`animate-fade flex  ${styles.customFont}
+                <div key={index} className={`animate-fade flex ${styles.customFont} break-words text-wrap
                 ${v.nickname === userNickname && v.type === MessageType.CHAT ? 'justify-end' : 'justify-start'}`}>
                   {v.type === MessageType.JOIN ? (
                     <div className="flex justify-center bg-gray-300 py-1 px-4 m-1 rounded-xl w-fit ml-16 
