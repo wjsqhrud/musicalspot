@@ -95,4 +95,11 @@ public class UserController {
         return authService.deleteUserByNickname(request, requestBody);
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<TestResponseDto> changePassword(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody Map<String, String> requestBody) {
+        return authService.changePassword(authorizationHeader, requestBody);
+    }
+
 }

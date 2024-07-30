@@ -50,5 +50,9 @@ public class UserEntity {
         this.type = type;
         this.role = "ROLE_USER"; // 
     }
+    // 비밀번호를 설정하는 setter 메서드 추가
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }

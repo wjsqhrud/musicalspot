@@ -519,5 +519,30 @@ public class AuthServiceImplement implements AuthService {
         }
         
     }
+    
+    @Override
+    @Transactional
+    public ResponseEntity<TestResponseDto> changePassword(String authorizationHeader, Map<String, String> requestBody) {
+        String token = authorizationHeader.substring(7);
+        String userId = jwtUtils.extractUserId(token);
+
+        Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+        if (!optionalUser.isPresent()) {
+            return TestResponseDto.userNotFound();
+        }
+        UserEntity user = optionalUser.get();
+
+        String newPassword = requestBody.get("newPassword");
+        if (newPassword == null || newPassword.isEmpty()) {
+            return TestResponseDto.validationFail();
+        }
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+
+        userRepository.save(user);
+
+        return TestResponseDto.success();
+    }
 
 }
