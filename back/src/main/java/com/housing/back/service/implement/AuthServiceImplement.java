@@ -482,47 +482,41 @@ public class AuthServiceImplement implements AuthService {
     }
 
     public ResponseEntity<TestResponseDto> deleteUserByNickname(HttpServletRequest request, Map<String, String> requestBody) {
-       
-         try {
-            String token = request.getHeader("Authorization");
-            if (token == null || !token.startsWith("Bearer ")) {
-                return TestResponseDto.unAuthorized();
-            }
-
-            token = token.substring(7);
-            String userId = jwtUtils.extractUserId(token);
-
-            Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
-            if (!optionalUser.isPresent()) {
-                return TestResponseDto.userNotFound();
-            }
-            UserEntity user = optionalUser.get();
-
-            String nickname = requestBody.get("nickname");
-            if (nickname == null) {
-                return TestResponseDto.validationFail();
-            }
-
-            Optional<NickNameEntity> optionalNickname = nicknameRepository.findByNickname(nickname);
-            if (!optionalNickname.isPresent() || !optionalNickname.get().getUser().equals(user)) {
-                return TestResponseDto.customValidationFail("닉네임이 일치하지 않습니다.");
-            }
-
-            // 연관된 모든 데이터 삭제
-            refreshTokenRepository.deleteByUser(user);
-            reviewLikeRepository.deleteByUser(user);
-            musicalLikeRepository.deleteByUser(user);
-            reviewCommentRepository.deleteByUser(user);
-            reviewRepository.deleteByUser(user);
-            nicknameRepository.deleteByUser(user);
-            userRepository.delete(user);
-
-            return TestResponseDto.success("회원탈퇴가 완료되었습니다.");
-        } catch (DataAccessException e) {
-            return TestResponseDto.databaseError();
-        } catch (Exception e) {
-            return TestResponseDto.databaseError();
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return TestResponseDto.unAuthorized();
         }
+
+        token = token.substring(7);
+        String userId = jwtUtils.extractUserId(token);
+
+        Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+        if (!optionalUser.isPresent()) {
+            return TestResponseDto.userNotFound();
+        }
+        UserEntity user = optionalUser.get();
+
+        String nickname = requestBody.get("nickname");
+        if (nickname == null) {
+            return TestResponseDto.validationFail();
+        }
+
+        Optional<NickNameEntity> optionalNickname = nicknameRepository.findByNickname(nickname);
+        if (!optionalNickname.isPresent() || !optionalNickname.get().getUser().equals(user)) {
+            return TestResponseDto.customValidationFail("닉네임이 일치하지 않습니다.");
+        }
+
+        // 연관된 모든 데이터 삭제
+        refreshTokenRepository.deleteByUser(user);
+        reviewLikeRepository.deleteByUser(user);
+        musicalLikeRepository.deleteByUser(user);
+        reviewCommentRepository.deleteByUser(user);
+        reviewRepository.deleteByUser(user);
+        nicknameRepository.deleteByUser(user);
+        userRepository.delete(user);
+
+        return TestResponseDto.success();
+        
     }
 
 }
