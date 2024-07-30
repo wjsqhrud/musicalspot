@@ -4,8 +4,9 @@ import { useAuth } from 'hooks/useAuthHook';
 import { HeaderProvider } from 'services/HeaderService/HeaderService';
 import CommonHeader from 'acomponents/header/CommonHeader';
 import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
-import Modal from 'components/Modal/Modal';
-import { userInfo } from 'services/Auth/authService';
+// import Modal from 'components/Modal/Modal';
+import { changePassword, userInfo } from 'services/Auth/authService';
+import Modal from 'components/Modal/MyPageModal';
 // import Modal from 'components/Modal/Modal';
 
 
@@ -14,6 +15,9 @@ const MyPage: React.FC = () => {
   const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [changePwdModalOpen, setChangePwdModalOpen] = useState(false);
   const [userData, setUserData] = useState({ userId: '', email: '', nickname: '', type: '' });
+  const [newPassword, setNewPassword] = useState('');
+
+  const { navigateToLogin } = useNavigateHelper(); 
 
   const deleteAccountModalConfirm = async (inputNickname?: string) => {
     if (inputNickname) {
@@ -33,6 +37,8 @@ const MyPage: React.FC = () => {
         setUserData(response.data);
       }
     } catch (error) {
+      alert('로그인 후 이용해주세요');
+      navigateToLogin();
       console.error("Failed to fetch user info:", error);
     }
   };
@@ -41,6 +47,20 @@ const MyPage: React.FC = () => {
     fetchUserData();
   }, [isAuthenticated]);
 
+  const fetchChangePassword = async (inputValue?: string) => {
+    if (!inputValue) {
+      alert("비밀번호를 입력해주세요.");
+      return;
+    }
+    try {
+      const response = await changePassword(inputValue);
+      alert("비밀번호가 성공적으로 변경되었습니다.");
+      setChangePwdModalOpen(false);
+      window.location.reload();
+    } catch (error) {
+      alert("올바른 비밀번호가 아닙니다.");
+    }
+  };
 
 
 
@@ -155,12 +175,7 @@ const MyPage: React.FC = () => {
                     변경
                   </button>
                 </div>
-                <button
-                  onClick={handleAuthCheck}
-                  className="mt-4 p-4 bg-blue-500 text-white rounded"
-                >
-                  인증 여부 확인
-                </button>
+                
               </div>
             </div>
           </div>
@@ -169,10 +184,10 @@ const MyPage: React.FC = () => {
       <Modal
         isOpen={changePwdModalOpen}
         onClose={() => setChangePwdModalOpen(false)}
-        onConfirm={deleteAccountModalConfirm}
+        onConfirm={fetchChangePassword}
         message="비밀번호 변경"
         showInput={true}
-        placeholder='8~13자 변경하실 비밀번호를 입력하세요'
+        placeholder="8~13자 변경하실 비밀번호를 입력하세요"
       />
     </HeaderProvider>
   );
