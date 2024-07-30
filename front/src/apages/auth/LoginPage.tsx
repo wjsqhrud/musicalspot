@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AuthInputComponent from 'acomponents/auth/AuthInputComponent';
 import AuthButton from 'acommons/auth/AuthButton';
 import AuthDivider from 'acommons/auth/AuthDivider';
@@ -16,8 +16,10 @@ import useSignInResponse from 'services/SignInService/signInResponseService';
 import HomeButton from 'acommons/auth/HomeButton';
 import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 import musicalSpotLogo from 'assets/images/musical-spot-logo.png';
+import { useAuth } from 'hooks/useAuthHook';
 
 const LoginPage: React.FC = () => {
+  const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [usernameError, setUsernameError] = useState('');
@@ -26,14 +28,22 @@ const LoginPage: React.FC = () => {
   const usernameRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
-  const { navigateToSignUp } = useNavigateHelper(); 
+  const { navigateToSignUp, navigateToHome } = useNavigateHelper(); 
   const { signInResponse } = useSignInResponse();
+
+  useEffect(() => {
+    console.log("Running checkAuthStatus on mount..." + isAuthenticated);
+    if(isAuthenticated){
+      console.log("홈으로가라")
+      navigateToHome();
+    }
+    
+  }, [isAuthenticated]);
 
   const handleLogin = () => {
     handleLoginService(username, password, setUsernameError, setPasswordError, usernameRef, signInResponse);
   };
-  const {navigateToHome } =
-    useNavigateHelper();
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">        

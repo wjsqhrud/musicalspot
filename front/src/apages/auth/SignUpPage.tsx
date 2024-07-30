@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AuthInputComponent from 'acomponents/auth/AuthInputComponent';
 import AuthButton from 'acommons/auth/AuthButton';
 import AuthDivider from 'acommons/auth/AuthDivider';
@@ -12,8 +12,10 @@ import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 import HomeButton from 'acommons/auth/HomeButton';
 import Modal from 'components/Modal/Modal';
 import musicalSpotLogo from 'assets/images/musical-spot-logo.png';
+import { useAuth } from 'hooks/useAuthHook';
 
 const SignUpPage: React.FC = () => {
+  const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,6 +49,14 @@ const SignUpPage: React.FC = () => {
   const handleSignUpSuccess = () => {
     setSuccessModalOpen(true);
   };
+  useEffect(() => {
+    console.log("Running checkAuthStatus on mount..." + isAuthenticated);
+    if(isAuthenticated){
+      console.log("홈으로가라")
+      navigateToHome();
+    }
+    
+  }, [isAuthenticated]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
