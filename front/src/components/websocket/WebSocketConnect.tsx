@@ -249,7 +249,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
             <div id="inputInnerContainer" className="flex items-center border-t border-signature rounded-b-lg">
               <input
                 id="chatTransmitter"
-                className="flex-1 h-12 pl-1 outline-none border-none rounded-b-lg"
+                className="flex-1 h-12 pl-3 outline-none border-none rounded-b-lg"
                 type="text"
                 value={messageInput}
                 placeholder="이곳에 메시지를 입력하세요."

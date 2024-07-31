@@ -2,14 +2,15 @@ import React, { useEffect, useRef } from "react";
 import { RiProhibited2Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import ReactDOM from "react-dom";
+import useNavigateHelper from "utils/NavigationUtil/navigationUtil";
 
 interface SignUpRedirectProps {
   onClose: () => void;
   signInUrl: string; // 추가
   toggleChat: () => void; // 추가
 }
-
 const SignUpRedirect: React.FC<SignUpRedirectProps> = ({ onClose, signInUrl, toggleChat }) => {
+  const { navigateToLogin, navigateToHome } = useNavigateHelper(); 
   const modalRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
@@ -33,7 +34,7 @@ const SignUpRedirect: React.FC<SignUpRedirectProps> = ({ onClose, signInUrl, tog
   const handleLoginClick = () => {
     console.log("Login button clicked"); // 로그 추가
     onClose(); // 모달 닫기
-    navigate(signInUrl); // 로그인 페이지로 이동
+    navigateToLogin(); // 로그인 페이지로 이동
     toggleChat(); // 추가
   };
 
