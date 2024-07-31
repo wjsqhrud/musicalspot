@@ -107,6 +107,9 @@ const MyPage: React.FC = () => {
       },
       () => {
         // 인증 실패 시 로직
+        setCommonModalOpen(true);
+      setModalMessage("로그인한 회원만 이용 가능합니다.");
+      navigateToLogin();
         console.log("인증 필요함");
       }
     );
