@@ -1,7 +1,5 @@
 package com.housing.back.controller.auth;
 
-
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,13 +28,14 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@Tag(name = "Auth API", description = "비로그인 사용자의 인증인가를 제공하는 컨트롤러")
+@Tag(name = "Auth API", description = "비로그인 사용자의 인증 및 인가를 제공하는 컨트롤러")
 public class AuthController {
     
     private final AuthService authService;
 
     @PostMapping("/id-check")
-    @Operation(summary = "아이디 중복체크", description = "회원가입 시 동일한 아이디가 있는지 확인합니다")
+    @Operation(summary = "아이디 중복 체크", 
+               description = "회원가입 시 사용자가 입력한 아이디가 이미 존재하는지 확인합니다.")
     public ResponseEntity<? super IdCheckResponseDto> idCheck (
         @RequestBody @Valid IdCheckRequestDto requestBody 
     ) {
@@ -45,7 +44,8 @@ public class AuthController {
     }
 
     @PostMapping("/email-certification")
-    @Operation(summary = "이메일 인증코드 발송", description = "회원가입시 입력한 이메일에 인증코드를 발송합니다.")
+    @Operation(summary = "이메일 인증 코드 발송", 
+               description = "회원가입 시 사용자가 입력한 이메일로 인증 코드를 발송합니다.")
     public ResponseEntity<? super EmailCertificationResponseDto> emailCertification (
         @RequestBody @Valid EmailCertificationRequestDto requestBody
     ){
@@ -54,7 +54,8 @@ public class AuthController {
     }
 
     @PostMapping("/check-certification")
-    @Operation(summary = "인증코드 체크", description = "회원가입시 작성한 인증코드와 이메일에 발송된 인증코드가 동일한지 확인합니다.")
+    @Operation(summary = "인증 코드 확인", 
+               description = "사용자가 입력한 인증 코드가 이메일로 발송된 코드와 일치하는지 확인합니다.")
     public ResponseEntity<? super CheckCertificationResponseDto> checkCertification (
         @RequestBody @Valid CheckCertificationRequestDto requestBody
     ){
@@ -63,7 +64,8 @@ public class AuthController {
     }
 
     @PostMapping("/sign-up")
-    @Operation(summary = "회원가입", description = "아이디, 이메일, 비밀번호 데이터를 이용하여 회원가입을 시도합니다.")
+    @Operation(summary = "회원 가입", 
+               description = "아이디, 이메일, 비밀번호 정보를 사용하여 새로운 사용자를 등록합니다.")
     public ResponseEntity<? super SignUpResponseDto> signUp (
         @RequestBody @Valid SignUpRequestDto requestBody
     ) {
@@ -72,7 +74,8 @@ public class AuthController {
     }
     
     @PostMapping("/sign-in")
-    @Operation(summary = "로그인", description = "아이디와 비밀번호를 이용하여 로그인을 시도합니다.")
+    @Operation(summary = "로그인", 
+               description = "사용자의 아이디와 비밀번호를 사용하여 로그인 절차를 수행합니다.")
     public ResponseEntity<? super SignInResponseDto> signIn(
             @RequestBody @Valid SignInRequestDto requestBody,
             HttpServletRequest request
@@ -80,6 +83,4 @@ public class AuthController {
         ResponseEntity<? super SignInResponseDto> response = authService.signIn(requestBody,request);
         return response;
     }
-
-    
 }
