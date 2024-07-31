@@ -5,10 +5,10 @@
     min-height: 100vh; /* 뷰포트의 전체 높이를 차지 */
   }
   
-  .content {
+.content {
     flex: 1; /* 중간 콘텐츠를 유연하게 차지 */
-  }
-/*  */
+}
+
 .headerStyle {
     max-width: 1250px;
     margin: 0 auto;

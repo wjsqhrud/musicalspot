@@ -3,13 +3,15 @@ import { Client } from '@stomp/stompjs';
 import { FaMinus } from 'react-icons/fa';
 import { IoEnterOutline } from 'react-icons/io5';
 import { IoIosSend } from "react-icons/io";
-import SignUpRedirect from 'components/Modal/SignUpRedirectModal';
 import { useAuth } from 'hooks/useAuthHook';
 import { ChatMessage, MessageType, initializeWebSocket } from '../../hooks/connectWebSocketHook';
 import { ImExit } from "react-icons/im";
 import 'tailwindcss/tailwind.css';
 import styles from './WebSocketConnect.module.css';
-import { REDIRECT_SIGN_IN, SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
+import { SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
+import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
+import ModalWithCancle from 'components/Modal/ModalWithCancle';
+import Modal from 'components/Modal/Modal';
 
 interface ChatComponentProps {
   isVisible: boolean;
@@ -28,8 +30,13 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const { checkAuthStatus } = useAuth();
-  const [isMuted, setIsMuted] = useState<boolean>(false);
   const MUTE_DURATION = 10000;
+  const { navigateToLogin }= useNavigateHelper();
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [showMutedModal, setShowMutedModal] = useState<boolean>(false);
+  const [isOverMsgLength, setIsOverMsgLength] = useState<boolean>(false);
+  const [isSameMsg, setIsSameMsg] = useState<boolean>(false);
+  const [isEmptyMsg, setIsEmptyMsg] = useState<boolean>(false);
 
   const handleConnectWebSocket = () => {
     checkAuthStatus(
@@ -43,9 +50,13 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
     );
   };
 
-  const closeModal = () => {
+  const closeModalWithChat = () => {
     setShowModal(false);
+    toggleChat();
   };
+  const closeOnlyModal = () => {
+    setShowModal(false);
+  }
 
   const connectWebSocket = (nickname: string) => {
     const config = {
@@ -78,34 +89,29 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const maximumChatLength = 150;
-
+    const maximumMessageRender = 150;
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
-    if (messages.length > maximumChatLength) {
-      // 메시지 배열 길이 제한 초과 시 가장 오래된 메시지 제거
+    if (messages.length > maximumMessageRender) {
       handleNewMessage(messages.slice(1) as unknown as ChatMessage);
     }
   }, [messages, handleNewMessage]);
 
+  useEffect(() => {
+    if(messageInput.trim() === "") {
+      setIsEmptyMsg(true);
+    } else {
+      setIsEmptyMsg(false);
+    }
+  },[messageInput])
+
   const sendMessage = () => {
-    const inputContent: HTMLInputElement | any = document.getElementById("chatTransmitter");
-    if (isMuted) {
-      window.alert('도배 및 욕설로 인해 채팅이 금지되어 있습니다. 잠시 후 다시 시도하세요.');
-      return;
-    } 
-    else if (messageInput.length > 50) {
-      window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
-      inputContent.value = "";
+    if (!messageInput.trim()) {
+      setIsEmptyMsg(true);
       return;
     }
 
-    if (!isJoined) {
-      setMessageInput('');
-      window.alert('아직 채팅에 참여하지 않았습니다.');
-    } else if (!messageInput.trim()) {
-      window.alert('빈 내용은 전송할 수 없습니다.');
-    } else if (stompClient) {
+    if (stompClient && !isMuted) {
       const chatMessage: ChatMessage = {
         nickname: userNickname,
         messageText: messageInput,
@@ -121,13 +127,6 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   };
 
   const handleExitChat = () => {
-    const chatMessage: ChatMessage = {
-      nickname: userNickname,
-      messageText: messageInput,
-      transmitTime: '',
-      type: MessageType.JOIN,
-    };
-
     if (stompClient && stompClient.active) {
       stompClient.publish({
         destination: '/app/chat.removeUser',
@@ -139,9 +138,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
       setMessages([]);
       setMessageInput('');
       toggleChat();
-
     }
-
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,22 +146,18 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   };
 
   const handlePersonalMessage = (message: ChatMessage) => {
-    // 개인 메시지 핸들링 로직
-    if (message.messageText?.includes("비속어")) {
-      window.alert("비속어가 감지되었습니다.");
+    if (message.messageText?.includes("비속어") || message.messageText?.includes("도배감지")) {
       setIsMuted(true);
-      setTimeout(() => setIsMuted(false), MUTE_DURATION);
+      setTimeout(() => {
+        setIsMuted(false);
+      }, MUTE_DURATION);
+
+      setShowMutedModal(true);
 
     } else if (message.messageText?.includes("동일문자열")) {
-      window.alert("동일한 내용을 연속해서 전송할 수 없습니다.");
-
-    } else if (message.messageText?.includes("도배감지")) {
-      window.alert("도배 감지됨. 일정 시간 동안 채팅이 금지됩니다.");
-      setIsMuted(true);
-      setTimeout(() => setIsMuted(false), MUTE_DURATION);
-
+      setIsSameMsg(true);
     } else if (message.messageText?.includes("길이초과")) {
-      window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
+      setIsOverMsgLength(true);
     }
   };
 
@@ -181,7 +174,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
             </button>
             <button onClick={handleExitChat} className={styles.exitChatBtn}>
               <ImExit size={18}/>
-              </button>
+            </button>
           </div>
   
           <div className={`flex-grow flex items-center justify-center bg-slate-300 ${isConnected ? 'hidden' : ''}`}>
@@ -252,7 +245,8 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                 className="flex-1 h-12 pl-3 outline-none border-none rounded-b-lg"
                 type="text"
                 value={messageInput}
-                placeholder="이곳에 메시지를 입력하세요."
+                disabled={isMuted}
+                placeholder={isMuted ? "욕설 및 도배로 인해 채팅이 금지 되었습니다." : "이곳에 메시지를 입력하세요"}
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -261,13 +255,40 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                   }
                 }}
               />
-              <button className="m-1 p-1 bg-transparent text-signature rounded-lg hover:text-white hover:bg-signature 
-              transition-all" onClick={sendMessage}>
+              {!isEmptyMsg && <button className="m-1 p-1 bg-transparent text-signature rounded-lg hover:text-white hover:bg-signature 
+              transition-all animate-fade" onClick={sendMessage}>
                 <IoIosSend size={26} />
-              </button>
+              </button>}
+              
             </div>
           </div>
-          {showModal && <SignUpRedirect onClose={closeModal} signInUrl={REDIRECT_SIGN_IN()} toggleChat={toggleChat} />}
+          {showModal && 
+          <ModalWithCancle
+          isOpen={showModal}
+          onClose={closeModalWithChat} 
+          onConfirm={()=>{navigateToLogin()}}
+          toggleChat={toggleChat}
+          message='채팅 기능은 로그인한 회원만 이용 가능합니다.'
+          />}
+          {showMutedModal && (
+          <Modal
+            isOpen={showMutedModal}
+            onClose={() => setShowMutedModal(false)}
+            onConfirm={() => setShowMutedModal(false)}
+            message={`도배 및 비속어 사용으로 인해 ${MUTE_DURATION / 1000} 초 동안 채팅이 금지되었습니다. 바르고 고운말 사용을 사용해주세요`}
+          />)}
+          {isOverMsgLength && <Modal
+          isOpen={isOverMsgLength}
+          onClose={closeOnlyModal}
+          onConfirm={()=> setIsOverMsgLength(false)}
+          message='최대 전송가능한 문자는 50자 이내입니다.'
+          />}
+          {isSameMsg && <Modal
+          isOpen={isSameMsg}
+          onClose={closeOnlyModal}
+          onConfirm={()=> setIsSameMsg(false)}
+          message='이전과 동일한 메세지는 전송할 수 없습니다.'
+          />}
         </div>
       )}
     </>
