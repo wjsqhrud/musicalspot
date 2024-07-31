@@ -64,9 +64,10 @@ const MyPage: React.FC = () => {
       setModalMessage("비밀번호가 성공적으로 변경되었습니다.");
       // alert("비밀번호가 성공적으로 변경되었습니다.");
       setChangePwdModalOpen(false);
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
-      alert("올바른 비밀번호가 아닙니다.");
+      setCommonModalOpen(true);
+      setModalMessage("올바른 비밀번호가 아닙니다");
     }
   };
 
