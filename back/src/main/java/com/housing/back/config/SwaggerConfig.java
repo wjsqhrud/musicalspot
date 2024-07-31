@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,6 +24,9 @@ public class SwaggerConfig {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
                                         .name("Authorization"))) // Ensure it uses "Authorization" header
-                .info(new Info().title("API Documentation").version("1.0").description("API Documentation"));
+                .info(new Info()
+                    .title("MusicalSpot")
+                    .version("1.0")
+                    .description("뮤지컬 관련 정보를 공유"));
     }
 }
