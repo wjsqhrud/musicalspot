@@ -6,8 +6,7 @@ interface ModalProps {
   children: React.ReactNode;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
-
+const ReviewModal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,4 +60,4 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     </div>
   );
 };
-export default Modal;
+export default ReviewModal;

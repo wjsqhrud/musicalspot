@@ -8,7 +8,8 @@ import {
 import { Review } from "./ReviewType";
 import ReviewDetail from "./ReviewDetail";
 import ReviewFormModal from "acomponents/createReview/ReviewFormModal";
-import Modal from "acomponents/review/Modal";
+import ReviewModal from "acomponents/review/Modal";
+import Modal from "components/Modal/Modal";
 import "styles/style.css";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
@@ -28,6 +29,8 @@ const ReviewList: React.FC = () => {
   const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
   const [sortType, setSortType] = useState<SortType>("recent");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   const observer = useRef<IntersectionObserver | null>(null);
   const navigate = useNavigate();
 
@@ -126,12 +129,14 @@ const ReviewList: React.FC = () => {
       },
       () => {
         console.log("인증 필요함");
-        alert("로그인 상태에서만 작성가능합니다.");
-        navigate("/auth/sign-in");
+        setShowLoginModal(true);
       }
     );
   };
-
+  const handleLoginRedirect = () => {
+    setShowLoginModal(false);
+    navigate("/auth/sign-in");
+  };
   const handleCloseCreateModal = () => {
     setIsCreateModalOpen(false);
   };
@@ -233,7 +238,7 @@ const ReviewList: React.FC = () => {
             <p className="text-center mt-4">더 이상 리뷰가 없습니다.</p>
           )}
 
-          <Modal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
+          <ReviewModal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
             {selectedReviewId && (
               <ReviewDetail
                 isAuthenticated={isAuthenticated}
@@ -242,7 +247,7 @@ const ReviewList: React.FC = () => {
                 onDelete={handleReviewSubmitted}
               />
             )}
-          </Modal>
+          </ReviewModal>
         </div>
       </div>
 {/* <<<<<<< HEAD
@@ -276,8 +281,14 @@ const ReviewList: React.FC = () => {
       </Modal>
     </div>
 ======= */}
-    </HeaderProvider>
 
+    <Modal
+      isOpen={showLoginModal}
+      onClose={() => setShowLoginModal(false)}
+      onConfirm={handleLoginRedirect}
+      message="리뷰 작성은 로그인한 회원만 이용 가능합니다."
+    />
+    </HeaderProvider>
   );
 };
 
