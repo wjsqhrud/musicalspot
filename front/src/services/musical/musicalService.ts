@@ -17,6 +17,8 @@ import {
 } from "utils/APIUrlUtil/apiUrlUtil";
 import { getCookie } from "utils/CookieUtil/cookieUtis";
 
+
+
 // 뮤지컬 카테고리 리스트 불러오기
 export const categoryList = async () => {
   try {

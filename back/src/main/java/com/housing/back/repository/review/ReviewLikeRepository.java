@@ -12,4 +12,5 @@ import com.housing.back.entity.auth.UserEntity;
 @Repository
 public interface ReviewLikeRepository extends JpaRepository<ReviewLikeEntity, Long> {
     Optional<ReviewLikeEntity> findByUserAndReview(UserEntity user, ReviewEntity review);
+    void deleteByUser(UserEntity user);
 }

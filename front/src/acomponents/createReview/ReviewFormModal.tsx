@@ -18,7 +18,7 @@ const ReviewFormModal: React.FC<ReviewFormModalProps> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="w-full">
+      <div className="w-full h-full">
         <h2 className="text-2xl font-bold mb-4">
           {existingReview ? "리뷰 수정" : "리뷰 작성"}
         </h2>

@@ -21,4 +21,5 @@ public interface NicknameRepository extends JpaRepository<NickNameEntity, Long> 
     @Modifying
     void deleteByUser(UserEntity user); // 이 부분을 추가합니다.
     Optional<NickNameEntity> findByUserId(Long userId);
+    
 }

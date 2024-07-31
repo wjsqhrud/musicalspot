@@ -132,6 +132,8 @@ const Mainpage: React.FC = () => {
 
   return (
     <HeaderProvider>
+      <div className="page-container">
+      <div className="content">
       <div className={styles.headerStyle}>
         <CommonHeader
           isAuthenticated={isAuthenticated}
@@ -189,6 +191,7 @@ const Mainpage: React.FC = () => {
             style={{ pointerEvents: 'auto' }} // pointer-events 설정
           />
         </div>
+
       ))}
   </div>
   {/* 슬라이드 네비게이션 */}
@@ -211,6 +214,7 @@ const Mainpage: React.FC = () => {
       <div className={styles.recommendContent}>
         <span className={styles.recommendText}>What's Hot</span>
       </div>
+
         {/* Grid Section */}
         <div className={styles.gridContainer}>
           {musicalsByViewCount.slice(0, 1).map((musical) => (
@@ -264,9 +268,12 @@ const Mainpage: React.FC = () => {
         </div>
 
         {/* Footer Section */}
-        <footer className={styles.footerStyle}>
+        
+      </div>
+      <footer className={styles.footerStyle}>
           <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
         </footer>
+      </div>
       </div>
     </HeaderProvider>
   );

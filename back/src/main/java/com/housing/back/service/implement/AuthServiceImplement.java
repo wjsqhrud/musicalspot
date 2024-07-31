@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +26,7 @@ import com.housing.back.dto.request.auth.NicknameRequestDto;
 import com.housing.back.dto.request.auth.SignInRequestDto;
 import com.housing.back.dto.request.auth.SignUpRequestDto;
 import com.housing.back.dto.response.ResponseDto;
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.dto.response.auth.CheckCertificationResponseDto;
 import com.housing.back.dto.response.auth.EmailCertificationResponseDto;
 import com.housing.back.dto.response.auth.GenerateNewTokensResponseDto;
@@ -33,6 +35,7 @@ import com.housing.back.dto.response.auth.JwtResponseDto;
 import com.housing.back.dto.response.auth.NicknameResponseDto;
 import com.housing.back.dto.response.auth.SignInResponseDto;
 import com.housing.back.dto.response.auth.SignUpResponseDto;
+import com.housing.back.dto.response.auth.UserInfoResponseDto;
 import com.housing.back.entity.auth.NickNameEntity;
 import com.housing.back.entity.auth.RefreshTokenEntity;
 import com.housing.back.entity.auth.UserEntity;
@@ -43,6 +46,10 @@ import com.housing.back.repository.auth.CertificationRepository;
 import com.housing.back.repository.auth.NicknameRepository;
 import com.housing.back.repository.auth.RefreshTokenRepository;
 import com.housing.back.repository.auth.UserRepository;
+import com.housing.back.repository.musical.MusicalLikeRepository;
+import com.housing.back.repository.review.ReviewCommentRepository;
+import com.housing.back.repository.review.ReviewLikeRepository;
+import com.housing.back.repository.review.ReviewRepository;
 import com.housing.back.service.AuthService;
 import com.housing.back.service.JwtBlacklistService;
 
@@ -62,9 +69,10 @@ public class AuthServiceImplement implements AuthService {
     private final EmailProvider emailProvider;
     private final JwtBlacklistService  jwtBlacklistService;
     private final JwtUtils jwtUtils;
-    
-
-    
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final MusicalLikeRepository musicalLikeRepository;
+    private final ReviewCommentRepository reviewCommentRepository;
+    private final ReviewRepository reviewRepository;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -474,4 +482,95 @@ public class AuthServiceImplement implements AuthService {
         return ResponseEntity.ok(response);
     }
 
+    @Transactional
+    public ResponseEntity<TestResponseDto> deleteUserByNickname(HttpServletRequest request, Map<String, String> requestBody) {
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return TestResponseDto.unAuthorized();
+        }
+
+        token = token.substring(7);
+        String userId = jwtUtils.extractUserId(token);
+
+        Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+        if (!optionalUser.isPresent()) {
+            return TestResponseDto.userNotFound();
+        }
+        UserEntity user = optionalUser.get();
+
+        String nickname = requestBody.get("nickname");
+        if (nickname == null) {
+            return TestResponseDto.validationFail();
+        }
+
+        Optional<NickNameEntity> optionalNickname = nicknameRepository.findByNickname(nickname);
+        if (!optionalNickname.isPresent() || !optionalNickname.get().getUser().equals(user)) {
+            return TestResponseDto.customValidationFail("닉네임이 일치하지 않습니다.");
+        }
+
+        try {
+            // 사용자 삭제 - 연관된 모든 데이터는 자동으로 삭제됨 (ON DELETE CASCADE)
+            userRepository.delete(user);
+
+            return TestResponseDto.success();
+        } catch (DataAccessException e) {
+            return TestResponseDto.databaseError();
+        } catch (Exception e) {
+            return TestResponseDto.databaseError();
+        }
+        
+    }
+    
+    @Override
+    @Transactional
+    public ResponseEntity<TestResponseDto> changePassword(String authorizationHeader, Map<String, String> requestBody) {
+        String token = authorizationHeader.substring(7);
+        String userId = jwtUtils.extractUserId(token);
+
+        Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+        if (!optionalUser.isPresent()) {
+            return TestResponseDto.userNotFound();
+        }
+        UserEntity user = optionalUser.get();
+
+        String newPassword = requestBody.get("newPassword");
+        if (newPassword == null || newPassword.isEmpty()) {
+            return TestResponseDto.validationFail();
+        }
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+
+        userRepository.save(user);
+
+        return TestResponseDto.success();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<TestResponseDto> getUserInfo(String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        String userId = jwtUtils.extractUserId(token);
+
+        Optional<UserEntity> optionalUser = userRepository.findByUserId(userId);
+        if (!optionalUser.isPresent()) {
+            return TestResponseDto.userNotFound();
+        }
+        UserEntity user = optionalUser.get();
+
+        Optional<NickNameEntity> optionalNickname = nicknameRepository.findByUser(user);
+        if (!optionalNickname.isPresent()) {
+            return TestResponseDto.customValidationFail("닉네임이 존재하지 않습니다.");
+        }
+        String nickname = optionalNickname.get().getNickname();
+
+         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto(
+                user.getType(),
+                user.getUserId(),
+                user.getEmail(),
+                nickname
+        );
+
+        return TestResponseDto.success(userInfoResponseDto);
+    }
 }

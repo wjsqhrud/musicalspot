@@ -21,5 +21,5 @@ public interface MusicalRepository extends JpaRepository<MusicalEntity, Long> {
     List<MusicalEntity> findAllByOrderByEndDateAsc();
     List<MusicalEntity> findAllByOrderByTitleAsc();
     List<MusicalEntity> findAllByOrderByStartDateDesc();
-    List<MusicalEntity> findByTitleStartingWith(String title);
+    List<MusicalEntity> findByTitleContaining(String title);
 }

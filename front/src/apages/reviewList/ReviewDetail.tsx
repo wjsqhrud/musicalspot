@@ -6,45 +6,49 @@ import {
   reviewDetailsIncreaseView,
   reviewLike,
 } from "services/review/reviewService";
-import { getCookie } from "utils/CookieUtil/cookieUtis";
 import EditDeleteButtons from "acomponents/review/EditDeleteButton";
 import CommentForm from "acomponents/reviewComments/CommentsForm";
 import ReviewLike from "acomponents/review/ReviewLike";
 import ReviewForm from "acomponents/createReview/ReviewForm";
 import CommentList from "./CommentList";
-import { HeartIcon, EyeIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
+import { truncateString } from "acomponents/review/ReviewContentLength";
 
 interface ReviewDetailProps {
   reviewId: number;
   onClose: () => void;
+  onDelete: () => void;
+  isAuthenticated: boolean;
 }
 
-const ReviewDetail: React.FC<ReviewDetailProps> = ({ reviewId, onClose }) => {
+const ReviewDetail: React.FC<ReviewDetailProps> = ({
+  reviewId,
+  onClose,
+  onDelete,
+  isAuthenticated,
+}) => {
   const [review, setReview] = useState<Review | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
-  const isLoggedIn = useCallback((): boolean => {
-    return !!getCookie("accessToken");
-  }, []);
+  const navigate = useNavigate();
 
   const fetchReviewDetail = useCallback(async () => {
     try {
       setLoading(true);
       await reviewDetailsIncreaseView(reviewId.toString());
 
-      const response = isLoggedIn()
+      const response = isAuthenticated
         ? await privateReviewDetails(reviewId.toString())
         : await publicReviewDetails(reviewId.toString());
 
       setReview(response.data);
 
-      if (isLoggedIn()) {
+      if (isAuthenticated) {
         const likeResponse = await reviewLike(reviewId.toString());
-        setIsLiked(likeResponse.isLiked);
+        setIsLiked(likeResponse.data);
       }
     } catch (error) {
       console.error("Error fetching review details:", error);
@@ -52,8 +56,10 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ reviewId, onClose }) => {
     } finally {
       setLoading(false);
     }
-  }, [reviewId, isLoggedIn]);
-
+  }, [reviewId, isAuthenticated]);
+  const handleMusicalDetail = () => {
+    navigate(`/auth/details/${review?.musicalId}`);
+  };
   useEffect(() => {
     fetchReviewDetail();
   }, [fetchReviewDetail]);
@@ -85,45 +91,46 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ reviewId, onClose }) => {
         existingReview={reviewId.toString()}
         onClose={handleCloseEdit}
         onReviewSubmitted={handleCommentAdded}
-
       />
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/3 pr-4">
+    <div className="container mx-auto px-4 py-4">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="md:w-1/3">
           <img
             src={review.musicalImageUrl}
             alt={review.musicalTitle}
-            className="w-full h-auto object-cover rounded-lg shadow-lg"
+            className="w-full h-auto object-cover rounded-lg shadow-lg cursor-pointer"
           />
-          <h2 className="text-2xl font-bold mt-4 mb-2">{review.musicalTitle}</h2>
-          <p className="text-gray-600 mb-2">카테고리: {review.musicalCategory}</p>
+          <h2 className="text-xl font-bold mt-2">
+            {truncateString(review.musicalTitle, 20)}
+          </h2>
+          <p className="cursor-pointer" onClick={handleMusicalDetail}>
+            상세보기
+          </p>
+          <p className="text-sm text-gray-600">
+            카테고리: {review.musicalCategory}
+          </p>
         </div>
-        <div className="md:w-2/3 pl-4">
-          <h1 className="text-3xl font-bold mb-4">{review.title}</h1>
-          <div className="flex justify-between items-center mb-4">
+        <div className="md:w-2/3 flex flex-col">
+          <h1 className="text-2xl font-bold mb-2">{review.title}</h1>
+          <div className="flex justify-between items-center text-sm mb-2">
             <p className="text-gray-600">작성자: {review.nickname}</p>
-            <div>
-              <p className="text-gray-600">
-                작성일: {new Date(review.createdAt).toLocaleDateString()}
-              </p>
-              <p className="text-gray-600">
-                수정일: {new Date(review.updatedAt).toLocaleDateString()}
-              </p>
-            </div>
+            <p className="text-gray-600">
+              작성일: {new Date(review.createdAt).toLocaleDateString()}
+            </p>
           </div>
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center text-gray-600">
-            <EyeIcon className="w-4 h-4 mr-1 text-blue-500" />
-              <span>{review.viewCount}</span>
-            </div>
-            <div className="flex items-center text-gray-600">
-            <ChatBubbleLeftIcon className="w-4 h-4 mr-1 text-green-500" />
-              <span>{review.comments.length}</span>
-            </div>
+          <div className="flex justify-between items-center text-sm mb-2">
+            <span className="flex items-center">
+              <EyeIcon className="w-4 h-4 mr-1 text-blue-500" />
+              {review.viewCount}
+            </span>
+            <span className="flex items-center">
+              <ChatBubbleLeftIcon className="w-4 h-4 mr-1 text-green-500" />
+              {review.comments.length}
+            </span>
             <ReviewLike
               reviewId={review.id.toString()}
               isLiked={isLiked}
@@ -131,30 +138,38 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ reviewId, onClose }) => {
               onLikeToggle={handleLikeToggle}
             />
           </div>
-          <div className="bg-gray-100 p-6 rounded-lg mb-6 h-96 overflow-y-auto">
-            <p className="text-gray-800 whitespace-pre-wrap">{review.content}</p>
+          <div className="bg-gray-100 p-4 rounded-lg mb-2 flex-grow overflow-y-auto">
+            <p className="text-gray-800 whitespace-pre-wrap text-sm">
+              {review.content}
+            </p>
           </div>
           <EditDeleteButtons
             reviewId={review.id.toString()}
             isOwner={review.owner}
             onEdit={handleEdit}
+            onDelete={onDelete}
           />
-          <div className="mt-8">
-            <h3 className="text-2xl font-semibold mb-4">
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">
               댓글 ({review.comments.length})
             </h3>
-            <CommentList comments={review.comments} onCommentUpdated={handleCommentAdded} />
-            {isLoggedIn() && (
-              <CommentForm
-                reviewId={reviewId.toString()}
-                onCommentAdded={handleCommentAdded}
+            <div className="max-h-40 overflow-y-auto mb-2">
+              <CommentList
+                comments={review.comments}
+                onCommentUpdated={handleCommentAdded}
               />
-            )}
+            </div>
+            <CommentForm
+              reviewId={reviewId.toString()}
+              onCommentAdded={handleCommentAdded}
+              isAuthenticated={isAuthenticated}
+            />
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default ReviewDetail;
 

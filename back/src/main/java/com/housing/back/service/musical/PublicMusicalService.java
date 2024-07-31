@@ -225,7 +225,7 @@ public class PublicMusicalService {
 
     public ResponseEntity<TestResponseDto> getMusicalsByTitleStartingWith(String title) { // 제목으로 뮤지컬 검색
         try {
-            List<MusicalEntity> musicals = musicalRepository.findByTitleStartingWith(title);
+            List<MusicalEntity> musicals = musicalRepository.findByTitleContaining(title);
             if (musicals.isEmpty()) {
                 return TestResponseDto.notFound();
             }

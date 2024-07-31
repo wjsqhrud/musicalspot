@@ -1,34 +1,43 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import ReviewItem from "./ReviewItem";
-import { reviewRecent40, reviewLikes40, reviewViews40 } from "services/review/reviewService";
+import {
+  reviewRecent40,
+  reviewLikes40,
+  reviewViews40,
+} from "services/review/reviewService";
 import { Review } from "./ReviewType";
-// <<<<<<< HEAD
-// import Modal from "./ReviewModal";
-// import ReviewDetail from "./ReviewDetail";
-// import ReviewForm from "apages/CreateReview/CreateReviewModal";
-
-// const ReviewList: React.FC = () => {
-//   const [reviews, setReviews] = useState<Review[]>([]);
-// =======
 import ReviewDetail from "./ReviewDetail";
 import ReviewFormModal from "acomponents/createReview/ReviewFormModal";
 import Modal from "acomponents/review/Modal";
-import 'styles/style.css';
+import "styles/style.css";
+import { HeaderProvider } from "services/HeaderService/HeaderService";
+import CommonHeader from "acomponents/header/CommonHeader";
+import { useAuth } from "hooks/useAuthHook";
+import { link } from "fs";
+import { useNavigate } from "react-router-dom";
 
-type SortType = 'recent' | 'likes' | 'views';
+type SortType = "recent" | "likes" | "views";
 
 const ReviewList: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-// >>>>>>> origin/hwanhee
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
-  const [sortType, setSortType] = useState<SortType>('recent');
+  const [sortType, setSortType] = useState<SortType>("recent");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const observer = useRef<IntersectionObserver | null>(null);
+  const navigate = useNavigate();
+
+  const {
+    isAuthenticated,
+    myNickname,
+    nicknameModalOpen,
+    setNicknameModalOpen,
+    checkAuthStatus,
+  } = useAuth();
 
   const lastReviewElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -50,13 +59,13 @@ const ReviewList: React.FC = () => {
     try {
       let response;
       switch (sortType) {
-        case 'recent':
+        case "recent":
           response = await reviewRecent40(page);
           break;
-        case 'likes':
+        case "likes":
           response = await reviewLikes40(page);
           break;
-        case 'views':
+        case "views":
           response = await reviewViews40(page);
           break;
         default:
@@ -98,6 +107,7 @@ const ReviewList: React.FC = () => {
     setReviews([]);
     setHasMore(true);
     fetchReviews();
+    handleCloseModal();
   }, []);
 
   const handleReviewClick = (reviewId: number) => {
@@ -109,7 +119,17 @@ const ReviewList: React.FC = () => {
   };
 
   const handleCreateReviewClick = () => {
-    setIsCreateModalOpen(true);
+    checkAuthStatus(
+      (nickname) => {
+        console.log("인증된 사용자:", nickname);
+        setIsCreateModalOpen(true);
+      },
+      () => {
+        console.log("인증 필요함");
+        alert("로그인 상태에서만 작성가능합니다.");
+        navigate("/auth/sign-in");
+      }
+    );
   };
 
   const handleCloseCreateModal = () => {
@@ -130,34 +150,102 @@ const ReviewList: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-6 text-center">후기 게시판</h2>
-      <div className="flex justify-between mb-4">
-        <button
-          onClick={handleCreateReviewClick}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          리뷰 작성
-        </button>
-        <div className="relative">
-          <button 
-            onClick={toggleDropdown}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
-          >
-            {sortType === 'recent' ? '최신순' : sortType === 'likes' ? '좋아요순' : '조회수순'}
-            <svg className="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-            </svg>
-          </button>
-          {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => handleSortChange('recent')}>최신순</a>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => handleSortChange('likes')}>좋아요순</a>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => handleSortChange('views')}>조회수순</a>
+    <HeaderProvider>
+      <div className="max-w-[1250px] mx-auto pt-20">
+        <CommonHeader
+          isAuthenticated={isAuthenticated}
+          myNickname={myNickname}
+          nicknameModalOpen={nicknameModalOpen}
+          setNicknameModalOpen={setNicknameModalOpen}
+          checkAuthStatus={checkAuthStatus}
+        />
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-3xl font-bold mb-6 text-center">후기 게시판</h2>
+          <div className="flex justify-between mb-4">
+            <button
+              onClick={handleCreateReviewClick}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              리뷰 작성
+            </button>
+
+            <div className="relative">
+              <button
+                onClick={toggleDropdown}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
+              >
+                {sortType === "recent"
+                  ? "최신순"
+                  : sortType === "likes"
+                  ? "좋아요순"
+                  : "조회수순"}
+                <svg
+                  className="fill-current h-4 w-4 ml-2"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
+                  <button
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => handleSortChange("recent")}
+                  >
+                    최신순
+                  </button>
+                  <button
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => handleSortChange("likes")}
+                  >
+                    좋아요순
+                  </button>
+                  <button
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => handleSortChange("views")}
+                  >
+                    조회수순
+                  </button>
+                </div>
+              )}
             </div>
+          </div>
+          <ReviewFormModal
+            isOpen={isCreateModalOpen}
+            onClose={handleCloseCreateModal}
+            onReviewSubmitted={handleReviewSubmitted}
+          />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3">
+            {reviews.map((review, index) => (
+              <div
+                key={`${review.id}-${index}`}
+                ref={index === reviews.length - 1 ? lastReviewElementRef : null}
+                onClick={() => handleReviewClick(review.id)}
+                className="cursor-pointer"
+              >
+                <ReviewItem review={review} isAuthenticated={isAuthenticated} />
+              </div>
+            ))}
+          </div>
+          {loading && <p className="text-center mt-4">로딩 중...</p>}
+          {!hasMore && (
+            <p className="text-center mt-4">더 이상 리뷰가 없습니다.</p>
           )}
+
+          <Modal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
+            {selectedReviewId && (
+              <ReviewDetail
+                isAuthenticated={isAuthenticated}
+                reviewId={selectedReviewId}
+                onClose={handleCloseModal}
+                onDelete={handleReviewSubmitted}
+              />
+            )}
+          </Modal>
         </div>
       </div>
+{/* <<<<<<< HEAD
       <ReviewFormModal
         isOpen={isCreateModalOpen}
         onClose={handleCloseCreateModal}
@@ -187,6 +275,9 @@ const ReviewList: React.FC = () => {
         )}
       </Modal>
     </div>
+======= */}
+    </HeaderProvider>
+
   );
 };
 

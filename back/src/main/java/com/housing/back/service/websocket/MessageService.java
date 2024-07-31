@@ -1,7 +1,5 @@
 package com.housing.back.service.websocket;
 
-import java.time.LocalDateTime;
-
 import com.housing.back.dto.request.websocket.MessageDTO;
 
 public interface MessageService {

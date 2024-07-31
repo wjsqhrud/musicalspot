@@ -1,21 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
+import { ContentInput } from "acomponents/createReview/ContentLength";
 import { reviewCommentsCreate } from "services/review/reviewService";
+import { useNavigate } from "react-router-dom";
 
 interface CommentFormProps {
   reviewId: string;
   onCommentAdded: () => void;
+  isAuthenticated: boolean;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ reviewId, onCommentAdded }) => {
-  const [content, setContent] = useState("");
+const CommentForm: React.FC<CommentFormProps> = ({
+  reviewId,
+  onCommentAdded,
+  isAuthenticated,
+}) => {
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (content: string) => {
     if (!content.trim()) return;
+
+    if (!isAuthenticated) {
+      alert("댓글을 작성하려면 로그인이 필요합니다.");
+      navigate("/auth/sign-in");
+      return;
+    }
 
     try {
       await reviewCommentsCreate(reviewId, content);
-      setContent("");
       onCommentAdded();
     } catch (error) {
       console.error("댓글 작성 실패:", error);
@@ -24,21 +35,16 @@ const CommentForm: React.FC<CommentFormProps> = ({ reviewId, onCommentAdded }) =
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="w-full p-2 border rounded"
+    <div className="mt-4">
+      <ContentInput
+        minLength={5}
+        maxLength={200}
         placeholder="댓글을 작성하세요"
-        rows={3}
+        onSubmit={handleSubmit}
+        isTextArea={true}
+        textAreaHeight="40px"
       />
-      <button
-        type="submit"
-        className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        댓글 작성
-      </button>
-    </form>
+    </div>
   );
 };
 

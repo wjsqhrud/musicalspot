@@ -1,5 +1,5 @@
 import Modal from "components/Modal/Modal";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaRegUser, FaSearch } from "react-icons/fa";
 import { categoryList } from "services/musical/musicalService";
 import useNavigateHelper from "utils/NavigationUtil/navigationUtil";
@@ -10,6 +10,7 @@ import axios from "axios"; // axios 임포트
 import { SEARCH_MUSICALS_BY_TITLE } from "utils/APIUrlUtil/apiUrlUtil"; // 경로에 따라 적절히 수정
 import { useLocation, useNavigate } from "react-router-dom"; // useNavigate 임포트
 import musicalSpotLogo from 'assets/images/musical-spot-logo.png';
+import DeleteAccountModal from "components/Modal/deleteAcoountModal";
 
 type CommonHeaderProps = {
   isAuthenticated: boolean;
@@ -35,7 +36,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   checkAuthStatus,
 }) => {
   const navigate = useNavigate();
-  const { navigateToCreateNickname, navigateToLogin, navigateToHome } =
+  const { navigateToCreateNickname, navigateToLogin, navigateToHome, navigateToMyblog } =
     useNavigateHelper();
   const [categories, setCategories] = useState<Category[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
@@ -46,6 +47,8 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] =
     useState<boolean>(false); // 검색 드롭다운 상태
   const [noResults, setNoResults] = useState<boolean>(false); // 검색 결과 없음 상태
+  const searchDropdownRef = useRef<HTMLDivElement>(null); // 드롭다운 요소에 대한 참조
+  const searchInputRef = useRef<HTMLDivElement>(null); // 검색 입력 박스에 대한 참조
 
   useEffect(() => {
     console.log("첫 번째 로직");
@@ -53,6 +56,25 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     console.log("닉네임 : " + myNickname);
     handleCategoryList();
   }, [isAuthenticated, myNickname]);
+
+  // 마우스 바깥클릭시 검색드랍다운 삭제
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchDropdownRef.current && 
+        !searchDropdownRef.current.contains(event.target as Node) &&
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleCategoryList = async () => {
     try {
@@ -94,6 +116,20 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     navigateToCreateNickname();
   };
 
+  const handleMyPage =  () => {
+    checkAuthStatus(
+      (nickname) => {
+        // todo: 인증성공시 로직실행하시면됩니다.
+        console.log("인증된 사용자:", nickname);
+        navigateToMyblog();
+      },
+      () => {
+        // todo: 인증실패시에는 로그인하라는 알림을 띄울지, 로그인화면으로 보낼지 정하면됩니다.
+        console.log("인증 필요함");
+      }
+    );
+  }
+
   const handleLogOut = async () => {
     const result = await combinedLogoutHandler(navigateToHome);
     if (result) {
@@ -113,8 +149,16 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   const deleteAccountModalConfirm = async (inputNickname?: string) => {
     if (inputNickname) {
       console.log("회원탈퇴 진행: " + inputNickname);
-      await deleteAccount(inputNickname);
-      window.location.reload();
+      try {
+        await deleteAccount(inputNickname);
+        alert("회원탈퇴에 성공하였습니다. 그동안 이용해주셔서 감사합니다.");
+        window.location.reload();
+        console.log("시도는한거야?")
+      } catch (error) {
+        console.error("회원탈퇴 실패:", error);
+        alert("회원탈퇴에 실패하였습니다. 다시 시도해주세요.");
+        window.location.reload();
+      }
     } else {
       console.log("닉네임이 입력되지 않았습니다.");
     }
@@ -138,7 +182,9 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     const value = event.target.value;
     setSearchInput(value);
     if (value) {
-      const results = await searchMusicalsByTitle(value); // API 호출로 검색 결과 가져오기
+      const encodedValue = encodeURIComponent(value);
+      console.log(encodedValue);
+      const results = await searchMusicalsByTitle(encodedValue); // API 호출로 검색 결과 가져오기
       if (results.data.length === 0) {
         setNoResults(true);
       } else {
@@ -157,10 +203,12 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
   const handleSearchSubmit = (
     event: React.KeyboardEvent | React.MouseEvent
   ) => {
+    console.log("클릭옴?")
     if (
       searchInput &&
       (event.type === "click" || (event as React.KeyboardEvent).key === "Enter")
     ) {
+      
       navigate(`/auth/search?query=${encodeURIComponent(searchInput)}`);
     }
   };
@@ -217,7 +265,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
       </div>
     </div>
         <div className="flex items-center space-x-4 relative">
-          <div className="flex items-center border-b-2 border-black">
+          <div ref={searchInputRef} className="flex items-center border-b-2 border-black">
             <input
               type="text"
               placeholder="Search"
@@ -232,7 +280,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
             </button>
           </div>
           {isSearchDropdownOpen && (
-            <div className="absolute top-12 left-0 right-0 bg-white border border-gray-300 z-10">
+            <div ref={searchDropdownRef} className="absolute top-12 left-0 right-0 bg-white border border-gray-300 z-10" style={{ height: '300px', overflowY: 'scroll' }}>
               {noResults ? (
                 <div className="p-2">No results found</div>
               ) : searchResults.length > 0 ? (
@@ -254,6 +302,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
             <FaRegUser size={24} onClick={handleAuthButton} />
             {dropdownOpen && (
               <CommonDropDown
+                onMyPageClick={handleMyPage}
                 onLogoutClick={handleLogOut}
                 onDeleteAccountClick={handleDeleteAccount}
               />
@@ -273,7 +322,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
         onConfirm={logOutModalConfirm}
         message="로그아웃 성공"
       />
-      <Modal
+      <DeleteAccountModal
         isOpen={deleteAccountModalOpen}
         onClose={() => setDeleteAccountModalOpen(false)}
         onConfirm={deleteAccountModalConfirm}

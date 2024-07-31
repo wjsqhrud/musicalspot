@@ -13,6 +13,7 @@ import com.housing.back.dto.request.auth.NicknameRequestDto;
 import com.housing.back.dto.request.auth.SignInRequestDto;
 import com.housing.back.dto.request.auth.SignUpRequestDto;
 import com.housing.back.dto.response.ResponseDto;
+import com.housing.back.dto.response.TestResponseDto;
 import com.housing.back.dto.response.auth.CheckCertificationResponseDto;
 import com.housing.back.dto.response.auth.EmailCertificationResponseDto;
 import com.housing.back.dto.response.auth.GenerateNewTokensResponseDto;
@@ -32,19 +33,14 @@ public interface AuthService {
     ResponseEntity<? super SignInResponseDto> signIn (SignInRequestDto dto,HttpServletRequest request);
     ResponseEntity<? super NicknameResponseDto> checkNickName (NicknameRequestDto dto);  // 추가
     ResponseEntity<? super NicknameResponseDto> createNickName(String authorizationHeader, NicknameRequestDto requestBody);
-
-
     ResponseEntity<? super NicknameResponseDto> findNickName(String authorizationHeader);
-
-
     boolean verifyRefreshToken(String refreshToken, String deviceInfo, String ipAddress);
     ResponseEntity<? super GenerateNewTokensResponseDto> generateNewTokens(String refreshToken);
     ResponseEntity<?> handleTokenRefresh(String authorizationHeader, Map<String, String> requestBody, HttpServletRequest request);
-    // 로그아웃 메서드 추가
     ResponseEntity<ResponseDto> logout(String token, String refreshToken);
-    /////////////////////////////////////////
     ResponseEntity<ResponseDto> accessSecureArea(HttpServletRequest request);
-    /////////////////////////////////////////
     ResponseEntity<?> processDeviceInfo(String accessToken, String refreshToken, String deviceInfo, HttpServletRequest request);
-
+    ResponseEntity<TestResponseDto> deleteUserByNickname(HttpServletRequest request, Map<String, String> requestBody);
+    ResponseEntity<TestResponseDto> changePassword(String authorizationHeader, Map<String, String> requestBody);
+    ResponseEntity<TestResponseDto> getUserInfo(String authorizationHeader);
 }

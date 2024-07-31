@@ -7,9 +7,13 @@ import Modal from 'components/Modal/Modal';
 import { handleNicknameChange, checkNicknameAvailability, handleCreateNickname } from 'services/NicknameService/nicknameService';
 import Button from 'acommons/Button';
 import Input from 'acommons/Input';
+import { useAuth } from 'hooks/useAuthHook';
+import AuthInputComponent from './AuthInputComponent';
+import AuthButton from 'acommons/auth/AuthButton';
 
 
 const CreateNickNameComponent: React.FC = () => {
+  const { isAuthenticated, myNickname, nicknameModalOpen, setNicknameModalOpen, checkAuthStatus } = useAuth();
   const [nickname, setNickname] = useState('');
   const [nicknameError, setNicknameError] = useState('');
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
@@ -19,7 +23,14 @@ const CreateNickNameComponent: React.FC = () => {
   const [logOutModalOpen, setLogOutModalOpen] = useState(false);
   const [createNicknameModalOpen, setCreateNicknameModalOpen] = useState(false);
 
-  
+  useEffect(() => {
+    console.log("Running checkAuthStatus on mount..." + isAuthenticated);
+    if(isAuthenticated){
+      console.log("홈으로가라")
+      navigateToHome();
+    }
+    
+  }, [isAuthenticated]);
 
   useEffect(() => {
     console.log("Hello World");
@@ -60,7 +71,18 @@ const CreateNickNameComponent: React.FC = () => {
         <div className="w-6"></div>
       </div>
       <div>
-      <Input
+      <AuthInputComponent
+        value={nickname}
+        onChange={(event) => handleNicknameChange(event, setNickname, setNicknameError, setErrorType, setIsNicknameAvailable)}
+        onButtonClick={() => checkNicknameAvailability(nickname, setNicknameError, setErrorType, setIsNicknameAvailable)}
+        showLabel={true}
+        labelText="닉네임"
+        buttonText="중복 확인"
+        placeholderText="닉네임을 입력하세요"
+        errorText={nicknameError}
+        errorType={errorType}
+      />
+      {/* <Input
         value={nickname}
         
         onChange={(event) => handleNicknameChange(event, setNickname, setNicknameError, setErrorType, setIsNicknameAvailable)}
@@ -72,12 +94,23 @@ const CreateNickNameComponent: React.FC = () => {
         type="text"
         // errorText={nicknameError}
         // errorType={errorType}
-      />
+      /> */}
       <Button text="중복확인" onClick={() => checkNicknameAvailability(nickname, setNicknameError, setErrorType, setIsNicknameAvailable)}/>
       </div>
       
       <div className="flex flex-col space-y-2 mt-4">
-        <Button
+      <AuthButton 
+          text="닉네임 생성" 
+          onClick={() => handleCreateNickname(nickname, isNicknameAvailable, setNicknameError, setErrorType, setCreateNicknameModalOpen)} 
+          className="w-full p-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+        />
+        <AuthButton 
+          text="로그아웃" 
+          onClick={handleLogOut} 
+          variant="secondary"
+          className="w-full p-2"
+        />
+        {/* <Button
           text="닉네임 생성" 
           onClick={() => handleCreateNickname(nickname, isNicknameAvailable, setNicknameError, setErrorType, setCreateNicknameModalOpen)} 
           className="w-full p-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
@@ -86,7 +119,7 @@ const CreateNickNameComponent: React.FC = () => {
           text="로그아웃" 
           onClick={handleLogOut} 
           className="w-full p-2"
-        />
+        /> */}
         <Modal 
           isOpen={createNicknameModalOpen} 
           onClose={() => setCreateNicknameModalOpen(false)}
