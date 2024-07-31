@@ -16,6 +16,8 @@ const MyPage: React.FC = () => {
   const [changePwdModalOpen, setChangePwdModalOpen] = useState(false);
   const [userData, setUserData] = useState({ userId: '', email: '', nickname: '', type: '' });
   const [newPassword, setNewPassword] = useState('');
+  const [commonModalOpen, setCommonModalOpen] = useState<boolean>(false); // State for the login alert modal
+  const [modalMessage, setModalMessage] = useState<string>('');
 
   const { navigateToLogin } = useNavigateHelper(); 
 
@@ -37,7 +39,9 @@ const MyPage: React.FC = () => {
         setUserData(response.data);
       }
     } catch (error) {
-      alert('로그인 후 이용해주세요');
+      setCommonModalOpen(true);
+      setModalMessage("로그인한 회원만 이용 가능합니다.")
+      // alert('로그인 후 이용해주세요');
       navigateToLogin();
       console.error("Failed to fetch user info:", error);
     }
@@ -49,12 +53,16 @@ const MyPage: React.FC = () => {
 
   const fetchChangePassword = async (inputValue?: string) => {
     if (!inputValue) {
-      alert("비밀번호를 입력해주세요.");
+      setCommonModalOpen(true);
+      setModalMessage("비밀번호를 입력해주세요")
+      // alert("비밀번호를 입력해주세요.");
       return;
     }
     try {
       const response = await changePassword(inputValue);
-      alert("비밀번호가 성공적으로 변경되었습니다.");
+      setCommonModalOpen(true);
+      setModalMessage("비밀번호가 성공적으로 변경되었습니다.");
+      // alert("비밀번호가 성공적으로 변경되었습니다.");
       setChangePwdModalOpen(false);
       window.location.reload();
     } catch (error) {
@@ -101,6 +109,10 @@ const MyPage: React.FC = () => {
         console.log("인증 필요함");
       }
     );
+  };
+  const commonModalConfirm = () => {
+    setCommonModalOpen(false);
+    setModalMessage("")
   };
 
   // bg-white w-full max-w-xl h-auto md:h-3/4 flex justify-center items-center rounded shadow-md
@@ -188,6 +200,12 @@ const MyPage: React.FC = () => {
         message="비밀번호 변경"
         showInput={true}
         placeholder="8~13자 변경하실 비밀번호를 입력하세요"
+      />
+      <Modal
+        isOpen={commonModalOpen}
+        onClose={() => setCommonModalOpen(false)}
+        onConfirm={commonModalConfirm}
+        message={modalMessage}
       />
     </HeaderProvider>
   );
