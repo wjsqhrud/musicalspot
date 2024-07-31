@@ -17,9 +17,9 @@ public class TimeFormatter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH : mm");        
         
         // 포맷 적용하기        
-        String formatedNow = now.format(formatter);  
+        String formattedNow = now.format(formatter);  
         
-        return formatedNow;
+        return formattedNow;
     }
 
 }

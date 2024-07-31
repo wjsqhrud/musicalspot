@@ -173,15 +173,13 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
       {isVisible && (
         <div
           id="chatContainer"
-          className={`z-50 fixed flex flex-col justify-between bottom-0 right-0
-            mr-11 mb-11 w-[400px]  h-[650px]  rounded-lg select-none ${styles.customBoxShadow} bg-white`}
+          className={`${styles.chatContainer} ${styles.customBoxShadow}`}
         >
-          <div className="flex justify-end items-center p-2 bg-violet-400 rounded-t-lg opacity-70">
-            <button onClick={toggleChat} className="rounded-full p-2 text-white hover:bg-white hover:text-red-600 transition-all">
+          <div className={styles.upperBtnContainer}>
+            <button onClick={toggleChat} className={styles.minimizeBtn}>
               <FaMinus />
             </button>
-            <button onClick={handleExitChat} className='flex ml-2 bg-transparent rounded-full p-2
-             text-white hover:bg-white hover:text-red-600 transition-all'>
+            <button onClick={handleExitChat} className={styles.exitChatBtn}>
               <ImExit size={18}/>
               </button>
           </div>
@@ -229,8 +227,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                 <div key={index} className={`animate-fade flex ${styles.customFont} break-words text-wrap
                 ${v.nickname === userNickname && v.type === MessageType.CHAT ? 'justify-end' : 'justify-start'}`}>
                   {v.type === MessageType.JOIN ? (
-                    <div className="flex justify-center bg-gray-300 py-1 px-4 m-1 rounded-xl w-fit ml-16 
-                    text-black text-xs font-mono font-semibold">
+                    <div className={`font-mono ${styles.noticeStyle}`}>
                       <span>{v.messageText}</span>
                     </div>
                   ) : (

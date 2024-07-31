@@ -160,7 +160,7 @@ const DynamicCategoryPage: React.FC = () => {
         break;
       case '4' : setCategoryName("넘버별 퍼포먼스");
         break;
-      default :
+      default : setCategoryName("전체보기");
         break;
     }
   },[location])
