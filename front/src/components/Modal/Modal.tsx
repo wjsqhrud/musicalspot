@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export interface ModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
   onConfirm: (inputValue?: string) => void;
   message?: string;

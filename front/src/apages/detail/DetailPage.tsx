@@ -126,7 +126,7 @@ const DetailPage: React.FC = () => {
   return (
     <HeaderProvider>
 
-      <div className="max-w-[1250px] mx-auto pt-20 select-none">
+      <div className="max-w-[1250px] mx-auto pt-16 select-none">
         {/* 공통 헤더 */}
 
         <CommonHeader

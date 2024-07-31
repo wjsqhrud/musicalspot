@@ -223,7 +223,7 @@ const Mainpage: React.FC = () => {
               className={styles.gridInner}
               onClick={() => handleClick(musical.id)}
             >
-              <div className={styles.gridImage}>
+              <div className={`${styles.gridImage} group`}>
                 <img
                   src={musical.imageUrl}
                   alt={musical.title}
@@ -244,7 +244,7 @@ const Mainpage: React.FC = () => {
           {musicalsByViewCount.slice(1, 7).map((musical) => (
             <div
               key={musical.id}
-              className={styles.sortedImgContainer}
+              className={`${styles.sortedImgContainer} group`}
               onClick={() => handleClick(musical.id)}
             >
               <div className={styles.gridImage}>
