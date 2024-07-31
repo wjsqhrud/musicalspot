@@ -1,3 +1,14 @@
+/* 전체 페이지 컨테이너 */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 뷰포트의 전체 높이를 차지 */
+  }
+  
+  .content {
+    flex: 1; /* 중간 콘텐츠를 유연하게 차지 */
+  }
+/*  */
 .headerStyle {
     max-width: 1250px;
     margin: 0 auto;
@@ -156,7 +167,7 @@
     overflow: hidden;
 }
 
-.footerStyle {
+/* .footerStyle {
     position: absolute;
     bottom: 0;
     width: 100vw;
@@ -164,4 +175,12 @@
     text-align: center;
     padding: 10px;
     border-top: 2px solid rgb(209, 213, 219);
-}
+} */
+
+.footerStyle {
+    background-color: rgb(243, 244, 246);
+    text-align: center;
+    padding: 10px;
+    border-top: 2px solid rgb(209, 213, 219);
+    width: 100%;
+  }

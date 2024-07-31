@@ -132,6 +132,8 @@ const Mainpage: React.FC = () => {
 
   return (
     <HeaderProvider>
+      <div className="page-container">
+      <div className="content">
       <div className={styles.headerStyle}>
         <CommonHeader
           isAuthenticated={isAuthenticated}
@@ -266,9 +268,12 @@ const Mainpage: React.FC = () => {
         </div>
 
         {/* Footer Section */}
-        <footer className={styles.footerStyle}>
+        
+      </div>
+      <footer className={styles.footerStyle}>
           <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
         </footer>
+      </div>
       </div>
     </HeaderProvider>
   );
