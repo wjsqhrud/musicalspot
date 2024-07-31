@@ -110,14 +110,14 @@ const DynamicCategoryPage: React.FC = () => {
       const response = await categoryList();
       setCategories(response);
       // 카테고리 ID가 있을 경우 해당 카테고리 이름 설정
-      if (categoryId) {
-        const selectedCategory = response.find(
-          (category) => category.id === categoryId
-        );
-        setCategoryName(
-          selectedCategory ? selectedCategory.category : "뮤지컬"
-        );
-      }
+      // if (categoryId) {
+      //   const selectedCategory = response.find(
+      //     (category) => category.id === categoryId
+      //   );
+      //   setCategoryName(
+      //     selectedCategory ? selectedCategory.category : "뮤지컬"
+      //   );
+      // }
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -143,7 +143,11 @@ const DynamicCategoryPage: React.FC = () => {
       const selectedCategory = categories.find(
         (category) => category.id === categoryId
       );
-      setCategoryName(selectedCategory ? selectedCategory.category : "장르 선택");
+      if(selectedCategory)
+      {
+        setCategoryName(selectedCategory.category);
+      }
+      
     }
   }, [categories, currentCategoryId]);
   
