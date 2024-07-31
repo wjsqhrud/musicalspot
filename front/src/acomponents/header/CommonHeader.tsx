@@ -129,7 +129,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
       }
     );
   }
-
+ // todo: 모달진입점
   const handleLogOut = async () => {
     const result = await combinedLogoutHandler(navigateToHome);
     if (result) {
@@ -137,6 +137,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
     }
   };
 
+  //todo: 확인버튼
   const logOutModalConfirm = () => {
     window.location.reload();
   };

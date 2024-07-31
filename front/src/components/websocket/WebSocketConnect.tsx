@@ -10,6 +10,7 @@ import { ImExit } from "react-icons/im";
 import 'tailwindcss/tailwind.css';
 import styles from './WebSocketConnect.module.css';
 import { REDIRECT_SIGN_IN, SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
+import Modal from 'components/Modal/Modal';
 
 interface ChatComponentProps {
   isVisible: boolean;
@@ -29,6 +30,13 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   const [showModal, setShowModal] = useState<boolean>(false);
   const { checkAuthStatus } = useAuth();
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  //todo:sds
+  const [logOutModalOpen, setLogOutModalOpen] = useState(false);
+//todo: 확인버튼
+const logOutModalConfirm = () => {
+  // window.location.reload();
+};
+
   const MUTE_DURATION = 10000;
 
   const handleConnectWebSocket = () => {
@@ -95,7 +103,8 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
       return;
     } 
     else if (messageInput.length > 50) {
-      window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
+      setLogOutModalOpen(true);
+      // window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
       inputContent.value = "";
       return;
     }
@@ -164,7 +173,9 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
       setTimeout(() => setIsMuted(false), MUTE_DURATION);
 
     } else if (message.messageText?.includes("길이초과")) {
-      window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
+      //todo: 여기모달
+      setLogOutModalOpen(true);
+      // window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
     }
   };
 
@@ -268,6 +279,12 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
             </div>
           </div>
           {showModal && <SignUpRedirect onClose={closeModal} signInUrl={REDIRECT_SIGN_IN()} toggleChat={toggleChat} />}
+          <Modal
+        isOpen={logOutModalOpen}
+        onClose={() => setLogOutModalOpen(false)}
+        onConfirm={logOutModalConfirm}
+        message="한번에 최대 전송 가능한 문자는 50자 이내 입니다."
+      />
         </div>
       )}
     </>

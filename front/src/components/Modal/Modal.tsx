@@ -4,13 +4,13 @@ export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (inputValue?: string) => void;
-  message: string;
+  message?: string;
   showInput?: boolean;
   placeholder?: string; // 기본값 설정
 }
 
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, message, showInput, placeholder = "닉네임을 입력하세요" }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, message= "기본값", showInput, placeholder = "닉네임을 입력하세요" }) => {
   const [inputValue, setInputValue] = useState('');
 
   if (!isOpen) return null;
@@ -47,6 +47,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, message, show
           </button>
         </div>
       </div>
+      
     </div>
   );
 };
