@@ -6,6 +6,8 @@ import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // 아이콘 사용을 위해 react-icons 패키지 사용
 import styles from './DetailPage.module.css';
+import Modal from "components/Modal/Modal";
+import useNavigateHelper from "utils/NavigationUtil/navigationUtil";
 interface Link {
   id: number;
   siteName: string;
@@ -40,8 +42,11 @@ const DetailPage: React.FC = () => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [logInModalOpen, setLogInModalOpen] = useState(false);
   const navigate = useNavigate();
 
+  const { navigateToLogin } =
+    useNavigateHelper();
   const {
     isAuthenticated,
     myNickname,
@@ -85,9 +90,10 @@ const DetailPage: React.FC = () => {
     getDetails();
   }, [musicalId, isAuthenticated,liked]);
 
+  
   const handleLikeClick = async () => {
     if (!isAuthenticated) {
-      alert("좋아요를 누르려면 로그인이 필요합니다.");
+      setLogInModalOpen(true)
       return;
     }
     try {
@@ -102,6 +108,9 @@ const DetailPage: React.FC = () => {
     }
   };
 
+  const logInModalConfirm = () => {
+    navigateToLogin();
+  };
   const openModal = () => {
     setModalIsOpen(true);
   };
@@ -236,6 +245,12 @@ const DetailPage: React.FC = () => {
           )}
         </div>
       </div>
+      <Modal
+        isOpen={logInModalOpen}
+        onClose={() => setLogInModalOpen(false)}
+        onConfirm={logInModalConfirm}
+        message="로그인한 회원만 이용 가능합니다."
+      />
     </HeaderProvider>
   );
 };
