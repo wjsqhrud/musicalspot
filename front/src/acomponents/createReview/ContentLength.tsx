@@ -50,7 +50,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
           value={content}
           onChange={handleContentChange}
           placeholder={placeholder}
-          className="w-full p-2 border rounded text-gray-700 bg-white no-scrollbar"
+          className="w-full p-2 border rounded text-gray-700 bg-white h-fit"
           rows={isTextArea ? 5 : undefined}
           style={{ height: isTextArea ? textAreaHeight : "auto" }}
         />
