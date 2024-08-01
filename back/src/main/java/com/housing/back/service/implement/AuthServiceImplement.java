@@ -96,17 +96,20 @@ public class AuthServiceImplement implements AuthService {
 
     @Override
     public ResponseEntity<? super EmailCertificationResponseDto> emailCertification(EmailCertificationRequestDto dto) {
-        
+        String userId = dto.getId();
+            String email = dto.getEmail();
+            VerificationCodeEntity certificationEntity = certificationRepository.findByUserId(userId);
+            if (certificationEntity != null) certificationRepository.deleteByUserId(userId);
+            
         try {
             
-            String userId = dto.getId();
-            String email = dto.getEmail();
+            
 
-            boolean isExistId = userRepository.existsByUserId(userId);
-            if (isExistId) {
-                // Delete any existing verification code for the user ID and email
-                certificationRepository.deleteByUserId(userId);
-            }
+            // boolean isExistId = userRepository.existsByUserId(userId);
+            // if (isExistId) {
+            //     // Delete any existing verification code for the user ID and email
+                
+            // }
 
             String certificationNumber = CertificationNumber.getCertificationNumber();
 
