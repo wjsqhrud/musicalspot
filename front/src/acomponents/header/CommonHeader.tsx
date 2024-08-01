@@ -152,7 +152,7 @@ const CommonHeader: React.FC<CommonHeaderProps> = ({
       console.log("회원탈퇴 진행: " + inputNickname);
       try {
         await deleteAccount(inputNickname);
-        alert("회원탈퇴에 성공하였습니다. 그동안 이용해주셔서 감사합니다.");
+        // alert("회원탈퇴에 성공하였습니다. 그동안 이용해주셔서 감사합니다.");
         window.location.reload();
         console.log("시도는한거야?")
       } catch (error) {
