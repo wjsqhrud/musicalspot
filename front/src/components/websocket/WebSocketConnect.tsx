@@ -42,6 +42,8 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   const [isSameMsg, setIsSameMsg] = useState<boolean>(false);
   const [isEmptyMsg, setIsEmptyMsg] = useState<boolean>(false);
 
+  const isAllGreen = isConnected && isJoined;
+
   const handleConnectWebSocket = () => {
     checkAuthStatus(
       (nickname) => {
@@ -93,7 +95,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const maximumMessageRender = 150;
+    const maximumMessageRender = 100;
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 
     if (messages.length > maximumMessageRender) {
@@ -214,9 +216,9 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
             </button>
           </div>
   
-          <div className={`flex-grow ${isConnected ? '' : 'hidden'} ${styles.customScrollbar} overflow-y-auto`}>
+          <div className={`flex-grow ${isAllGreen ? '' : 'hidden'} ${styles.customScrollbar} overflow-y-auto`}>
             {isConnected && !isJoined ? (
-              <div className="flex items-center justify-center h-full">
+              <div className="flex items-center justify-center h-full max-w-[400px]">
                 <button
                   onClick={handleConnectWebSocket}
                   className="relative z-10 flex items-center justify-center space-x-2 text-xl px-6 py-3 
@@ -229,11 +231,11 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
               </div>
             ) : (
               messages.map((v, index) => (
-                <div key={index} className={`animate-fade flex ${styles.customFont} break-words text-wrap
+                <div key={index} className={`${styles.animateFadeIn} flex ${styles.customFont} break-words text-wrap
                 ${v.nickname === userNickname && v.type === MessageType.CHAT ? 'justify-end' : 'justify-start'}`}>
                   {v.type === MessageType.JOIN ? (
                     <div className={`font-mono ${styles.noticeStyle}`}>
-                      <span>{v.messageText}</span>
+                      <span>{v.messageText} </span>
                     </div>
                   ) : (
                     <div className={`flex items-end ${v.nickname === userNickname ? 'flex-row': 'flex-row-reverse'}`}>
@@ -260,6 +262,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
                 disabled={isMuted}
                 placeholder={isMuted ? "욕설 및 도배로 인해 채팅이 금지 되었습니다." : "이곳에 메시지를 입력하세요"}
                 onChange={handleInputChange}
+                autoComplete='off'
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();

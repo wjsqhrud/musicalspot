@@ -30,12 +30,13 @@ export function initializeWebSocket(config: WebSocketConfig, userNickname: strin
     onConnect: () => {
       console.log('WebSocket 연결됨');
 
+      // 웹소켓 연결 시 websocket mapping 구독 
       client.subscribe('/topic/chatRoom', (message: Message) => {
         console.log('메시지 수신:', message.body);
         const receivedMessage: ChatMessage = JSON.parse(message.body);
         config.onMessage(receivedMessage);
       });
-
+      // 필터링 트리거 시 받을 개인 메세지 mapping 구독
       client.subscribe('/user/queue/reply', (message: Message) => {
         const receivedMessage: ChatMessage = JSON.parse(message.body);
         console.log("reply로 받은 문자 : " + receivedMessage);
