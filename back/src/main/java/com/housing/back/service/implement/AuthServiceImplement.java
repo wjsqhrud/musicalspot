@@ -105,7 +105,7 @@ public class AuthServiceImplement implements AuthService {
             boolean isExistId = userRepository.existsByUserId(userId);
             if (isExistId) {
                 // Delete any existing verification code for the user ID and email
-                certificationRepository.deleteByUserIdAndEmail(userId, email);
+                certificationRepository.deleteByUserId(userId);
             }
 
             String certificationNumber = CertificationNumber.getCertificationNumber();
