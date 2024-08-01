@@ -14,11 +14,13 @@ import CommentList from "./CommentList";
 import { EyeIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { truncateString } from "acomponents/review/ReviewContentLength";
+import LoadingModal from "acomponents/review/LoadingModal";
 
 interface ReviewDetailProps {
   reviewId: number;
   onClose: () => void;
   onDelete: () => void;
+  onUpdate: (updatedReview: Review) => void;
   isAuthenticated: boolean;
 }
 
@@ -26,6 +28,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
   reviewId,
   onClose,
   onDelete,
+  onUpdate,
   isAuthenticated,
 }) => {
   const [review, setReview] = useState<Review | null>(null);
@@ -45,6 +48,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
         : await publicReviewDetails(reviewId.toString());
 
       setReview(response.data);
+      onUpdate(response.data);
 
       if (isAuthenticated) {
         const likeResponse = await reviewLike(reviewId.toString());
@@ -56,21 +60,35 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [reviewId, isAuthenticated]);
+  }, [reviewId, isAuthenticated, onUpdate]);
+
   const handleMusicalDetail = () => {
     navigate(`/auth/details/${review?.musicalId}`);
   };
+
   useEffect(() => {
     fetchReviewDetail();
   }, [fetchReviewDetail]);
 
   const handleCommentAdded = useCallback(() => {
     fetchReviewDetail();
-  }, [fetchReviewDetail]);
+    if (review) {
+      onUpdate({
+        ...review,
+        commentCount: review.commentCount + 1,
+      });
+    }
+  }, [fetchReviewDetail, review, onUpdate]);
 
   const handleLikeToggle = useCallback(() => {
     fetchReviewDetail();
-  }, [fetchReviewDetail]);
+    if (review) {
+      onUpdate({
+        ...review,
+        likeCount: isLiked ? review.likeCount - 1 : review.likeCount + 1,
+      });
+    }
+  }, [fetchReviewDetail, review, isLiked, onUpdate]);
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -81,7 +99,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
     fetchReviewDetail();
   }, [fetchReviewDetail]);
 
-  if (loading) return <div>로딩 중...</div>;
+  if (loading) return <LoadingModal />;
   if (error) return <div>{error}</div>;
   if (!review) return <div>리뷰를 찾을 수 없습니다.</div>;
 
@@ -138,7 +156,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
               onLikeToggle={handleLikeToggle}
             />
           </div>
-          <div className="bg-gray-100 p-4 rounded-lg mb-2 flex-grow overflow-y-auto">
+          <div className="bg-gray-100 p-4 rounded-lg mb-2 max-h-60 h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
             <p className="text-gray-800 whitespace-pre-wrap text-sm">
               {review.content}
             </p>
@@ -172,4 +190,3 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
 };
 
 export default ReviewDetail;
-

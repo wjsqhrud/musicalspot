@@ -18,7 +18,6 @@ const CommentForm: React.FC<CommentFormProps> = ({
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-
   const handleSubmit = async (content: string) => {
     if (!content.trim()) return;
 
@@ -46,17 +45,16 @@ const CommentForm: React.FC<CommentFormProps> = ({
         maxLength={200}
         placeholder="댓글을 작성하세요"
         onSubmit={handleSubmit}
-        isTextArea={true}
+        isTextArea={false}
         textAreaHeight="45px"
       />
       <Modal
-  isOpen={showLoginModal}
-  onClose={() => setShowLoginModal(false)}
-  onConfirm={handleLoginRedirect}
-  message="댓글 작성은 로그인한 회원만 이용 가능합니다."
-/>
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onConfirm={handleLoginRedirect}
+        message="댓글 작성은 로그인한 회원만 이용 가능합니다."
+      />
     </div>
-    
   );
 };
 
