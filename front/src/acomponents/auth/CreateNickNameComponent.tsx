@@ -82,19 +82,6 @@ const CreateNickNameComponent: React.FC = () => {
         errorText={nicknameError}
         errorType={errorType}
       />
-      {/* <Input
-        value={nickname}
-        
-        onChange={(event) => handleNicknameChange(event, setNickname, setNicknameError, setErrorType, setIsNicknameAvailable)}
-        // onButtonClick={() => checkNicknameAvailability(nickname, setNicknameError, setErrorType, setIsNicknameAvailable)}
-        // showLabel={true}
-        // labelText="닉네임"
-        // buttonText="중복 확인"
-        placeholder="닉네임을 입력하세요"
-        type="text"
-        // errorText={nicknameError}
-        // errorType={errorType}
-      /> */}
       <Button text="중복확인" onClick={() => checkNicknameAvailability(nickname, setNicknameError, setErrorType, setIsNicknameAvailable)}/>
       </div>
       
@@ -110,16 +97,6 @@ const CreateNickNameComponent: React.FC = () => {
           variant="secondary"
           className="w-full p-2"
         />
-        {/* <Button
-          text="닉네임 생성" 
-          onClick={() => handleCreateNickname(nickname, isNicknameAvailable, setNicknameError, setErrorType, setCreateNicknameModalOpen)} 
-          className="w-full p-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-        />
-        <Button 
-          text="로그아웃" 
-          onClick={handleLogOut} 
-          className="w-full p-2"
-        /> */}
         <Modal 
           isOpen={createNicknameModalOpen} 
           onClose={() => setCreateNicknameModalOpen(false)}

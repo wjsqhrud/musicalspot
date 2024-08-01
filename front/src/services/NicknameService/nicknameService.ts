@@ -2,11 +2,27 @@ import { NicknameRequestDto } from 'utils/DtoUtil/request/auth';
 import { checkNicknameRequest, createNicknameRequest } from 'services/Auth/authService';
 import { ResponseCode } from 'utils/TypeUtil/enums';
 
-export const handleNicknameChange = (event: React.ChangeEvent<HTMLInputElement>, setNickname: React.Dispatch<React.SetStateAction<string>>, setNicknameError: React.Dispatch<React.SetStateAction<string>>, setErrorType: React.Dispatch<React.SetStateAction<'error' | 'success' | 'smallError'>>, setIsNicknameAvailable: React.Dispatch<React.SetStateAction<boolean>>) => {
-    setNickname(event.target.value);
-    setNicknameError('');
-    setErrorType('error');
-    setIsNicknameAvailable(false);
+export const handleNicknameChange = (
+    event: React.ChangeEvent<HTMLInputElement>, 
+    setNickname: React.Dispatch<React.SetStateAction<string>>, 
+    setNicknameError: React.Dispatch<React.SetStateAction<string>>, 
+    setErrorType: React.Dispatch<React.SetStateAction<'error' | 'success' | 'smallError'>>, 
+    setIsNicknameAvailable: React.Dispatch<React.SetStateAction<boolean>>) => {
+    const nickname = event.target.value;
+
+    // Regular expression for validation: no special characters, no whitespace, length up to 6
+    const nicknameRegex = /^[a-zA-Z0-9]{1,6}$/;
+
+    if (!nicknameRegex.test(nickname)) {
+        setNicknameError('닉네임은 공백없이 1~6자 이내의 영문 및 숫자만 가능합니다.');
+        setErrorType('error');
+        setIsNicknameAvailable(false);
+    } else {
+        setNickname(nickname);
+        setNicknameError('');
+        setErrorType('error');
+        setIsNicknameAvailable(false);
+    }
 };
 
 export const checkNicknameAvailability = async (nickname: string, setNicknameError: React.Dispatch<React.SetStateAction<string>>, setErrorType: React.Dispatch<React.SetStateAction<'error' | 'success' | 'smallError'>>, setIsNicknameAvailable: React.Dispatch<React.SetStateAction<boolean>>) => {
