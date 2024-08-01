@@ -116,7 +116,7 @@ public class AuthServiceImplement implements AuthService {
             boolean isSuccessed = emailProvider.sendCertificationMail(email, certificationNumber);
             if(!isSuccessed) return EmailCertificationResponseDto.mailSendFail();
 
-            VerificationCodeEntity certificationEntity = new VerificationCodeEntity(userId, email, certificationNumber);
+            certificationEntity = new VerificationCodeEntity(userId, email, certificationNumber);
             certificationRepository.save(certificationEntity);
             
         } catch (Exception exception){
