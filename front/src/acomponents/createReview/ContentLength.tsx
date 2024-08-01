@@ -63,7 +63,7 @@ export const ContentInput: React.FC<ContentInputProps> = ({
         type="submit"
         className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
       >
-        제출
+        작성
       </button>
     </form>
   );

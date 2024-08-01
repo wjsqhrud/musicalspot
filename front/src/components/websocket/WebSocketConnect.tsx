@@ -8,10 +8,12 @@ import { ChatMessage, MessageType, initializeWebSocket } from '../../hooks/conne
 import { ImExit } from "react-icons/im";
 import 'tailwindcss/tailwind.css';
 import styles from './WebSocketConnect.module.css';
+
 import { SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
 import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 import ModalWithCancle from 'components/Modal/ModalWithCancle';
 import Modal from 'components/Modal/Modal';
+
 
 interface ChatComponentProps {
   isVisible: boolean;
@@ -30,6 +32,8 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const { checkAuthStatus } = useAuth();
+
+
   const MUTE_DURATION = 10000;
   const { navigateToLogin }= useNavigateHelper();
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -108,8 +112,10 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   },[messageInput])
 
   const sendMessage = () => {
+
     if (!messageInput.trim()) {
       setIsEmptyMsg(true);
+
       return;
     }
 
@@ -159,7 +165,13 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
     } else if (message.messageText?.includes("동일문자열")) {
       setIsSameMsg(true);
     } else if (message.messageText?.includes("길이초과")) {
+// <<<<<<< HEAD
+//       //todo: 여기모달
+//       setLogOutModalOpen(true);
+//       // window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
+// =======
       setIsOverMsgLength(true);
+
     }
   };
 
@@ -265,6 +277,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
               
             </div>
           </div>
+
           {showModal && 
           <ModalWithCancle
           isOpen={showModal}
@@ -292,6 +305,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
           onConfirm={()=> setIsSameMsg(false)}
           message='이전과 동일한 메세지는 전송할 수 없습니다.'
           />}
+
         </div>
       )}
     </>

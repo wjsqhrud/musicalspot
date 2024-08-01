@@ -8,12 +8,12 @@ import {
 import { Review } from "./ReviewType";
 import ReviewDetail from "./ReviewDetail";
 import ReviewFormModal from "acomponents/createReview/ReviewFormModal";
-import Modal from "acomponents/review/Modal";
+import ReviewModal from "acomponents/review/Modal";
+import Modal from "components/Modal/Modal";
 import "styles/style.css";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
-import { link } from "fs";
 import { useNavigate } from "react-router-dom";
 
 type SortType = "recent" | "likes" | "views";
@@ -28,6 +28,8 @@ const ReviewList: React.FC = () => {
   const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
   const [sortType, setSortType] = useState<SortType>("recent");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   const observer = useRef<IntersectionObserver | null>(null);
   const navigate = useNavigate();
 
@@ -126,10 +128,14 @@ const ReviewList: React.FC = () => {
       },
       () => {
         console.log("인증 필요함");
-        alert("로그인 상태에서만 작성가능합니다.");
-        navigate("/auth/sign-in");
+        setShowLoginModal(true);
       }
     );
+  };
+
+  const handleLoginRedirect = () => {
+    setShowLoginModal(false);
+    navigate("/auth/sign-in");
   };
 
   const handleCloseCreateModal = () => {
@@ -144,6 +150,16 @@ const ReviewList: React.FC = () => {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
+  const updateReviewInList = useCallback((updatedReview: Review) => {
+    setReviews((prevReviews) =>
+      prevReviews.map((review) =>
+        review.id === updatedReview.id
+          ? { ...review, ...updatedReview }
+          : review
+      )
+    );
+  }, []);
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -233,51 +249,27 @@ const ReviewList: React.FC = () => {
             <p className="text-center mt-4">더 이상 리뷰가 없습니다.</p>
           )}
 
-          <Modal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
+          <ReviewModal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
             {selectedReviewId && (
               <ReviewDetail
                 isAuthenticated={isAuthenticated}
                 reviewId={selectedReviewId}
                 onClose={handleCloseModal}
                 onDelete={handleReviewSubmitted}
+                onUpdate={updateReviewInList}
               />
             )}
-          </Modal>
+          </ReviewModal>
         </div>
       </div>
-{/* <<<<<<< HEAD
-      <ReviewFormModal
-        isOpen={isCreateModalOpen}
-        onClose={handleCloseCreateModal}
-        onReviewSubmitted={handleReviewSubmitted}
+
+      <Modal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onConfirm={handleLoginRedirect}
+        message="리뷰 작성은 로그인한 회원만 이용 가능합니다."
       />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3">
-        {reviews.map((review, index) => (
-          <div
-            key={`${review.id}-${index}`}
-            ref={index === reviews.length - 1 ? lastReviewElementRef : null}
-            onClick={() => handleReviewClick(review.id)}
-            className="cursor-pointer"
-          >
-            <ReviewItem review={review} />
-          </div>
-        ))}
-      </div>
-      {loading && <p className="text-center mt-4">로딩 중...</p>}
-      {!hasMore && <p className="text-center mt-4">더 이상 리뷰가 없습니다.</p>}
-
-      <Modal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
-        {selectedReviewId && (
-          <ReviewDetail
-            reviewId={selectedReviewId}
-            onClose={handleCloseModal}
-          />
-        )}
-      </Modal>
-    </div>
-======= */}
     </HeaderProvider>
-
   );
 };
 

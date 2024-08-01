@@ -1,7 +1,5 @@
-
-
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import Modal from "components/Modal/Modal";
+import React, { useState } from "react";
 import {
   deleteReview,
   privateReviewDetails,
@@ -20,7 +18,8 @@ const EditDeleteButtons: React.FC<EditDeleteButtonsProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const handleEdit = async () => {
     try {
       const response = await privateReviewDetails(reviewId);
@@ -29,18 +28,20 @@ const EditDeleteButtons: React.FC<EditDeleteButtonsProps> = ({
     } catch (error) {
       console.error("리뷰 데이터 불러오기 중 오류 발생:", error);
     }
-
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("정말로 이 리뷰를 삭제하시겠습니까?")) {
-      try {
-        await deleteReview(reviewId);
-        navigate(`/auth/reviewlist`);
-        onDelete();
-      } catch (error) {
-        console.error("리뷰 삭제 중 오류 발생:", error);
-      }
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteReview(reviewId);
+      onDelete();
+    } catch (error) {
+      console.error("리뷰 삭제 중 오류 발생:", error);
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
@@ -48,12 +49,27 @@ const EditDeleteButtons: React.FC<EditDeleteButtonsProps> = ({
 
   return (
     <div className="edit-delete-buttons">
-      <button onClick={handleEdit}>수정</button>
-      <button onClick={handleDelete}>삭제</button>
+      <button
+        onClick={handleEdit}
+        className="mr-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        수정
+      </button>
+      <button
+        onClick={handleDeleteClick}
+        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+      >
+        삭제
+      </button>
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        message="정말로 이 리뷰를 삭제하시겠습니까?"
+      />
     </div>
   );
 };
-
 
 export default EditDeleteButtons;
 

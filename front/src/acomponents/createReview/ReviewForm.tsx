@@ -7,6 +7,7 @@ import {
 import { Review } from "./CreateReviewType";
 import MusicalSelector from "./MusicalSelector";
 import { ContentInput } from "./ContentLength";
+import MusicalSearch from "./SearchMusical";
 
 interface ReviewFormProps {
   existingReview?: string;
@@ -115,6 +116,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       </div>
       <div className="w-full md:w-1/3">
         <MusicalSelector onMusicalSelect={handleMusicalSelect} />
+        <MusicalSearch onMusicalSelect={handleMusicalSelect} />{" "}
       </div>
       <div className="w-full md:w-1/3">
         <div className="mb-4">

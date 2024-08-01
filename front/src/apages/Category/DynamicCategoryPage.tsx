@@ -162,7 +162,7 @@ const DynamicCategoryPage: React.FC = () => {
         break;
       case '3' : setCategoryName("창작");
         break;
-      case '4' : setCategoryName("넘버별 퍼포먼스");
+      case '4' : setCategoryName("넌버벌 퍼포먼스");
         break;
       default : setCategoryName("전체보기");
         break;
