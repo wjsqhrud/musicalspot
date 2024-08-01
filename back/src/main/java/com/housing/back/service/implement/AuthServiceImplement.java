@@ -103,7 +103,10 @@ public class AuthServiceImplement implements AuthService {
             String email = dto.getEmail();
 
             boolean isExistId = userRepository.existsByUserId(userId);
-            if (isExistId) return EmailCertificationResponseDto.duplicateId();
+            if (isExistId) {
+                // Delete any existing verification code for the user ID and email
+                certificationRepository.deleteByUserIdAndEmail(userId, email);
+            }
 
             String certificationNumber = CertificationNumber.getCertificationNumber();
 

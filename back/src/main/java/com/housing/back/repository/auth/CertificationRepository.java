@@ -16,4 +16,6 @@ public interface CertificationRepository extends JpaRepository<VerificationCodeE
     @Transactional
     void deleteByUserId(String userId);
 
+    @Transactional
+    void deleteByUserIdAndEmail(String userId, String email);
 }

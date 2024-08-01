@@ -42,7 +42,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, isAuthenticated }) => {
         </p>
         <p className="text-xs text-gray-500 mb-1">작성자: {review.nickname}</p>
         <p className="text-xs text-gray-700 mb-2 line-clamp-2 flex-grow">
-          {truncateString(review.content, 50)}
+          {truncateString(review.content, 30)}
         </p>
         <div className="flex justify-between text-xs text-gray-500">
           <div className="flex items-center">

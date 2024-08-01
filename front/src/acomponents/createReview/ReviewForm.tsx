@@ -92,7 +92,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     const newTitle = e.target.value;
     setFormData((prev) => ({ ...prev, title: newTitle }));
     if (newTitle.length < 5) {
-      setError("제목은 최소 5글자 이상 입력해주세요");
+      setError("제목은 최소 5글자에서 20글자 사이로 입력해주세요");
+    } else if(newTitle.length > 20) {
+      setError("제목은 최소 5글자에서 20글자 사이로 입력해주세요");
     } else {
       setError(null);
     }
