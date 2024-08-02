@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 import CommonHeader from "acomponents/header/CommonHeader";
+import CommonFooter from "acomponents/footer/CommonFooter";
 import { useAuth } from "hooks/useAuthHook";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import {
@@ -97,7 +98,7 @@ const AllCategoryPage: React.FC = () => {
     setCategories(response);
     console.log("Categories Data:", response);
   };
-//안녕하세요
+  //안녕하세요
   useEffect(() => {
     fetchMusicals();
     fetchCategories();
@@ -256,11 +257,9 @@ const AllCategoryPage: React.FC = () => {
             </div>
           ))}
         </div>
-
-        <footer className="w-full bg-gray-100 text-center py-2.5 border-t border-gray-300">
-          <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
-        </footer>
       </div>
+      {/* 공통 푸터 컴포넌트 */}
+      <CommonFooter />
     </HeaderProvider>
   );
 };

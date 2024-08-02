@@ -7,10 +7,11 @@ import {
 
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
+import CommonFooter from "acomponents/footer/CommonFooter";
 import { useAuth } from "hooks/useAuthHook";
 import { useNavigate } from "react-router-dom"; // import useNavigate 추가
 import { GrPrevious, GrNext } from "react-icons/gr";
-import styles from './Mainpage.module.css';
+import styles from "./Mainpage.module.css";
 
 interface Musical {
   id: number;
@@ -133,147 +134,145 @@ const Mainpage: React.FC = () => {
   return (
     <HeaderProvider>
       <div className="page-container">
-      <div className="content">
-      <div className={styles.headerStyle}>
-        <CommonHeader
-          isAuthenticated={isAuthenticated}
-          myNickname={myNickname}
-          nicknameModalOpen={nicknameModalOpen}
-          setNicknameModalOpen={setNicknameModalOpen}
-          checkAuthStatus={checkAuthStatus}
-        />
-        <div className={styles.slideContainer}>
-  {/* 슬라이드 버튼 컨테이너 */}
-  <div className={styles.slideBtnContainer}>
-    {/* 이전 슬라이드 버튼 */}
-    <button
-      className={styles.slideBtn}
-      onClick={handlePrev}
-    >
-      <GrPrevious />
-    </button>
-    {/* 다음 슬라이드 버튼 */}
-    <button
-      className={styles.slideBtn}
-      onClick={handleNext}
-    >
-      <GrNext />
-    </button>
-  </div>
-  
-  {/* 슬라이드 컨테이너 */}
-  <div className={styles.slideContainerInner}>
-  <div
-    className={styles.slideBoxAnimation}
-    style={{
-      transform: `translateX(-${
-        currentSlide * (100 / musicalsByStartDate.length)
-      }%)`,
-    }}
-  >
-    {musicalsByStartDate.length > 0 &&
-      musicalsByStartDate.map((musical, index) => (
-        <div
-          key={musical.id}
-          className={`${styles.slideSortBox}  
+        <div className="content">
+          <div className={styles.headerStyle}>
+            <CommonHeader
+              isAuthenticated={isAuthenticated}
+              myNickname={myNickname}
+              nicknameModalOpen={nicknameModalOpen}
+              setNicknameModalOpen={setNicknameModalOpen}
+              checkAuthStatus={checkAuthStatus}
+            />
+            <div className={styles.slideContainer}>
+              {/* 슬라이드 버튼 컨테이너 */}
+              <div className={styles.slideBtnContainer}>
+                {/* 이전 슬라이드 버튼 */}
+                <button className={styles.slideBtn} onClick={handlePrev}>
+                  <GrPrevious />
+                </button>
+                {/* 다음 슬라이드 버튼 */}
+                <button className={styles.slideBtn} onClick={handleNext}>
+                  <GrNext />
+                </button>
+              </div>
+
+              {/* 슬라이드 컨테이너 */}
+              <div className={styles.slideContainerInner}>
+                <div
+                  className={styles.slideBoxAnimation}
+                  style={{
+                    transform: `translateX(-${
+                      currentSlide * (100 / musicalsByStartDate.length)
+                    }%)`,
+                  }}
+                >
+                  {musicalsByStartDate.length > 0 &&
+                    musicalsByStartDate.map((musical, index) => (
+                      <div
+                        key={musical.id}
+                        className={`${styles.slideSortBox}  
             ${
               index === currentSlide
                 ? styles.currentImgStyle
                 : styles.normalImgStyle
             } cursor-pointer`}
-          onClick={() => handleClick(musical.id)}
-          style={{ zIndex: 100 }} // z-index 설정
-        >
-          <img
-            src={musical.imageUrl}
-            alt={musical.title}
-            className="w-full h-full shadow-modalShadow shadow-stone-600 mx-auto"
-            style={{ pointerEvents: 'auto' }} // pointer-events 설정
-          />
-        </div>
+                        onClick={() => handleClick(musical.id)}
+                        style={{ zIndex: 100 }} // z-index 설정
+                      >
+                        <img
+                          src={musical.imageUrl}
+                          alt={musical.title}
+                          className="w-full h-full shadow-modalShadow shadow-stone-600 mx-auto"
+                          style={{ pointerEvents: "auto" }} // pointer-events 설정
+                        />
+                      </div>
+                    ))}
+                </div>
+                {/* 슬라이드 네비게이션 */}
+                <div
+                  className={
+                    "absolute bottom-2 left-0 right-0 flex justify-center space-x-2 mt-2"
+                  }
+                >
+                  {musicalsByStartDate.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`h-1 cursor-pointer ${
+                        index === currentSlide
+                          ? styles.currentSlideBarStyle
+                          : styles.normalSlideBarStyle
+                      } transition-all duration-300`}
+                      onClick={() => handleLineClick(index)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
 
-      ))}
-  </div>
-  {/* 슬라이드 네비게이션 */}
-  <div className={"absolute bottom-2 left-0 right-0 flex justify-center space-x-2 mt-2"}>
-    {musicalsByStartDate.map((_, index) => (
-      <div
-        key={index}
-        className={`h-1 cursor-pointer ${
-          index === currentSlide
-            ? styles.currentSlideBarStyle
-            : styles.normalSlideBarStyle
-        } transition-all duration-300`}
-        onClick={() => handleLineClick(index)}
-      />
-    ))}
-  </div>
-</div>
-</div>
+            <div className={styles.recommendContainer}>
+              <span className={styles.recommendText}>What's Hot</span>
+            </div>
 
-      <div className={styles.recommendContent}>
-        <span className={styles.recommendText}>What's Hot</span>
-      </div>
-
-        {/* Grid Section */}
-        <div className={styles.gridContainer}>
-          {musicalsByViewCount.slice(0, 1).map((musical) => (
-            <div
-              key={musical.id}
-              className={styles.gridInner}
-              onClick={() => handleClick(musical.id)}
-            >
-              <div className={`${styles.gridImage} group`}>
-                <img
-                  src={musical.imageUrl}
-                  alt={musical.title}
-                  className={styles.gridImgContainer}
-                />
-                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 
+            {/* Grid Section */}
+            <div className={styles.gridContainer}>
+              {musicalsByViewCount.slice(0, 1).map((musical) => (
+                <div
+                  key={musical.id}
+                  className={styles.gridInner}
+                  onClick={() => handleClick(musical.id)}
+                >
+                  <div className={`${styles.gridImage} group`}>
+                    <img
+                      src={musical.imageUrl}
+                      alt={musical.title}
+                      className={styles.gridImgContainer}
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 
                 text-white text-center p-2.5 opacity-0 group-hover:opacity-100 hover:bg-opacity-65 
-                transition-opacity duration-300 flex flex-col justify-center items-center">
-                  <div>{musical.title}</div>
-                  <div>{formatDate(musical.startDate)}</div>
-                  {musical.startDate !== musical.endDate ? (
-                    <div>{formatDate(musical.endDate)}</div>
-                  ) : null}
+                transition-opacity duration-300 flex flex-col justify-center items-center"
+                    >
+                      <div>{musical.title}</div>
+                      <div>{formatDate(musical.startDate)}</div>
+                      {musical.startDate !== musical.endDate ? (
+                        <div>{formatDate(musical.endDate)}</div>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
-          {musicalsByViewCount.slice(1, 7).map((musical) => (
-            <div
-              key={musical.id}
-              className={`${styles.sortedImgContainer} group`}
-              onClick={() => handleClick(musical.id)}
-            >
-              <div className={styles.gridImage}>
-                <img
-                  src={musical.imageUrl}
-                  alt={musical.title}
-                  className={styles.gridImgContainer}
-                />
-                <div className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center 
+              ))}
+              {musicalsByViewCount.slice(1, 7).map((musical) => (
+                <div
+                  key={musical.id}
+                  className={`${styles.sortedImgContainer} group`}
+                  onClick={() => handleClick(musical.id)}
+                >
+                  <div className={styles.gridImage}>
+                    <img
+                      src={musical.imageUrl}
+                      alt={musical.title}
+                      className={styles.gridImgContainer}
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 w-full h-full bg-black bg-opacity-0 text-white text-center 
                 p-2.5 opacity-0 group-hover:opacity-100 hover:bg-opacity-65 transition-opacity duration-300 flex flex-col 
-                justify-center items-center">
-                  <div>{musical.title}</div>
-                  <div>{formatDate(musical.startDate)}</div>
-                  {musical.startDate !== musical.endDate ? (
-                    <div>{formatDate(musical.endDate)}</div>
-                  ) : null}
+                justify-center items-center"
+                    >
+                      <div>{musical.title}</div>
+                      <div>{formatDate(musical.startDate)}</div>
+                      {musical.startDate !== musical.endDate ? (
+                        <div>{formatDate(musical.endDate)}</div>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Footer Section */}
-        
-      </div>
-      <footer className={styles.footerStyle}>
-          <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
-        </footer>
-      </div>
+            {/* Footer Section */}
+          </div>
+          <CommonFooter />
+        </div>
       </div>
     </HeaderProvider>
   );

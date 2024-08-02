@@ -1,0 +1,7 @@
+.footerStyle {
+  background-color: rgb(243, 244, 246);
+  text-align: center;
+  padding: 10px;
+  border-top: 2px solid rgb(209, 213, 219);
+  width: 100%;
+}
