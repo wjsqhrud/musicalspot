@@ -52,4 +52,9 @@ public class PublicReviewController {
     public ResponseEntity<TestResponseDto> getReviewsByViews(@RequestParam(name = "page", defaultValue = "0") int page) {
         return publicReviewService.getReviewsByViews(page);
     }
+    @GetMapping("/musical/{musicalId}/reviews")
+    @Operation(summary = "뮤지컬 리뷰 조회", description = "특정 뮤지컬에 대한 리뷰 목록을 조회합니다.")
+    public ResponseEntity<TestResponseDto> getReviewsByMusical(@PathVariable("musicalId") Long musicalId) {
+        return publicReviewService.getReviewsByMusicalId(musicalId);
+    }
 }

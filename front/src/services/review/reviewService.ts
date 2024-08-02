@@ -1,6 +1,18 @@
 import axios from "axios";
-import { CREATE_REVIEW, DELETE_REVIEW, PRIVATE_REVIEW_DETAILS, PUBLIC_REVIEW_DETAILS, REVIEW_COMMENTS_CREATE, REVIEW_COMMENTS_DELETE, REVIEW_COMMENTS_UPDATE, REVIEW_DETAILS_INCREASE_VIEW, REVIEW_LIKE, REVIEWS_LIKES_40, REVIEWS_RECENT_40, REVIEWS_VIEWS_40, TOGGLE_REVIEW_LIKE, UPDATE_REVIEW } from "utils/APIUrlUtil/apiUrlUtil";
+import { CREATE_REVIEW, DELETE_REVIEW, MUSICAL_REVIEWS, PRIVATE_REVIEW_DETAILS, PUBLIC_REVIEW_DETAILS, REVIEW_COMMENTS_CREATE, REVIEW_COMMENTS_DELETE, REVIEW_COMMENTS_UPDATE, REVIEW_DETAILS_INCREASE_VIEW, REVIEW_LIKE, REVIEWS_LIKES_40, REVIEWS_RECENT_40, REVIEWS_VIEWS_40, TOGGLE_REVIEW_LIKE, UPDATE_REVIEW } from "utils/APIUrlUtil/apiUrlUtil";
 import { getCookie } from "utils/CookieUtil/cookieUtis";
+
+// todo: 0802 환희님 뮤지컬 연관 리뷰
+// 특정 뮤지컬에 대한 리뷰 목록 가져오기
+export const MusicalReviews = async (musicalId: string) => {
+  try {
+      const result = await axios.get(MUSICAL_REVIEWS(musicalId));
+      return result.data;
+  } catch (error) {
+      console.error('Error', error);
+      throw error;
+  }
+};
 
 // 로그인 사용자 리뷰 게시글 정보
 export const privateReviewDetails = async (reviewId: string) => {

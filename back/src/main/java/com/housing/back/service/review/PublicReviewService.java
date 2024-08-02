@@ -174,4 +174,37 @@ public class PublicReviewService {
             throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
         }
     }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<TestResponseDto> getReviewsByMusicalId(Long musicalId) {
+        try {
+            List<ReviewEntity> reviews = reviewRepository.findByMusicalId(musicalId);
+            if (reviews.isEmpty()) {
+                return TestResponseDto.notFound();
+            }
+            // 리뷰를 원하는 형식으로 매핑하고 응답 생성
+            List<ReviewListResponseDto> reviewList = reviews.stream().map(review -> {
+                String reviewNickname = nicknameRepository.findByUserId(review.getUser().getId())
+                    .map(NickNameEntity::getNickname)
+                    .orElse("Unknown");
+
+                String musicalImageUrl = review.getMusical().getImageUrl();
+                String musicalTitle = review.getMusical().getTitle();
+                String musicalCategory = review.getMusical().getCategory().getCategory();
+
+                int commentCount = reviewCommentRepository.countByReviewId(review.getId());
+
+                return new ReviewListResponseDto(
+                    review.getId(), review.getTitle(), review.getContent(), review.getMusical().getId(),
+                    musicalTitle, musicalImageUrl, musicalCategory, reviewNickname, review.getCreatedAt(),
+                    review.getUpdatedAt(), review.getViewCount(), review.getLikeCount(), commentCount);
+            }).collect(Collectors.toList());
+
+            return TestResponseDto.success(reviewList);
+        } catch (DataAccessException e) {
+            throw new CustomDatabaseException(TestResponseMessage.DATABASE_ERROR.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(TestResponseMessage.GENERAL_ERROR.getMessage(), e);
+        }
+    }
 }

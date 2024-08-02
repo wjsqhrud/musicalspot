@@ -69,10 +69,10 @@ public class AuthServiceImplement implements AuthService {
     private final EmailProvider emailProvider;
     private final JwtBlacklistService  jwtBlacklistService;
     private final JwtUtils jwtUtils;
-    private final ReviewLikeRepository reviewLikeRepository;
-    private final MusicalLikeRepository musicalLikeRepository;
-    private final ReviewCommentRepository reviewCommentRepository;
-    private final ReviewRepository reviewRepository;
+    // private final ReviewLikeRepository reviewLikeRepository;
+    // private final MusicalLikeRepository musicalLikeRepository;
+    // private final ReviewCommentRepository reviewCommentRepository;
+    // private final ReviewRepository reviewRepository;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
