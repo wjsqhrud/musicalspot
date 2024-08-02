@@ -15,6 +15,7 @@ export interface Review {
   likeCount: number;
   commentCount: number;
   owner: boolean;
+  isLiked: boolean;
   comments: Comment[];
 }
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Review } from "./ReviewType";
 import { truncateString } from "acomponents/review/ReviewContentLength";
 import { EyeIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { reviewLike } from "services/review/reviewService";
+import ReviewLike from "acomponents/review/ReviewLike";
 
 interface ReviewItemProps {
   review: Review;
@@ -11,23 +10,6 @@ interface ReviewItemProps {
 }
 
 const ReviewItem: React.FC<ReviewItemProps> = ({ review, isAuthenticated }) => {
-  const [isLiked, setIsLiked] = useState(false);
-
-  useEffect(() => {
-    const fetchLikeStatus = async () => {
-      if (isAuthenticated) {
-        try {
-          const response = await reviewLike(review.id.toString());
-          setIsLiked(response.data);
-        } catch (error) {
-          console.error("Error fetching like status:", error);
-        }
-      }
-    };
-
-    fetchLikeStatus();
-  }, [review.id, isAuthenticated]);
-
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 w-full h-full flex flex-col">
       <img
@@ -55,18 +37,12 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ review, isAuthenticated }) => {
             <ChatBubbleLeftIcon className="w-4 h-4 mr-1 text-green-500" />
             <span>{review.commentCount}</span>
           </div>
-          <div className="flex items-center">
-            {isAuthenticated ? (
-              isLiked ? (
-                <FaHeart className="w-4 h-4 mr-1 text-red-500" />
-              ) : (
-                <FaRegHeart className="w-4 h-4 mr-1 text-red-500" />
-              )
-            ) : (
-              <FaRegHeart className="w-4 h-4 mr-1 text-red-500" />
-            )}
-            <span>{review.likeCount}</span>
-          </div>
+          <ReviewLike
+            reviewId={review.id.toString()}
+            initialLikeCount={review.likeCount}
+            isAuthenticated={isAuthenticated}
+            isLiked={review.isLiked}
+          />
         </div>
       </div>
     </div>

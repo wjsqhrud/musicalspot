@@ -15,6 +15,7 @@ import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
 import { useNavigate } from "react-router-dom";
+import { ReviewItemSkeleton } from "acomponents/review/LoadingModal";
 
 type SortType = "recent" | "likes" | "views";
 
@@ -244,7 +245,15 @@ const ReviewList: React.FC = () => {
               </div>
             ))}
           </div>
-          {loading && <p className="text-center mt-4">로딩 중...</p>}
+          {loading && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 mt-4">
+              {Array(40)
+                .fill(0)
+                .map((_, index) => (
+                  <ReviewItemSkeleton key={index} />
+                ))}
+            </div>
+          )}
           {!hasMore && (
             <p className="text-center mt-4">더 이상 리뷰가 없습니다.</p>
           )}

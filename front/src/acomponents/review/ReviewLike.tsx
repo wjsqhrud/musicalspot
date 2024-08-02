@@ -1,28 +1,57 @@
-import { HeartIcon } from "@heroicons/react/24/outline";
-import React from "react";
-import { toggleReviewLike } from "services/review/reviewService";
+import React, { useState, useEffect } from "react";
+import { toggleReviewLike, reviewLike } from "services/review/reviewService";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Modal from "components/Modal/Modal";
 
 interface ReviewLikeProps {
   reviewId: string;
+  initialLikeCount: number;
+  isAuthenticated: boolean;
+  onLikeToggle?: (newLikeCount: number, isLiked: boolean) => void;
   isLiked: boolean;
-  likeCount: number;
-  onLikeToggle: () => void;
 }
 
 const ReviewLike: React.FC<ReviewLikeProps> = ({
   reviewId,
-  isLiked,
-  likeCount,
+  initialLikeCount,
+  isAuthenticated,
   onLikeToggle,
+  isLiked: initialIsLiked,
 }) => {
-  const handleLikeSubmit = async () => {
+  const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [likeCount, setLikeCount] = useState(initialLikeCount);
+
+  useEffect(() => {
+    setIsLiked(initialIsLiked);
+    setLikeCount(initialLikeCount);
+  }, [initialIsLiked, initialLikeCount]);
+
+  const handleLikeSubmit = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     try {
       await toggleReviewLike(reviewId);
-      onLikeToggle();
+      const newIsLiked = !isLiked;
+      const newLikeCount = isLiked ? likeCount - 1 : likeCount + 1;
+      setIsLiked(newIsLiked);
+      setLikeCount(newLikeCount);
+      if (onLikeToggle) {
+        onLikeToggle(newLikeCount, newIsLiked);
+      }
     } catch (error) {
       console.error("Error toggling like:", error);
     }
+  };
+
+  const handleLoginRedirect = () => {
+    setShowLoginModal(false);
+    navigate("/auth/sign-in");
   };
 
   return (
@@ -41,6 +70,12 @@ const ReviewLike: React.FC<ReviewLikeProps> = ({
         )}
       </button>
       <span>{likeCount}</span>
+      <Modal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onConfirm={handleLoginRedirect}
+        message="좋아요는 로그인한 회원만 이용 가능합니다."
+      />
     </div>
   );
 };

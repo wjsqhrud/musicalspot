@@ -28,6 +28,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [titleError, settitleError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | undefined>();
 
   useEffect(() => {
@@ -93,7 +94,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     const newTitle = e.target.value;
     setFormData((prev) => ({ ...prev, title: newTitle }));
     if (newTitle.length < 5) {
-      setError("제목은 최소 5글자 이상 입력해주세요");
+      settitleError("제목은 최소 5글자 이상 입력해주세요");
     } else {
       setError(null);
     }

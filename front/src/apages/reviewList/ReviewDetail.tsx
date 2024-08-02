@@ -4,7 +4,6 @@ import {
   privateReviewDetails,
   publicReviewDetails,
   reviewDetailsIncreaseView,
-  reviewLike,
 } from "services/review/reviewService";
 import EditDeleteButtons from "acomponents/review/EditDeleteButton";
 import CommentForm from "acomponents/reviewComments/CommentsForm";
@@ -14,7 +13,7 @@ import CommentList from "./CommentList";
 import { EyeIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { truncateString } from "acomponents/review/ReviewContentLength";
-import LoadingModal from "acomponents/review/LoadingModal";
+import { ReviewDetailLoadingModal } from "acomponents/review/LoadingModal";
 
 interface ReviewDetailProps {
   reviewId: number;
@@ -34,7 +33,6 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
   const [review, setReview] = useState<Review | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
@@ -49,11 +47,6 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
 
       setReview(response.data);
       onUpdate(response.data);
-
-      if (isAuthenticated) {
-        const likeResponse = await reviewLike(reviewId.toString());
-        setIsLiked(likeResponse.data);
-      }
     } catch (error) {
       console.error("Error fetching review details:", error);
       setError("리뷰를 불러오는데 실패했습니다.");
@@ -75,20 +68,25 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
     if (review) {
       onUpdate({
         ...review,
-        commentCount: review.commentCount + 1,
+        commentCount: review.comments.length + 1,
       });
     }
   }, [fetchReviewDetail, review, onUpdate]);
 
-  const handleLikeToggle = useCallback(() => {
-    fetchReviewDetail();
-    if (review) {
-      onUpdate({
-        ...review,
-        likeCount: isLiked ? review.likeCount - 1 : review.likeCount + 1,
-      });
-    }
-  }, [fetchReviewDetail, review, isLiked, onUpdate]);
+  const handleLikeToggle = useCallback(
+    (newLikeCount: number, isLiked: boolean) => {
+      if (review) {
+        const updatedReview = {
+          ...review,
+          likeCount: newLikeCount,
+          isLiked: isLiked,
+        };
+        setReview(updatedReview);
+        onUpdate(updatedReview);
+      }
+    },
+    [review, onUpdate]
+  );
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -99,7 +97,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
     fetchReviewDetail();
   }, [fetchReviewDetail]);
 
-  if (loading) return <LoadingModal />;
+  if (loading) return <ReviewDetailLoadingModal />;
   if (error) return <div>{error}</div>;
   if (!review) return <div>리뷰를 찾을 수 없습니다.</div>;
 
@@ -121,6 +119,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
             src={review.musicalImageUrl}
             alt={review.musicalTitle}
             className="w-full h-auto object-cover rounded-lg shadow-lg cursor-pointer"
+            onClick={handleMusicalDetail}
           />
           <h2 className="text-xl font-bold mt-2">
             {truncateString(review.musicalTitle, 20)}
@@ -151,9 +150,10 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
             </span>
             <ReviewLike
               reviewId={review.id.toString()}
-              isLiked={isLiked}
-              likeCount={review.likeCount}
+              initialLikeCount={review.likeCount}
+              isAuthenticated={isAuthenticated}
               onLikeToggle={handleLikeToggle}
+              isLiked={review.isLiked}
             />
           </div>
           <div className="bg-gray-100 p-4 rounded-lg mb-2 max-h-60 h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
