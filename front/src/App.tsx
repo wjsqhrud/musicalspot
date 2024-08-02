@@ -24,6 +24,7 @@ function App() {
   const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showNotification, setShowNotification] = useState<boolean>(false);
+  const [isJoined, setIsJoined] = useState<boolean>(false);
 
   const toggleChat = () => {
     setIsChatVisible(!isChatVisible);
@@ -42,12 +43,15 @@ function App() {
         toggleChat={toggleChat} 
         messages={messages}
         setMessages={setMessages}
-        handleNewMessage={handleNewMessage} 
+        handleNewMessage={handleNewMessage}
+        isJoined={isJoined}
+        setIsJoined={setIsJoined}
       />
       {!isChatVisible && (
         <ChatIconComponent 
           toggleChat={toggleChat} 
-          showNotification={showNotification} 
+          showNotification={showNotification}
+          isJoined={false} 
         />
       )}
       

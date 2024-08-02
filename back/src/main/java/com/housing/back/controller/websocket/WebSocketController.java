@@ -35,7 +35,8 @@ public class WebSocketController {
     private static final int SPAM_THRESHOLD = 8; // 허용되는 최대 메시지 수
     private static final long TIME_WINDOW = 10000; // 시간 창 (밀리초 단위, 임시로 10초 설정)
     private static final int MAX_MSG_LENGTH = 50; // 최대 문자열 길이 제한
-
+    private static final int DUPLICATE_MSG_COUNT = 3; // 동일 메세지 반복전송 카운팅
+    private int DUPLICATE_COUNTER = 0; // 동일 메세지 카운터
     // 사용자 닉네임과 세션 ID를 매핑하기 위한 맵
     private Map<String, String> userSessionMap = new ConcurrentHashMap<>();
 
@@ -56,6 +57,7 @@ public class WebSocketController {
         String userNickname = messageDTO.getNickname(); // 사용자 닉네임을 가져옴
         String sessionId = headerAccessor.getSessionId(); // 클라이언트 세션 ID를 가져옴
         
+
         // 사용자 닉네임과 세션 ID 매핑
         userSessionMap.put(userNickname, sessionId);
 
@@ -92,9 +94,13 @@ public class WebSocketController {
 
         // 사용자별 동일 문자열 도배 감지 메서드
         String prevMsg = userPreviousMessages.getOrDefault(userNickname, "");
-        if (prevMsg.equals(transmittedMsg)) {
+
+        if (prevMsg.equals(transmittedMsg)) DUPLICATE_COUNTER += 1;
+        
+        if (DUPLICATE_MSG_COUNT == DUPLICATE_COUNTER) {
             messageDTO.setMessageText("동일문자열");
             sendMessageToUser(sessionId, messageDTO);
+            DUPLICATE_COUNTER = 0;
             return null;
         }
 

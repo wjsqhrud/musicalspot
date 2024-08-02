@@ -1,19 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import { FaMinus } from 'react-icons/fa';
-import { IoEnterOutline } from 'react-icons/io5';
-import { IoIosSend } from "react-icons/io";
 import { useAuth } from 'hooks/useAuthHook';
 import { ChatMessage, MessageType, initializeWebSocket } from '../../hooks/connectWebSocketHook';
 import { ImExit } from "react-icons/im";
 import 'tailwindcss/tailwind.css';
 import styles from './WebSocketConnect.module.css';
-
 import { SOCKET_MAINADDRESS } from 'utils/APIUrlUtil/apiUrlUtil';
-import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
-import ModalWithCancle from 'components/Modal/ModalWithCancle';
-import Modal from 'components/Modal/Modal';
-
+import { useThrottle } from 'hooks/useThrottleHook';
+import { JoinChatBtn } from './JoinChatBtn';
+import { MsgTransMitter } from './MsgTransmitter';
+import { ChatMsgRenderer } from './ChatMsgRenderer';
+import { ModalRenderer } from 'components/Modal/WsModal';
 
 interface ChatComponentProps {
   isVisible: boolean;
@@ -21,21 +19,20 @@ interface ChatComponentProps {
   messages: ChatMessage[];
   handleNewMessage: (message: ChatMessage) => void;
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  setIsJoined: React.Dispatch<React.SetStateAction<boolean>>;
+  isJoined: boolean;
 }
 
-const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat, messages, handleNewMessage, setMessages }) => {
+const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat, messages, handleNewMessage, setMessages, isJoined, setIsJoined }) => {
   const serverAddr = SOCKET_MAINADDRESS;
   const [stompClient, setStompClient] = useState<Client | null>(null);
   const [messageInput, setMessageInput] = useState<string>('');
   const [userNickname, setUserNickname] = useState<string>('');
-  const [isJoined, setIsJoined] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const { checkAuthStatus } = useAuth();
 
-
   const MUTE_DURATION = 10000;
-  const { navigateToLogin }= useNavigateHelper();
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [showMutedModal, setShowMutedModal] = useState<boolean>(false);
   const [isOverMsgLength, setIsOverMsgLength] = useState<boolean>(false);
@@ -43,6 +40,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   const [isEmptyMsg, setIsEmptyMsg] = useState<boolean>(false);
 
   const isAllGreen = isConnected && isJoined;
+  const isModalPopped = !(showMutedModal || isOverMsgLength || isSameMsg);
 
   const handleConnectWebSocket = () => {
     checkAuthStatus(
@@ -56,6 +54,11 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
     );
   };
 
+  // 채팅 입장버튼 다중 클릭 방지
+  const handleThrottleConnectWS = useThrottle(()=> {
+    handleConnectWebSocket();
+  },2000)
+  
   const closeModalWithChat = () => {
     setShowModal(false);
     toggleChat();
@@ -86,9 +89,10 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
   useEffect(() => {
     return () => {
       if (stompClient && stompClient.active) {
-        console.log('WebSocket 연결 해제');
+        // 웹소켓 연결 해제 시 채팅로그 전부 삭제
+        setMessages([]);
         stompClient.deactivate();
-      }
+      } 
     };
   }, [stompClient]);
 
@@ -165,13 +169,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
     } else if (message.messageText?.includes("동일문자열")) {
       setIsSameMsg(true);
     } else if (message.messageText?.includes("길이초과")) {
-// <<<<<<< HEAD
-//       //todo: 여기모달
-//       setLogOutModalOpen(true);
-//       // window.alert("한번에 최대 전송 가능한 문자는 50자 이내 입니다.");
-// =======
       setIsOverMsgLength(true);
-
     }
   };
 
@@ -192,119 +190,45 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
           </div>
   
           <div className={`flex-grow flex items-center justify-center bg-slate-300 ${isConnected ? 'hidden' : ''}`}>
-            <button
-              onClick={handleConnectWebSocket}
-              className="relative flex items-center justify-center px-8 py-3 text-lg
-              rounded-full
-              transition-all duration-300 ease-in-out
-              shadow-[0_4px_9px_-4px_rgba(0,0,0,0.2)] 
-              hover:shadow-[0_8px_9px_-4px_rgba(0,0,0,0.1),0_4px_18px_0_rgba(0,0,0,0.2)]
-              overflow-hidden
-              group"
-            >
-              <span className='mr-2 text-white font-semibold tracking-wide relative z-10 
-              group-hover:translate-x-0.5 transition-transform duration-300'>
-                채팅 입장
-              </span>
-              <IoEnterOutline size={24} className="relative z-10 text-white 
-              group-hover:translate-x-0.5 transition-transform duration-300" />
-              <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-400"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 
-              opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-20 
-              bg-white transition-opacity duration-300"></div>
-            </button>
+            <JoinChatBtn clickFn={handleThrottleConnectWS}/>
           </div>
   
           <div className={`flex-grow ${isAllGreen ? '' : 'hidden'} ${styles.customScrollbar} overflow-y-auto`}>
             {isConnected && !isJoined ? (
-              <div className="flex items-center justify-center h-full max-w-[400px]">
-                <button
-                  onClick={handleConnectWebSocket}
-                  className="relative z-10 flex items-center justify-center space-x-2 text-xl px-6 py-3 
-                text-white rounded-full transition-all 
-                  duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-                >
-                  <span className={`group-hover:text-green-400 transition-colors duration-300`}>채팅 입장</span>
-                  <IoEnterOutline size={24} />
-                </button>
-              </div>
+              null
             ) : (
-              messages.map((v, index) => (
-                <div key={index} className={`${styles.animateFadeIn} flex ${styles.customFont} break-words text-wrap
-                ${v.nickname === userNickname && v.type === MessageType.CHAT ? 'justify-end' : 'justify-start'}`}>
-                  {v.type === MessageType.JOIN ? (
-                    <div className={`font-mono ${styles.noticeStyle}`}>
-                      <span>{v.messageText} </span>
-                    </div>
-                  ) : (
-                    <div className={`flex items-end ${v.nickname === userNickname ? 'flex-row': 'flex-row-reverse'}`}>
-                      <span className="text-gray-400 text-xxs bg-white">{v.transmitTime}</span>
-                      <div className={`${v.nickname === userNickname ? 'bg-green-500' : 'bg-signature'} p-2 m-1 rounded-xl 
-                      ${v.nickname === userNickname ? 'rounded-br-none' : 'rounded-bl-none'} w-fit text-white max-w-80`}>
-                        {v.nickname === userNickname ? `${v.messageText}` : `${v.nickname} : ${v.messageText}`}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))
+              <ChatMsgRenderer
+                messages={messages}
+                userNickname={userNickname}
+              />
             )}
             <div ref={messageEndRef}></div>
           </div>
   
           <div id="inputContainer" className={`'w-full rounded-b-lg' ${ !isJoined ? 'hidden' : 'block'} `}>
-            <div id="inputInnerContainer" className="flex items-center border-t border-signature rounded-b-lg">
-              <input
-                id="chatTransmitter"
-                className="flex-1 h-12 pl-3 outline-none border-none rounded-b-lg"
-                type="text"
-                value={messageInput}
-                disabled={isMuted}
-                placeholder={isMuted ? "욕설 및 도배로 인해 채팅이 금지 되었습니다." : "이곳에 메시지를 입력하세요"}
-                onChange={handleInputChange}
-                autoComplete='off'
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    sendMessage();
-                  }
-                }}
+          <MsgTransMitter
+              messageInput={messageInput}
+              isMuted={isMuted}
+              isModalPopped={isModalPopped}
+              onChanges={(e) => handleInputChange(e)}
+              sendMsgFn={sendMessage}
+              isEmptyMsg={isEmptyMsg}
               />
-              {!isEmptyMsg && <button className="m-1 p-1 bg-transparent text-signature rounded-lg hover:text-white hover:bg-signature 
-              transition-all animate-fade" onClick={sendMessage}>
-                <IoIosSend size={26} />
-              </button>}
-              
-            </div>
           </div>
 
-          {showModal && 
-          <ModalWithCancle
-          isOpen={showModal}
-          onClose={closeModalWithChat} 
-          onConfirm={()=>{navigateToLogin()}}
-          toggleChat={toggleChat}
-          message='채팅 기능은 로그인한 회원만 이용 가능합니다.'
-          />}
-          {showMutedModal && (
-          <Modal
-            isOpen={showMutedModal}
-            onClose={() => setShowMutedModal(false)}
-            onConfirm={() => setShowMutedModal(false)}
-            message={`도배 및 비속어 사용으로 인해 ${MUTE_DURATION / 1000} 초 동안 채팅이 금지되었습니다. 바르고 고운말 사용을 사용해주세요`}
-          />)}
-          {isOverMsgLength && <Modal
-          isOpen={isOverMsgLength}
-          onClose={closeOnlyModal}
-          onConfirm={()=> setIsOverMsgLength(false)}
-          message='최대 전송가능한 문자는 50자 이내입니다.'
-          />}
-          {isSameMsg && <Modal
-          isOpen={isSameMsg}
-          onClose={closeOnlyModal}
-          onConfirm={()=> setIsSameMsg(false)}
-          message='이전과 동일한 메세지는 전송할 수 없습니다.'
-          />}
+          <ModalRenderer
+            showModal={showModal}
+            showMutedModal={showMutedModal}
+            isOverMsgLength={isOverMsgLength}
+            isSameMsg={isSameMsg}
+            setIsOverMsgLength={() => setIsOverMsgLength(false)}
+            setIsSameMsg={() => setIsSameMsg(false)}
+            MUTE_DURATION={MUTE_DURATION}
+            closeOnlyModal={() => closeOnlyModal}
+            closeModalWithChat={() => closeModalWithChat}
+            setShowMutedModal={() => setShowMutedModal(false)}
+            toggleChat={() => toggleChat}
+          />
 
         </div>
       )}
