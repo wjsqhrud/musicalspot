@@ -19,9 +19,13 @@ export interface WebSocketConfig {
   onPersonalMessage: (message: ChatMessage) => void;
   onError?: (error: any) => void;
   onDebug?: (message: string) => void;
+  onDisconnect?: () => void;
 }
 
-export function initializeWebSocket(config: WebSocketConfig, userNickname: string, setIsJoined: (isJoined: boolean) => void): Client {
+export function initializeWebSocket(config: WebSocketConfig, 
+  userNickname: string, 
+  setIsJoined: (isJoined: boolean) => void): Client {
+  
   console.log('WebSocket 클라이언트 초기화');
   const socket = new SockJS(String(config.serverAddr()));
   const client = new Client({
@@ -36,10 +40,10 @@ export function initializeWebSocket(config: WebSocketConfig, userNickname: strin
         const receivedMessage: ChatMessage = JSON.parse(message.body);
         config.onMessage(receivedMessage);
       });
+      
       // 필터링 트리거 시 받을 개인 메세지 mapping 구독
       client.subscribe('/user/queue/reply', (message: Message) => {
         const receivedMessage: ChatMessage = JSON.parse(message.body);
-        console.log("reply로 받은 문자 : " + receivedMessage);
         config.onPersonalMessage(receivedMessage);
       });
 
@@ -62,6 +66,7 @@ export function initializeWebSocket(config: WebSocketConfig, userNickname: strin
     onDisconnect: () => {
       console.log('WebSocket 연결 해제');
       setIsJoined(false);
+      
     },
     
     onStompError: (frame) => {
