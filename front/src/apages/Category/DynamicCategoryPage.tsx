@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa"; // 드롭다운 아이콘 import
 import CommonHeader from "acomponents/header/CommonHeader"; // 공통 헤더 컴포넌트 import
+import CommonFooter from "acomponents/footer/CommonFooter";
 import { useAuth } from "hooks/useAuthHook"; // 인증 훅 import
 import { HeaderProvider } from "services/HeaderService/HeaderService"; // 헤더 서비스 import
 import {
@@ -75,7 +76,6 @@ const musicalDetailsIncrementView = async (musicalId: string) => {
   }
 };
 
-
 // DynamicCategoryPage 컴포넌트 정의
 const DynamicCategoryPage: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>(); // URL에서 카테고리 ID를 가져옴
@@ -85,9 +85,11 @@ const DynamicCategoryPage: React.FC = () => {
   const [sortOption, setSortOption] = useState(""); // 정렬 옵션 상태
   const [categoryName, setCategoryName] = useState(""); // 선택된 카테고리 이름 상태
   const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 훅
-  const [currentCategoryId, setCurrentCategoryId] = useState<string | undefined>("");
+  const [currentCategoryId, setCurrentCategoryId] = useState<
+    string | undefined
+  >("");
   const location = useLocation();
- 
+
   // 사용자 인증 정보와 관련된 상태 및 함수
   const {
     isAuthenticated,
@@ -135,7 +137,6 @@ const DynamicCategoryPage: React.FC = () => {
       fetchMusicals(categoryId);
     }
   }, [categories, categoryId]);
-  
 
   // 카테고리 데이터가 변경될 때마다 선택된 카테고리 이름 설정
   useEffect(() => {
@@ -143,31 +144,35 @@ const DynamicCategoryPage: React.FC = () => {
       const selectedCategory = categories.find(
         (category) => category.id === categoryId
       );
-      if(selectedCategory)
-      {
+      if (selectedCategory) {
         setCategoryName(selectedCategory.category);
       }
-      
     }
   }, [categories, currentCategoryId]);
-  
+
   useEffect(() => {
-    const currentCategoryId = location.pathname.split('/').pop();
-    switch(currentCategoryId) {
-      case 'all' : setCategoryName("전체보기");
+    const currentCategoryId = location.pathname.split("/").pop();
+    switch (currentCategoryId) {
+      case "all":
+        setCategoryName("전체보기");
         break;
-     case '1' : setCategoryName("라이선스")
+      case "1":
+        setCategoryName("라이선스");
         break;
-      case '2' : setCategoryName("오리지널");
+      case "2":
+        setCategoryName("오리지널");
         break;
-      case '3' : setCategoryName("창작");
+      case "3":
+        setCategoryName("창작");
         break;
-      case '4' : setCategoryName("넌버벌 퍼포먼스");
+      case "4":
+        setCategoryName("넌버벌 퍼포먼스");
         break;
-      default : setCategoryName("전체보기");
+      default:
+        setCategoryName("전체보기");
         break;
     }
-  },[location])
+  }, [location]);
 
   // 이미지 클릭 핸들러
   const handleClick = async (id: number) => {
@@ -233,7 +238,7 @@ const DynamicCategoryPage: React.FC = () => {
 
   // 선택된 정렬 옵션에 따라 뮤지컬 데이터 정렬
   const sortedMusicals = sortMusicals(musicals, sortOption);
-  
+
   return (
     <HeaderProvider>
       <div className="max-w-[1250px] mx-auto pt-20">
@@ -339,12 +344,9 @@ const DynamicCategoryPage: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* 푸터 섹션 */}
-        <footer className="bg-gray-100 text-center py-2.5 border-t border-gray-300">
-          <p>© {new Date().getFullYear()} Musical Spot. All rights reserved.</p>
-        </footer>
       </div>
+      {/* 공통 푸터 컴포넌트 */}
+      <CommonFooter />
     </HeaderProvider>
   );
 };
