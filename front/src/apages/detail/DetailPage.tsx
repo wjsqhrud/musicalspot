@@ -122,8 +122,9 @@ const DetailPage: React.FC = () => {
     setModalIsOpen(false);
   };
 
+  //todo: 0805 마지막 수정
   const handleReviewClick = () => {
-    console.log(`뮤지컬 아이디: ${musicalId}`);
+    navigate(`/auth/reviewlist/${musicalId}`);
   };
 
   return (

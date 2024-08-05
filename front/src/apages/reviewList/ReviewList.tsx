@@ -4,6 +4,7 @@ import {
   reviewRecent40,
   reviewLikes40,
   reviewViews40,
+  MusicalReviews,
 } from "services/review/reviewService";
 import { Review } from "./ReviewType";
 import ReviewDetail from "./ReviewDetail";
@@ -14,7 +15,7 @@ import "styles/style.css";
 import { HeaderProvider } from "services/HeaderService/HeaderService";
 import CommonHeader from "acomponents/header/CommonHeader";
 import { useAuth } from "hooks/useAuthHook";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ReviewItemSkeleton } from "acomponents/review/LoadingModal";
 
 type SortType = "recent" | "likes" | "views";
@@ -30,6 +31,8 @@ const ReviewList: React.FC = () => {
   const [sortType, setSortType] = useState<SortType>("recent");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const { musicalId } = useParams<{ musicalId: string }>();
+  const [musicalTitle, setMusicalTitle] = useState<string | null>(null);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const navigate = useNavigate();
@@ -61,18 +64,23 @@ const ReviewList: React.FC = () => {
     setError(null);
     try {
       let response;
-      switch (sortType) {
-        case "recent":
-          response = await reviewRecent40(page);
-          break;
-        case "likes":
-          response = await reviewLikes40(page);
-          break;
-        case "views":
-          response = await reviewViews40(page);
-          break;
-        default:
-          response = await reviewRecent40(page);
+      if (musicalId) {
+        response = await MusicalReviews(musicalId);
+        console.log(response);
+      } else {
+        switch (sortType) {
+          case "recent":
+            response = await reviewRecent40(page);
+            break;
+          case "likes":
+            response = await reviewLikes40(page);
+            break;
+          case "views":
+            response = await reviewViews40(page);
+            break;
+          default:
+            response = await reviewRecent40(page);
+        }
       }
       const data = response.data;
 
@@ -84,6 +92,9 @@ const ReviewList: React.FC = () => {
         setHasMore(false);
       }
       setReviews((prevReviews) => [...prevReviews, ...data]);
+      if (musicalId && data.length > 0) {
+        setMusicalTitle(data[0].musicalTitle);
+      }
     } catch (error) {
       console.error("리뷰 로딩 중 오류 발생:", error);
       setError("리뷰를 불러오는 데 실패했습니다. 다시 시도해 주세요.");
@@ -162,9 +173,9 @@ const ReviewList: React.FC = () => {
     );
   }, []);
 
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
+  // if (error) {
+  //   return <div className="text-center text-red-500">{error}</div>;
+  // }
 
   return (
     <HeaderProvider>
