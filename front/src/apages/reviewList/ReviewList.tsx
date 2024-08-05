@@ -188,7 +188,9 @@ const ReviewList: React.FC = () => {
           checkAuthStatus={checkAuthStatus}
         />
         <div className="container mx-auto px-4 py-8">
-          <h2 className="text-3xl font-bold mb-6 text-center">후기 게시판</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">
+            {musicalId && musicalTitle ? `${musicalTitle}` : "후기 게시판"}
+          </h2>{" "}
           <div className="flex justify-between mb-4">
             <button
               onClick={handleCreateReviewClick}
@@ -244,6 +246,7 @@ const ReviewList: React.FC = () => {
             onClose={handleCloseCreateModal}
             onReviewSubmitted={handleReviewSubmitted}
           />
+          <div className="text-red-500">{error}</div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3">
             {reviews.map((review, index) => (
               <div
@@ -268,7 +271,6 @@ const ReviewList: React.FC = () => {
           {!hasMore && (
             <p className="text-center mt-4">더 이상 리뷰가 없습니다.</p>
           )}
-
           <ReviewModal isOpen={!!selectedReviewId} onClose={handleCloseModal}>
             {selectedReviewId && (
               <ReviewDetail
