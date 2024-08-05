@@ -5,8 +5,7 @@ export const useThrottle = ( callback: () => void, delay: number ) => {
 
     return () => {
         const timeElapsed = Date.now() - lastRun.current;
-        console.log("useThrottle 진입.......")
-        if (timeElapsed >= delay) {
+        if (timeElapsed > delay) {
             callback();
             lastRun.current = Date.now();
         }
