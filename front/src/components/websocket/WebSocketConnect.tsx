@@ -72,8 +72,8 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
       serverAddr,
       onMessage: handleNewMessage,
       onPersonalMessage: handlePersonalMessage,
-      onError: (error: any) => console.error(error),
-      onDebug: (message: string) => console.log(message),
+      // onError: (error: any) => console.error(error),
+      // onDebug: (message: string) => console.log(message),
     };
 
     const client = initializeWebSocket(config, nickname, setIsJoined);
@@ -213,6 +213,7 @@ const WebSocketConnect: React.FC<ChatComponentProps> = ({ isVisible, toggleChat,
               onChanges={(e) => handleInputChange(e)}
               sendMsgFn={sendMessage}
               isEmptyMsg={isEmptyMsg}
+              muteDuration={MUTE_DURATION}
               />
           </div>
 

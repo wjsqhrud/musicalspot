@@ -17,13 +17,15 @@ const ModalWithCancle: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, mes
 
   const handleConfirm = () => {
     onConfirm(showInput ? inputValue : undefined);
+    window.location.reload();
     onClose();
+    
   };
 
-const handleCancle = () => {
-  onClose();
-  toggleChat(); // 추가
-};
+  const handleCancle = () => {
+    window.location.reload();
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">

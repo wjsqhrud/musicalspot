@@ -1,5 +1,5 @@
-// const DOMAIN = 'http://127.0.0.1:4040'; // 로컬에서 실행하기/
-const DOMAIN = 'https://musicalspot-server2.azurewebsites.net';
+const DOMAIN = 'http://127.0.0.1:4040'; // 로컬에서 실행하기/
+// const DOMAIN = 'https://musicalspot-server2.azurewebsites.net';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
 

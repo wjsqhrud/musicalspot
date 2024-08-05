@@ -4,7 +4,7 @@ import useNavigateHelper from 'utils/NavigationUtil/navigationUtil';
 
 export type ChatRestrictionMessage =
   | '채팅 기능은 로그인한 회원만 이용 가능합니다.'
-  | `도배 및 비속어 사용으로 인해 ${number} 초 동안 채팅이 금지되었습니다. 바르고 고운말 사용을 사용해주세요`
+  | `도배 및 비속어 사용으로 인해 ${number} 초 동안 채팅이 금지되었습니다. 바르고 고운말을 사용해주세요`
   | '최대 전송가능한 문자는 50자 이내입니다.'
   | '동일한 메세지를 여러번 전송할 수 없습니다.';
 
@@ -31,13 +31,18 @@ export const ModalRenderer:React.FC<ModalProps> = ({setIsSameMsg, setIsOverMsgLe
         {
     const { navigateToLogin }= useNavigateHelper();
 
+    const confirmFunc = () => {
+      navigateToLogin();
+      closeModalWithChat();
+    }
+    
     return (
         <>
         {showModal && 
           <ModalWithCancle
           isOpen={showModal}
           onClose={closeModalWithChat} 
-          onConfirm={()=>{navigateToLogin()}}
+          onConfirm={()=>{confirmFunc()}}
           toggleChat={toggleChat}
           message='채팅 기능은 로그인한 회원만 이용 가능합니다.'
           />}
@@ -46,7 +51,7 @@ export const ModalRenderer:React.FC<ModalProps> = ({setIsSameMsg, setIsOverMsgLe
             isOpen={showMutedModal}
             onClose={setShowMutedModal}
             onConfirm={setShowMutedModal}
-            message={`도배 및 비속어 사용으로 인해 ${MUTE_DURATION / 1000} 초 동안 채팅이 금지되었습니다. 바르고 고운말 사용을 사용해주세요`}
+            message={`도배 및 비속어 사용으로 인해 ${MUTE_DURATION / 1000} 초 동안 채팅이 금지되었습니다. 바르고 고운말을 사용해주세요`}
           />)}
           {isOverMsgLength && <Modal
           isOpen={isOverMsgLength}

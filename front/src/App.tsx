@@ -51,7 +51,7 @@ function App() {
         <ChatIconComponent 
           toggleChat={toggleChat} 
           showNotification={showNotification}
-          isJoined={false} 
+          isJoined={isJoined} 
         />
       )}
       
