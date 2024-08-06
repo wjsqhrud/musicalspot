@@ -32,7 +32,34 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "build" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+  deploy_backend_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Deploy Backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: "corretto" # Amazon Corretto 배포판 사용 본인이 사용하는 jdk종류에 맞게 검색해서 사용 openjdk,eclipse,Oracle 등등
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x back/gradlew # gradlew에 실행 권한을 부여하기 위해 back/경로 추가
+
+      - name: Build with Gradle
+        run: ./gradlew build
+        working-directory: back # working-directory 옵션을 사용하여 back 디렉토리에서 명령어 실행
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "musicalspot-server2"
+          # 기본 슬롯만 사용하므로 slot-name 제거했음 원래는 슬롯자리
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: "back/build/libs/back-0.0.1-SNAPSHOT.jar"
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
