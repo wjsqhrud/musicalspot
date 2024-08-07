@@ -1,4 +1,5 @@
 // const DOMAIN = 'http://127.0.0.1:4040'; // 로컬에서 실행하기/
+// 서버에 요청하는거임!
 const DOMAIN = "https://musicalspotserver.azurewebsites.net";
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
