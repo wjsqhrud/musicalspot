@@ -15,51 +15,27 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
           lfs: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # 최신 LTS 버전으로 업데이트
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_RIVER_0BD362700 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_RIVER_0BD3627000 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./front" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "build" # Built app content directory - optional
-          ###### End of Repository/Build Configurations ######
-  deploy_backend_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
-    runs-on: ubuntu-latest
-    name: Deploy Backend
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+          app_location: "./front"
+          api_location: ""
+          output_location: "build"
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: "corretto" # Amazon Corretto 배포판 사용 본인이 사용하는 jdk종류에 맞게 검색해서 사용 openjdk,eclipse,Oracle 등등
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x back/gradlew # gradlew에 실행 권한을 부여하기 위해 back/경로 추가
-
-      - name: Build with Gradle
-        run: ./gradlew build
-        working-directory: back # working-directory 옵션을 사용하여 back 디렉토리에서 명령어 실행
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: "musicalspotserver"
-          # 기본 슬롯만 사용하므로 slot-name 제거했음 원래는 슬롯자리
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: "back/build/libs/back-0.0.1-SNAPSHOT.jar"
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
@@ -71,3 +47,31 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_RIVER_0BD362700 }}
           action: "close"
+
+  deploy_backend_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Deploy Backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "corretto"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x back/gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+        working-directory: back
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: "musicalspotserver"
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: "back/build/libs/back-0.0.1-SNAPSHOT.jar"
