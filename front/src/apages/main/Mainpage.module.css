@@ -119,7 +119,7 @@
   font-weight: 800;
   padding-top: 28px;
   font-style: italic;
-  /* border-bottom: 2px solid rgb(151, 71, 255); */
+  border-bottom: 2px solid rgb(151, 71, 255);
 }
 
 .gridContainer {
